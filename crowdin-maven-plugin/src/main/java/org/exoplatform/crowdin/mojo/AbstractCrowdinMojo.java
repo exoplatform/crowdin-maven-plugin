@@ -1,0 +1,168 @@
+package org.exoplatform.crowdin.mojo;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Properties;
+import java.util.Set;
+
+import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
+import org.exoplatform.crowdin.model.CrowdinFileFactory;
+import org.exoplatform.crowdin.utils.CrowdinAPIHelper;
+
+import com.jayway.restassured.RestAssured;
+
+/**
+ * @author Philippe Aristote
+ */
+public abstract class AbstractCrowdinMojo extends AbstractMojo {
+
+	/**
+     * The directory to start parsing from
+     * @parameter expression="${startDir}" default-value="."
+     */
+    private String startDir;
+    
+    /**
+     * If true, no communication with Crowdin will be done; useful to test
+     * @parameter expression="${dryRun}" default-value="false"
+     */
+    private boolean dryRun;
+    
+    
+    private CrowdinFileFactory factory;
+    private CrowdinAPIHelper helper;
+    /**
+     * @required
+     * @parameter expression="${exo.crowdin.project.id}"
+     */
+	private String projectId;
+    /**
+     * @required
+     * @parameter expression="${exo.crowdin.project.key}"
+     */
+	private String projectKey;
+	/**
+     * @required
+     * @parameter expression="${exo.crowdin.properties}"
+     */
+	private String propertiesFile;
+	/**
+	 * The main properties file, that contains names of other properties
+	 */
+	private Properties mainProps;
+	/**
+	 * The list of properties files that contain pointers to each file to manage with Crowdin <br/>
+	 * Format:  project-name-version <=> path/to/file.properties <br/>
+	 * Example: cs-2.2.x <=> cs-2.2.x.properties
+	 */
+	private HashMap<String, Properties> properties;
+	
+	@Override
+	public void execute() throws MojoExecutionException, MojoFailureException {
+		// Initialization of the CrowdinFileFactory and CrowdinAPIHelper
+		factory = new CrowdinFileFactory(this);
+	    helper = new CrowdinAPIHelper(this);
+	    // Options to show in debug mode
+	    if (getLog().isDebugEnabled()) {
+			getLog().debug("*** RestAssured Base URI: "+ RestAssured.baseURI);
+			getLog().debug("*** RestAssured Port: "+ RestAssured.port);
+			getLog().debug("*** RestAssured Base Path: "+ RestAssured.basePath);
+			getLog().debug("*** RestAssured Request URI: "+ RestAssured.baseURI+":"+RestAssured.port+RestAssured.basePath);
+			getLog().debug("*** Current Working Directory: "+startDir);
+		}
+	    // Initialization of the properties
+	    mainProps = new Properties();
+	    properties = new HashMap<String, Properties>();
+		try {
+			if (getLog().isDebugEnabled()) getLog().debug("*** Loading the main properties file ("+propertiesFile+")...");
+			mainProps = loadProperties(propertiesFile);
+			Set<Object> keys = mainProps.keySet();
+			for (Object key : keys) {
+				if (getLog().isDebugEnabled()) getLog().debug("*** Loading the properties file ("+mainProps.getProperty(key.toString())+")...");
+				properties.put(key.toString(), loadProperties(mainProps.getProperty(key.toString())));
+			}
+			keys = null;
+		} catch (IOException e) {
+			getLog().error("Could not load the properties. Exception: "+e.getMessage());
+			if (getLog().isDebugEnabled()) {
+				for (StackTraceElement elt : e.getStackTrace()) {
+					getLog().debug("*** "+elt.toString());
+				}
+			}
+			throw new MojoExecutionException("Could not load the properties. Exception: "+e.getMessage());
+		}
+		// Create the target/ directory
+		File target = new File("target");
+		if (!target.exists()) target.mkdir();
+		// Call to the abstract method, that must be overriden in each concrete mojo
+	    executeMojo();
+	}
+	
+	/**
+	 * A convenience method to load properties file
+	 * @param _propertiesFile the name/path of the file to load
+	 * @return the Properties file
+	 * @throws IOException
+	 */
+	private Properties loadProperties(String _propertiesFile) throws IOException {
+		Properties res = new Properties();
+		InputStream in = new FileInputStream(_propertiesFile);
+		res.load(in);
+		in.close();
+		return res;
+	}
+	
+	/**
+	 * The core method of the Mojo. Has to be overriden in each concrete Mojo.
+	 * @throws MojoExecutionException
+	 * @throws MojoFailureException
+	 */
+	public abstract void executeMojo() throws MojoExecutionException, MojoFailureException;
+	
+	/*
+	 * Getters
+	 */
+	
+	public String getStartDir() {
+		return startDir;
+	}
+
+	public boolean isDryRun() {
+		return dryRun;
+	}
+
+	public CrowdinAPIHelper getHelper() {
+		return helper;
+	}
+	
+	public CrowdinFileFactory getFactory() {
+		return factory;
+	}
+	
+	public String getProjectId() {
+		return projectId;
+	}
+	
+	public String getProjectKey() {
+		return projectKey;
+	}
+
+	
+	public Properties getMainProperties() {
+		return mainProps;
+	}
+
+	/**
+	 * @return The list of properties files that contain pointers to each file to manage with Crowdin <br/>
+	 * Format:  project-name-version <=> path/to/file.properties <br/>
+	 * Example: cs-2.2.x <=> cs-2.2.x.properties
+	 */
+	public HashMap<String, Properties> getProperties() {
+		return properties;
+	}
+}
