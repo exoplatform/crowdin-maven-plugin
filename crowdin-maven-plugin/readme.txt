@@ -32,31 +32,31 @@ Why a maven plugin?
 Usage:
 ******
 
+Checkout the translation project (http://svn.exoplatform.org/exo-int/platform-tools/studies/trunk/PLF-2787/translations/)
+Open a terminal in the checked out folder, and run the following commands:
+
 1. Initialization
--- mvn org.exoplatform.crowdin:crowdin-maven-plugin:${version}:init
+-- mvn clean install -Pinit
 
 This will execute the plugin with the goal 'init':
--- parse the startDir directory (default is the current directory)
--- find all properties (and soon xml) files
+-- load the properties of each project
+-- browse them to identify master files and translations (master file = file with no specific language code)
 -- create folders on Crowdin if they don't exist
--- upload the master files on Crowdin if they don't exist (master file = file with no specific language code)
+-- upload the master files on Crowdin if they don't exist
 -- upload translations of each master file
 
 2. Synchronization
--- mvn org.exoplatform.crowdin:crowdin-maven-plugin:${version}:sync
+-- mvn clean install -Psync
 
 TODO
 
 3. Updating
--- mvn org.exoplatform.crowdin:crowdin-maven-plugin:${version}:update
+-- mvn clean install -Pupdate
 
 TODO
 
 4. Command line options
 
--- startDir
-   The directory from where the plugin will execute. Default is the current directory.
-   Example: mvn ... -DstartDir=cs-2.1.x/
 -- dryRun
    If true, no communication with Crowdin will be done; Default: false.
    Useful to see the evolution of the process. Combined with maven debug option -X, displays actual Rest calls and XmlPath queries.
@@ -68,13 +68,20 @@ Architecture:
 There are three main elements: the plugin, the communication with Crowdin API, the file model.
 
 1. File model
-The plugin defines and uses a class CrowdinFile that extends the java.io.File class.
-It adds a few attributes of a file in Crowdin, such as:
-- the type of the file (properties, xml)
-- whether the file is a master (w/o language code) or a translation
--- if yes, the language
--- if yes, a reference to the master file
-- a cleaned copy of the path of this file and its parent folder
+The model consists in 2 classes: CrowdinFile and CrowdinTranslation.
+CrowdinFile represents a master file on Crowdin, with the following attributes:
+- a pointer to the actual File
+- the path and name on Crowdin
+- the project (cs, ks etc) to use in the full file name
+- the type of file (properties only at the moment)
+
+CrowdinTranslation inherits from CrowdinFile, and adds the following attributes:
+- a pointer to the master CrowdinFile
+- the lang
+
+A third class CrowdinFileFactory allows to easily retrieve objects of the two classes above, after performing some
+common operation. One of the most important is the recognition of XML resource bundle files, to transform them automatically
+into Properties.
 
 2. Using the Crowdin API
 The plugin interacts with Crowdin thanks to its API (http://crowdin.net/page/api/).
@@ -94,12 +101,16 @@ Two convenience functions are provided to get details about the project, and to 
 3. Plugin Maven
 It contains 3 MOJOs, one for each interaction with Crowdin (init, sync, update)
 It's structured around an abstract parent class (AbstractCrowdinMojo) and three children classes, one for each MOJO.
-Only one is created so far: InitCrowdinMojo (MOJO init). The two others must be completed.
+Only one is created so far: InitCrowdinMojo (MOJO init). UpdateSourcesMojo was started but not completed, the sync mojo was not started.
 
-AbstractCrowdinMojo defines few properties
+AbstractCrowdinMojo defines few attributes
 -- startDir : cf command line options
 -- dryRun   : cf command line options
 -- helper   : a reference to the CrowdinAPIHelper class, to call functions that communicate with Crowdin
+-- projectId and projectKey : credentials to authenticate ourselves (exo) on Crowdin. they are set in the main settings.xml file
+-- propertiesFile : the path to the main configuration file, set in the translations' pom.xml file
+-- mainProps : the properties from the main config file (project-name-version = project-config-file)
+-- properties : a map with all referenced properties (project-name-version <-> poject-properties)
 
 
 Testing and debugging:
@@ -109,16 +120,6 @@ Testing and debugging:
 
 -- mvn clean install
 -- This will create the plugin artifacts in your local repository.
-
-
-Possible improvements:
-**********************
-
--- map war names with real folder structure with a configuration file (settings.xml)
--- use two properties for the project key and API key (settings.xml or command line)
--- add a prefix in the folder structure to indicate the project name and version (aio, plf30, etc)
--- ensure how the type of the file is defined
--- use an abstract class and children classes for different file types (properties, xml-gadget, xml-exo)
 
 
 Resources:
