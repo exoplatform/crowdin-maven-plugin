@@ -25,6 +25,34 @@
       <build>
         <plugins>
           <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>init</id>
+                <phase>initialize</phase>
+                <configuration>
+                  <executable>${basedir}/scripts/init-prepare.sh</executable>
+                  <workingDirectory>${exo.projects.directory.base}/eXoProjects/</workingDirectory>
+                </configuration>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>post-process</id>
+                <phase>package</phase>
+                <configuration>
+                  <executable>${basedir}/scripts/post-process.sh</executable>
+                  <workingDirectory>${exo.projects.directory.base}/eXoProjects/</workingDirectory>
+                </configuration>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
              <groupId>org.exoplatform.crowdin</groupId>
              <artifactId>crowdin-maven-plugin</artifactId>
              <version>1.0.0-SNAPSHOT</version>
@@ -36,7 +64,7 @@
                    <goal>init</goal>
                  </goals>
                  <configuration>
-                   <startDir>/home/exo/java/eXoProjects/Platform/3.5/</startDir>
+                   <startDir>${exo.projects.directory.base}/eXoProjects/</startDir>
                  </configuration>
                </execution>
              </executions>
@@ -60,7 +88,7 @@
                    <goal>sync</goal>
                  </goals>
                  <configuration>
-                   <startDir>/home/exo/java/eXoProjects/Platform/3.5/</startDir>
+                   <startDir>${exo.projects.directory.base}/eXoProjects/</startDir>
                  </configuration>
                </execution>
              </executions>
@@ -73,6 +101,34 @@
       <build>
         <plugins>
           <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>init</id>
+                <phase>initialize</phase>
+                <configuration>
+                  <executable>${basedir}/scripts/update-prepare.sh</executable>
+                  <workingDirectory>${exo.projects.directory.base}/eXoProjects/</workingDirectory>
+                </configuration>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>post-process</id>
+                <phase>package</phase>
+                <configuration>
+                  <executable>${basedir}/scripts/post-process.sh</executable>
+                  <workingDirectory>${exo.projects.directory.base}/eXoProjects/</workingDirectory>
+                </configuration>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
              <groupId>org.exoplatform.crowdin</groupId>
              <artifactId>crowdin-maven-plugin</artifactId>
              <version>1.0.0-SNAPSHOT</version>
@@ -84,7 +140,7 @@
                    <goal>update</goal>
                  </goals>
                  <configuration>
-                   <startDir>/home/exo/java/eXoProjects/Platform/3.5/</startDir>
+                   <startDir>${exo.projects.directory.base}/eXoProjects/</startDir>
                  </configuration>
                </execution>
              </executions>
