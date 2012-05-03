@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Copyright (C) 2003-2012 eXo Platform SAS.
 #
@@ -21,19 +21,21 @@
 
 
 # eXoProjects directory 
-EXO_PROJECTS=`pwd`/
+EXO_PROJECTS=`pwd`
+
+projects=( 'platform' 'ecms' 'cs' 'ks' 'social' )
+versions=( '3.5.x' '2.3.x' '2.2.x' '2.2.x' '1.2.x' )
+length=${#projects[@]}
 
 echo "=========================Restoring projects structure========================="
+echo ""
 
-mv platform-3.5.x platform
-echo "-------------------------Renamed platform-3.5.x to platform-------------------"
-mv ecms-2.3.x ecms
-echo "-------------------------Renamed ecms-2.3.x to ecms---------------------------"
-mv cs-2.2.x cs
-echo "-------------------------Renamed cs-2.2.x to cs-------------------------------"
-mv ks-2.2.x ks
-echo "-------------------------Renamed ks-2.2.x to ks-------------------------------"
-mv social-1.2.x social
-echo "-------------------------Renamed social-1.2.x to social-----------------------"
+for (( i=0;i<$length;i++)); do
+  if [ -d $EXO_PROJECTS/${projects[${i}]}-${versions[${i}]} ]; then
+    mv ${projects[${i}]}-${versions[${i}]} ${projects[${i}]}
+    echo "Renamed ${projects[${i}]}-${versions[${i}]} to ${projects[${i}]}"
+  fi
+done
 
+echo ""
 echo "=========================Finished=============================================="

@@ -16,7 +16,7 @@
 # along with this program; if not, see<http://www.gnu.org/licenses/>.#
 #
 #
-# Purpose : Prepare projects structure, clone projects if it is not existed, switch to expected version and update source code
+# Purpose : Prepare projects structure, clone projects if it is not existed, create branches from previous tags and switch to these branches
 #
 
 
@@ -25,6 +25,7 @@ EXO_PROJECTS=`pwd`
 
 projects=( 'platform' 'ecms' 'cs' 'ks' 'social' )
 versions=( '3.5.x' '2.3.x' '2.2.x' '2.2.x' '1.2.x' )
+oldtags=( '3.5.2' '2.3.6' '2.2.8' '2.2.8' '1.2.8' )
 length=${#projects[@]}
 
 echo "=========================Preparing projects structure========================="
@@ -53,8 +54,8 @@ for (( i=0;i<$length;i++)); do
   git remote add blessed git@github.com:exoplatform/${projects[${i}]}.git
   git fetch blessed
   echo "-------------------------Fetching done----------------------------------------"
-  git checkout remotes/blessed/stable/${versions[${i}]}
-  echo "-------------------------Switched to remotes/blessed/stable/${versions[${i}]}-------------"
+  git checkout -b crowdin/${oldtags[${i}]} ${oldtags[${i}]}
+  echo "-------------------------Switched to crowdin/${oldtags[${i}]}-------------"
   cd ..
   mv ${projects[${i}]} ${projects[${i}]}-${versions[${i}]}
   echo "-------------------------Renamed ${projects[${i}]} to ${projects[${i}]}-${versions[${i}]}-------------------"
@@ -64,3 +65,41 @@ done
 
 echo ""
 echo "=========================Projects prepared===================================="
+
+
+recurse() {
+  for i in "$1"/*;do
+    if [ -d "$i" ];then
+      recurse "$i"
+    elif [ -f "$i" ]; then
+      to=${i/temp\/crowdin\/translations\//}
+      mv ${i} ${to}
+      echo ""
+      echo "Moved"
+      echo "${i}"
+      echo "to"
+      echo "${to}"
+      echo ""
+    fi
+ done
+}
+
+recurse $EXO_PROJECTS/temp/crowdin
+
+$EXO_PROJECTS
+echo ""
+echo "=======================Committing translations to temporary branches================"
+for (( i=0;i<$length;i++)); do
+  cd ${projects[${i}]}-${versions[${i}]}
+  echo ""
+  echo "----------Updating translations from Crowdin to crowdin/${oldtags[${i}]} branch of ${projects[${i}]}------------"
+  git add .
+  git commit -m "Update translations from Crowdin"
+  cd ..
+  echo "----------Commited to crowdin/${oldtags[${i}]} branch of ${projects[${i}]}------------"
+  echo ""
+done
+echo "=========================Finished===================================================="
+echo ""
+echo "Now you need merge temporary branches to current branches manually and fix conflicts!"
+echo ""

@@ -37,8 +37,8 @@ public class CrowdinFileFactory {
 		}
 		
 		// replace all - by __ because of an unknown bug in RestAssured.get
-		_project = _project.replace("-", "__");
-		_name = _name.replace("-", "__");
+		_project = encodeMinusCharacterInPath(_project, true);
+		_name = encodeMinusCharacterInPath(_name, true);
 		
 		if (currentMojo.getLog().isDebugEnabled()) {
 			currentMojo.getLog().debug("*** Creating CrowdinFile with path: "+_path);
@@ -124,10 +124,23 @@ public class CrowdinFileFactory {
 		Matcher m = matchTranslation(_translationFile.getName());
     	String lang = m.group(2);
 		if (m.group(3) != null) lang += m.group(3);
-	  	lang = lang.replace("_", "-");
 	  	
-	  	String name = _translationFile.getName().replace("-", "__");
+	  	String name = encodeMinusCharacterInPath(_translationFile.getName(), true);
 	  	
 		return new CrowdinTranslation(_translationFile, name, _master.getType(), _master.getProject(), lang, _master);
 	}
+	
+  /**
+   * @param path path
+   * @param isEncode encode minus characters in path if isEncode is true, decode
+   *          minus characters if isEncode is false,
+   * @return encoded or decoded path
+   */
+  public static String encodeMinusCharacterInPath(String path, boolean isEncode) {
+    if (isEncode) {
+      return (path == null || path.isEmpty()) ? path : path.replace("-", "__");
+    } else {
+      return (path == null || path.isEmpty()) ? path : path.replace("__", "-");
+    }
+  }
 }
