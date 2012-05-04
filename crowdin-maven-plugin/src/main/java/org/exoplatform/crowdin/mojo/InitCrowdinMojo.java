@@ -21,6 +21,11 @@ public class InitCrowdinMojo extends AbstractCrowdinMojo {
      */	
 	@Override
 	public void executeMojo() throws MojoExecutionException, MojoFailureException {
+    if (!isAllPropertyFilesExisted() && !isForce()) {
+      getLog().info("\nThere are nonexistent properties files! Check again and update properties configuration files or run following command to "
+          + "continue:\n mvn clean install -Pinit -Dforce=true \n");
+      return;
+    }
 		// Iterate on each project defined in crowdin.properties
 		for (String proj : getProperties().keySet()) {
 			getLog().info("Starting project "+proj);
@@ -39,34 +44,6 @@ public class InitCrowdinMojo extends AbstractCrowdinMojo {
 				initTranslations(master);
 			}
 			getLog().info("Finished project "+proj);
-		}
-	}
-	
-	/**
-	 * Create parent directories of a file
-	 * @param _filePath the full path of the parent of that file
-	 */
-	private void initDir(String _filePath) {
-		// remove the file name
-		_filePath = _filePath.substring(0, _filePath.lastIndexOf('/'));
-		// add each element of the path in the cell of an array
-		String [] path = _filePath.split("/");
-		// reconstruct the path from the beginning, one element after each other
-		// if the folder under this path doesn't exist yet, it is created
-		StringBuffer pathFromBeginning = new StringBuffer();
-		for (String string : path) {
-			pathFromBeginning.append(string);
-			try {
-				if (!getHelper().elementExists(pathFromBeginning.toString())) {
-					if (getLog().isDebugEnabled()) getLog().debug("*** Create directory: "+_filePath);
-					String result = getHelper().addDirectory(pathFromBeginning.toString());
-					if (result.contains("success")) getLog().info("Directory '"+ pathFromBeginning.toString()+"' created succesfully.");
-					else getLog().warn("Cannot create directory '"+_filePath+"'. Reason:\n"+result);
-				}
-			} catch (MojoExecutionException e) {
-				getLog().error("Error while creating directory '"+_filePath+"'. Exception:\n"+e.getMessage());
-			}
-			pathFromBeginning.append("/");
 		}
 	}
 	

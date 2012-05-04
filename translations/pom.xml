@@ -72,10 +72,38 @@
         </plugins>
       </build>
     </profile>
-    <!--profile>
+    <profile>
       <id>sync</id>
       <build>
         <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>init</id>
+                <phase>initialize</phase>
+                <configuration>
+                  <executable>${basedir}/scripts/init-prepare.sh</executable>
+                  <workingDirectory>${exo.projects.directory.base}/eXoProjects/</workingDirectory>
+                </configuration>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>post-process</id>
+                <phase>package</phase>
+                <configuration>
+                  <executable>${basedir}/scripts/post-process.sh</executable>
+                  <workingDirectory>${exo.projects.directory.base}/eXoProjects/</workingDirectory>
+                </configuration>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
           <plugin>
              <groupId>org.exoplatform.crowdin</groupId>
              <artifactId>crowdin-maven-plugin</artifactId>
@@ -95,7 +123,7 @@
           </plugin>
         </plugins>
       </build>
-    </profile-->
+    </profile>
     <profile>
       <id>update</id>
       <build>

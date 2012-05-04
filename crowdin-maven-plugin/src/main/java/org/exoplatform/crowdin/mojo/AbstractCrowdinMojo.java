@@ -33,6 +33,14 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
      */
     private boolean dryRun;
     
+  /**
+   * If true, continue initialize or synchronize source code to Crowdin if there
+   * are nonexistent property files. If false, stop process
+   * 
+   * @parameter expression="${force}" default-value="false"
+   */
+    private boolean force;
+    
     
     private CrowdinFileFactory factory;
     private CrowdinAPIHelper helper;
@@ -135,6 +143,10 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
 	public boolean isDryRun() {
 		return dryRun;
 	}
+	
+  public boolean isForce() {
+    return force;
+  }
 
 	public CrowdinAPIHelper getHelper() {
 		return helper;
@@ -165,4 +177,65 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
 	public HashMap<String, Properties> getProperties() {
 		return properties;
 	}
+	
+  /**
+   * Create parent directories of a file
+   * 
+   * @param _filePath the full path of the parent of that file
+   */
+  protected void initDir(String _filePath) {
+    // remove the file name
+    _filePath = _filePath.substring(0, _filePath.lastIndexOf('/'));
+    // add each element of the path in the cell of an array
+    String[] path = _filePath.split("/");
+    // reconstruct the path from the beginning, one element after each other
+    // if the folder under this path doesn't exist yet, it is created
+    StringBuffer pathFromBeginning = new StringBuffer();
+    for (String string : path) {
+      pathFromBeginning.append(string);
+      try {
+        if (!getHelper().elementExists(pathFromBeginning.toString())) {
+          if (getLog().isDebugEnabled())
+            getLog().debug("*** Create directory: " + _filePath);
+          String result = getHelper().addDirectory(pathFromBeginning.toString());
+          if (result.contains("success"))
+            getLog().info("Directory '" + pathFromBeginning.toString() + "' created succesfully.");
+          else
+            getLog().warn("Cannot create directory '" + _filePath + "'. Reason:\n" + result);
+        }
+      } catch (MojoExecutionException e) {
+        getLog().error("Error while creating directory '" + _filePath + "'. Exception:\n" + e.getMessage());
+      }
+      pathFromBeginning.append("/");
+    }
+  }
+	
+  protected boolean isAllPropertyFilesExisted() {
+    boolean existed = true;
+    getLog().info("Checking property files... ");
+    // Iterate on each project defined in crowdin.properties
+    for (String proj : getProperties().keySet()) {
+      // Get the Properties of the current project, i.e. the content of
+      // cs-2.2.x.properties
+      Properties currentProj = getProperties().get(proj);
+      Set<Object> files = currentProj.keySet();
+      // Iterate on each file of the current project
+      for (Object file : files) {
+        // Skip the property baseDir
+        if (file.equals("baseDir")) {
+          continue;
+        }
+        // Construct the full path to the file
+        String filePath = getStartDir() + proj + currentProj.getProperty(file.toString());
+        File f = new File(filePath);
+        if (!f.exists()) {
+          existed = false;
+          getLog().warn("File not found: " + filePath);
+        }
+      }
+    }
+    getLog().info("Checking done.");
+    return existed;
+  }
+	
 }
