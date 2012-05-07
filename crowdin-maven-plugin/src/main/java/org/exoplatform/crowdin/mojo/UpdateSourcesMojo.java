@@ -79,6 +79,7 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
         entryName = entryName.replace('/', File.separatorChar);
         entryName = entryName.replace('\\', File.separatorChar);
         System.out.println("entryname " + entryName);
+        // Need improve, some portlets in CS use xml format for vi, ar locales
         boolean isXML = (entryName.indexOf(".xml")>0);
         if(isXML){
           entryName = entryName.replaceAll(".xml", ".properties");
