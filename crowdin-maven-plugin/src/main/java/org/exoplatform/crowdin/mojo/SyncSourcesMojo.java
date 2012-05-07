@@ -42,9 +42,12 @@ public class SyncSourcesMojo extends AbstractCrowdinMojo {
   @Override
   public void executeMojo() throws MojoExecutionException, MojoFailureException {
     if (!isAllPropertyFilesExisted() && !isForce()) {
-      getLog().info("\nThere are nonexistent properties files! Check again and update properties configuration files or run following command to "
-          + "continue:\n mvn clean install -Psync -Dforce=true \n "
-          + "Warning: All Crowdin files corresponding to nonexistent properties files will be deleted after execute above command.");
+      getLog().info("\n\n\n");
+      getLog().info("----------------------------------------------------------------------------------------\n\n"
+          + "There are nonexistent properties files! Check again and update properties configuration files or run following command to "
+          + "continue:\n mvn clean install -Psync -Dforce=true \n"
+          + "Warning: All Crowdin files corresponding to nonexistent properties files will be deleted after execute above command.\n");
+      getLog().info("----------------------------------------------------------------------------------------\n\n\n");
       return;
     }
     // Iterate on each project defined in crowdin.properties
@@ -86,31 +89,38 @@ public class SyncSourcesMojo extends AbstractCrowdinMojo {
         getLog().debug("*** Init dir");
       initDir(_file.getCrowdinPath());
       try {
-        if (getLog().isDebugEnabled())
-          getLog().debug("*** Checking whether file: " + _file.getCrowdinPath() + " exists.");
-        if (!getHelper().elementExists(_file.getCrowdinPath())) {
-          if (getLog().isDebugEnabled())
-            getLog().debug("*** Add file: " + _file.getCrowdinPath());
-          String result = getHelper().addFile(_file);
-          if (result.contains("success"))
-            getLog().info("File " + fileN + " created succesfully.");
-          else
-            getLog().warn("Cannot create file '" + _file.getFile().getPath() + "'. Reason:\n"
-                + result);
-        } else {
-          if (getLog().isDebugEnabled()){
-            getLog().debug("*** Update file: " + _file.getCrowdinPath());
+        if (_file.getFile().exists()) {
+          if (!getHelper().elementExists(_file.getCrowdinPath())) {
+            if (getLog().isDebugEnabled())
+              getLog().debug("*** Add file: " + _file.getCrowdinPath());
+            String result = getHelper().addFile(_file);
+            if (result.contains("success"))
+              getLog().info("File " + fileN + " created succesfully.");
+            else
+              getLog().warn("Cannot create file '" + _file.getFile().getPath() + "'. Reason:\n" + result);
+          } else {
+            if (getLog().isDebugEnabled()) {
+              getLog().debug("*** Update file: " + _file.getCrowdinPath());
+            }
+            String result = getHelper().updateFile(_file);
+            if (result.contains("success"))
+              getLog().info("File " + fileN + " updated succesfully.");
+            else
+              getLog().warn("Cannot update file '" + _file.getFile().getPath() + "'. Reason:\n" + result);
           }
-          String result = getHelper().updateFile(_file);
-          if (result.contains("success"))
-            getLog().info("File " + fileN + " updated succesfully.");
-          else
-            getLog().warn("Cannot update file '" + _file.getFile().getPath() + "'. Reason:\n"
-                + result);
+        } else {
+          if (getHelper().elementExists(_file.getCrowdinPath())) {
+            if (getLog().isDebugEnabled())
+              getLog().debug("*** Delete file: " + _file.getCrowdinPath());
+            String result = getHelper().deleteFile(_file);
+            if (result.contains("success"))
+              getLog().info("File " + fileN + " deleted succesfully.");
+            else
+              getLog().warn("Cannot delete file '" + _file.getFile().getPath() + "'. Reason:\n" + result);
+          }
         }
       } catch (MojoExecutionException e) {
-        getLog().error("Error while updating file '" + _file.getFile().getPath()
-            + "'. Exception:\n" + e.getMessage());
+        getLog().error("Error while updating file '" + _file.getFile().getPath() + "'. Exception:\n" + e.getMessage());
       }
     }
   }

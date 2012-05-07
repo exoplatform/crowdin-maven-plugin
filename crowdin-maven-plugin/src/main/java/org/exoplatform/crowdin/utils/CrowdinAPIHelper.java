@@ -76,6 +76,27 @@ public class CrowdinAPIHelper {
 	}
 	
 	/**
+   * Calls the function http://crowdin.net/page/api/delete-file
+   * @param _file Crowdin file
+   * @return true if the request is successful (file deleted), false otherwise
+   * @throws MojoExecutionException
+   */
+  public String deleteFile(CrowdinFile _file) throws MojoExecutionException {
+    if (currentMojo.isDryRun()) {
+      currentMojo.getLog().info("Deleting file '"+_file.getFile().getName()+"' in Dry Run mode...");
+      if (currentMojo.getLog().isDebugEnabled())
+        currentMojo.getLog().debug("*** Real mode would execute:\n" +
+            "given()." +
+              "multiPart(\"file\", "+_file.getCrowdinPath()+")." +
+              "post(\"/delete-file?key="+projectKey+").andReturn().asString();");
+      return "<dryRun success/>";
+    }
+    return given().
+        multiPart("file", _file.getCrowdinPath()).
+            post("/delete-file?key="+projectKey).andReturn().asString();
+  }
+	
+	/**
 	 * 
 	 * @param _eltPath the full path of the file/folder to check
 	 * @return true if the element exists, false otherwise

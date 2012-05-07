@@ -103,11 +103,10 @@ public class CrowdinFileFactory {
 			    path = "target/" + fileName + ".properties";
 			    return new File(path);
 			}
-			else throw new MojoExecutionException("File "+path+" doesn't exist or is not a file.");
 		} catch (Exception e) {
 			currentMojo.getLog().error("Cannot transform "+path+" into a properties file. Reason:\n"+e.getMessage());
 		}
-		return null;
+		return _xmlFile;
 	}
 	
 	/**
