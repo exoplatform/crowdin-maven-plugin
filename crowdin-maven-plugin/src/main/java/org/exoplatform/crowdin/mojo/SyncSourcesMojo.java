@@ -108,6 +108,9 @@ public class SyncSourcesMojo extends AbstractCrowdinMojo {
             else
               getLog().warn("Cannot update file '" + _file.getFile().getPath() + "'. Reason:\n" + result);
           }
+          if (_file.isShouldBeCleaned()) {
+            _file.getFile().delete();
+          }
         } else {
           if (getHelper().elementExists(_file.getCrowdinPath())) {
             if (getLog().isDebugEnabled())

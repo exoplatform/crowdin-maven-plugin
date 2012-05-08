@@ -1,13 +1,9 @@
 package org.exoplatform.crowdin.model;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.Properties;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.maven.plugin.MojoExecutionException;
 import org.exoplatform.crowdin.mojo.AbstractCrowdinMojo;
 import org.exoplatform.crowdin.utils.XMLToProps;
 
@@ -30,10 +26,12 @@ public class CrowdinFileFactory {
 		
 		File file = new File(_path);
 		String type = _path.substring(_path.lastIndexOf('.')+1);
+		boolean shouldBeCleaned = false;
 		if (type.equals("xml")) {
 			file = fromXMLToProps(file);
 			_path = file.getPath();
 			type = "properties";
+			shouldBeCleaned = true;
 		}
 		
 		// replace all - by __ because of an unknown bug in RestAssured.get
@@ -47,7 +45,7 @@ public class CrowdinFileFactory {
 			currentMojo.getLog().debug("*** Creating CrowdinFile in project: "+_project);
 		}
 		
-		return new CrowdinFile(file, _name, type, _project);
+		return new CrowdinFile(file, _name, type, _project, shouldBeCleaned);
 	}
 	
 	/**
@@ -95,12 +93,7 @@ public class CrowdinFileFactory {
 		String path = _xmlFile.getPath();
 		try {
 			if (XMLToProps.parse(path)) {
-				String fullFileName = _xmlFile.getName();
-			    String fileName = fullFileName;
-			    if(fileName.contains(".")) {
-			      fileName = fileName.substring(0, fileName.lastIndexOf("."));
-			    }
-			    path = "target/" + fileName + ".properties";
+			    path = path.replaceAll(".xml", ".properties");
 			    return new File(path);
 			}
 		} catch (Exception e) {
@@ -117,8 +110,10 @@ public class CrowdinFileFactory {
 	 */
 	public CrowdinTranslation prepareCrowdinTranslation(CrowdinFile _master, File _translationFile) {
 		String type = _translationFile.getName().substring(_translationFile.getName().lastIndexOf('.')+1);
+		boolean shouldBeCleaned = false;
 		if (type.equals("xml")) {
 			_translationFile = fromXMLToProps(_translationFile);
+			shouldBeCleaned = true;
 		}
 		Matcher m = matchTranslation(_translationFile.getName());
     	String lang = m.group(2);
@@ -126,7 +121,7 @@ public class CrowdinFileFactory {
 	  	
 	  	String name = encodeMinusCharacterInPath(_translationFile.getName(), true);
 	  	
-		return new CrowdinTranslation(_translationFile, name, _master.getType(), _master.getProject(), lang, _master);
+		return new CrowdinTranslation(_translationFile, name, _master.getType(), _master.getProject(), lang, _master, shouldBeCleaned);
 	}
 	
   /**

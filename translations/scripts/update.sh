@@ -54,6 +54,7 @@ for (( i=0;i<$length;i++)); do
   git remote add blessed git@github.com:exoplatform/${projects[${i}]}.git
   git fetch blessed
   echo "-------------------------Fetching done----------------------------------------"
+  git branch -D crowdin/${oldtags[${i}]}
   git checkout -b crowdin/${oldtags[${i}]} ${oldtags[${i}]}
   echo "-------------------------Switched to crowdin/${oldtags[${i}]}-------------"
   cd ..

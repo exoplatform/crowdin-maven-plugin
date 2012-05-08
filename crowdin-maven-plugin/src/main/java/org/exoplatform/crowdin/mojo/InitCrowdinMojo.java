@@ -43,8 +43,10 @@ public class InitCrowdinMojo extends AbstractCrowdinMojo {
 				// Construct the full path to the file
 				String filePath = getStartDir()+proj+currentProj.getProperty(file.toString());
 				CrowdinFile master = getFactory().prepareCrowdinFile(filePath, file.toString(), baseDir);
-				initFile(master);
-				initTranslations(master);
+        if (master.getFile().exists()) {
+          initFile(master);
+          initTranslations(master);
+        }
 			}
 			getLog().info("Finished project "+proj);
 		}
@@ -83,6 +85,9 @@ public class InitCrowdinMojo extends AbstractCrowdinMojo {
 	 */
 	private void initTranslations(CrowdinFile _master) {
 		File dir = _master.getFile().getParentFile();
+    if (_master.isShouldBeCleaned()) {
+      _master.getFile().delete();
+    }
 		File[] files = dir.listFiles(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String name) {
@@ -100,6 +105,9 @@ public class InitCrowdinMojo extends AbstractCrowdinMojo {
 					String result = getHelper().uploadTranslation(cTran);
 					if (result.contains("success")) getLog().info("Translation '"+transName+"' added succesfully.");
 					else getLog().warn("Cannot upload translation '"+file.getPath()+" with lang '"+cTran.getLang()+"'. Reason:\n"+result);
+          if (cTran.isShouldBeCleaned()) {
+            cTran.getFile().delete();
+          }
 				} catch (MojoExecutionException e) {
 					getLog().error("Error while adding translation '"+file.getPath()+"'. Exception:\n"+e.getMessage());
 				}

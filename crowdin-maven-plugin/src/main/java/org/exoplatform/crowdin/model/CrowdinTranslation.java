@@ -14,8 +14,8 @@ public class CrowdinTranslation extends CrowdinFile {
 	 */
 	private CrowdinFile master;
 	
-	public CrowdinTranslation(File _file, String _name, String _type, String _project, String _lang, CrowdinFile _master) {
-		super(_file, _name, _type, _project);
+	public CrowdinTranslation(File _file, String _name, String _type, String _project, String _lang, CrowdinFile _master, boolean _shouldBeCleaned) {
+		super(_file, _name, _type, _project, _shouldBeCleaned);
 		lang = _lang;
 		if (lang.equals("vn")) lang = "vi";
 		else if (lang.equals("es")) lang = "es-ES";

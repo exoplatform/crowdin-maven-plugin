@@ -24,11 +24,17 @@ public class CrowdinFile {
 	 */
 	private String name;
 	
-	public CrowdinFile(File _file, String _name, String _type, String _project) {
+	/**
+	 * Indicate this file should be cleaned or not
+	 */
+	private boolean shouldBeCleaned;
+	
+	public CrowdinFile(File _file, String _name, String _type, String _project, boolean _shouldBeCleaned) {
 		file = _file;
 		name = _name;
 		type = _type;
 		project = _project;
+		shouldBeCleaned = _shouldBeCleaned;
 	}
 
 	/*
@@ -54,5 +60,9 @@ public class CrowdinFile {
 	public String getName() {
 		return name;
 	}
-	
+
+  public boolean isShouldBeCleaned() {
+    return shouldBeCleaned;
+  }
+
 }

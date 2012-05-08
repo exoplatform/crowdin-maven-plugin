@@ -42,13 +42,9 @@ public class XMLToProps {
   @SuppressWarnings("unchecked")
   public static boolean parse(String inputFilePath) throws Exception {
     File inputFile = new File(inputFilePath) ;
-    if(!inputFile.exists() || !inputFile.isFile()) return false; 
-    String fullFileName = inputFile.getName() ;
-    String fileName = fullFileName ;
-    if(fileName.contains(".")) {
-      fileName = fileName.substring(0, fileName.lastIndexOf(".")) ;
-    }
-    String outputFile = "target/" + fileName + ".properties" ;
+    if(!inputFile.exists() || !inputFile.isFile()) return false;
+    
+    String outputFile = inputFilePath.replaceAll(".xml", ".properties");
     
     InputStream fis = new FileInputStream(inputFile);
     SAXBuilder builder = new SAXBuilder();
