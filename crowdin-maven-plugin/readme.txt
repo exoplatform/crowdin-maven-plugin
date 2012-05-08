@@ -10,14 +10,17 @@ There are three main interactions with Crowdin:
 -- upload all files with their translations
 
 2. Synchronizing Crowdin with the changes in the source
--- update folders names, files names
 -- create new folders, upload new files
 -- delete old folders and files
+-- update folders names, files names
+-- update master files content on Crowdin (master file = file with no specific language code)
 
 3. Updating the source code from changes in Crowdin
 -- export and download all translations
--- replace existing files by new ones
--- generate a patch
+-- create "Crowdin" branches in source code from last tags
+-- replace existing files in "Crowdin" branches by new ones
+-- commit changes to "Crowdin" branches
+-- merge "Crowdin" branches to working branches (do manually to fix conflicts)
 
 
 Why a maven plugin?
@@ -32,28 +35,56 @@ Why a maven plugin?
 Usage:
 ******
 
-Checkout the translation project (http://svn.exoplatform.org/exo-int/platform-tools/studies/trunk/PLF-2787/translations/)
-Open a terminal in the checked out folder, and run the following commands:
+Clone the translation project (https://github.com/exoplatform/plf-studies/tree/master/PLF-2787/translations)
+Open a terminal in the cloned folder, and run the following commands:
 
 1. Initialization
 -- mvn clean install -Pinit
 
 This will execute the plugin with the goal 'init':
 -- load the properties of each project
--- browse them to identify master files and translations (master file = file with no specific language code)
+-- browse them to identify master files and translations
 -- create folders on Crowdin if they don't exist
--- upload the master files on Crowdin if they don't exist
--- upload translations of each master file
+-- upload the master files and translations of each master file on Crowdin if they don't exist
+
+Note: If there are nonexistent master files in file system, there will be a warning like
+----------------------------------------------------------------------------------------
+There are nonexistent properties files! Check again and update properties configuration files or run following command to continue:
+  mvn clean install -Pinit -Dforce=true
+----------------------------------------------------------------------------------------
 
 2. Synchronization
 -- mvn clean install -Psync
 
-TODO
+This will execute the plugin with the goal 'sync':
+-- load the properties of each project
+-- browse them to identify master files and translations
+-- create new folders, upload new master files and translations (new entries in the properties of each project)
+-- update master files content on Crowdin (old entries in the properties of each project and exist in file system)
+-- delete old folders and files (old entries in the properties of each project and not exist in file system)
+
+Note: If there are nonexistent master files in file system, there will be a warning like
+----------------------------------------------------------------------------------------
+There are nonexistent properties files! Check again and update properties configuration files or run following command to continue:
+  mvn clean install -Psync -Dforce=true
+Warning: All Crowdin files corresponding to nonexistent properties files will be deleted after execute above command
+----------------------------------------------------------------------------------------
+
+==> We can rely on above message to know if there are some master files renamed in source code. In this case, we need update manually these
+master files by content and translations from Crowdin before do a synchronization again with -Dforce=true
 
 3. Updating
 -- mvn clean install -Pupdate
 
-TODO
+This will execute the plugin with the goal 'update':
+-- export and download all translations
+-- create "Crowdin" branches in source code from last tags
+-- replace existing files in "Crowdin" branches by new ones
+-- commit changes to "Crowdin" branches
+
+Note: We need merge manually "Crowdin" branches to working branches to fix conflicts and commit after that
+
+
 
 4. Command line options
 
@@ -74,6 +105,7 @@ CrowdinFile represents a master file on Crowdin, with the following attributes:
 - the path and name on Crowdin
 - the project (cs, ks etc) to use in the full file name
 - the type of file (properties only at the moment)
+- information indicate this file whether a temporary file or not (temporary files are generated when convert xml files to properties files)
 
 CrowdinTranslation inherits from CrowdinFile, and adds the following attributes:
 - a pointer to the master CrowdinFile
@@ -91,6 +123,7 @@ the plugin defines the class CrowdinAPIHelper. It contains functions that call t
 -- add-directory / addDirectory(String _dirName)
 -- add-file / addFile(CrowdinFile _file)
 -- update-file / updateFile(CrowdinFile _file)
+-- delete-file / deleteFile(CrowdinFile _file)
 -- upload-translation / uploadTranslation(CrowdinFile _file)
 -- export then download / downloadTranslations()
 
@@ -101,16 +134,21 @@ Two convenience functions are provided to get details about the project, and to 
 3. Plugin Maven
 It contains 3 MOJOs, one for each interaction with Crowdin (init, sync, update)
 It's structured around an abstract parent class (AbstractCrowdinMojo) and three children classes, one for each MOJO.
-Only one is created so far: InitCrowdinMojo (MOJO init). UpdateSourcesMojo was started but not completed, the sync mojo was not started.
+InitCrowdinMojo (MOJO init), SyncSourcesMojo (MOJO synchronize), UpdateSourcesMojo (MOJO update)
+
+Note: Plugin still doesn't support for gadget properties files. Also in update phase, the plugin produce translation files with the same
+extension name with master file (Some time in source code, master file and it's translation files are not same extension name).
+Also there is a case where there are duplicated master files with different extensions: properties and xml ( Bonita and Jbpm workflow resource
+bundles ), plugin only take files with properties extension in this case.
 
 AbstractCrowdinMojo defines few attributes
--- startDir : cf command line options
--- dryRun   : cf command line options
+-- startDir : cf command line options, the working directory for the plugin
+-- dryRun   : cf command line options, run in dryRun mode or not
 -- helper   : a reference to the CrowdinAPIHelper class, to call functions that communicate with Crowdin
 -- projectId and projectKey : credentials to authenticate ourselves (exo) on Crowdin. they are set in the main settings.xml file
 -- propertiesFile : the path to the main configuration file, set in the translations' pom.xml file
 -- mainProps : the properties from the main config file (project-name-version = project-config-file)
--- properties : a map with all referenced properties (project-name-version <-> poject-properties)
+-- properties : a map with all referenced properties (project-name-version <-> project-properties)
 
 
 Testing and debugging:

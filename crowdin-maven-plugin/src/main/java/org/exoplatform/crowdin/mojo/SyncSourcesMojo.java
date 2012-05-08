@@ -94,10 +94,16 @@ public class SyncSourcesMojo extends AbstractCrowdinMojo {
             if (getLog().isDebugEnabled())
               getLog().debug("*** Add file: " + _file.getCrowdinPath());
             String result = getHelper().addFile(_file);
-            if (result.contains("success"))
+            if (result.contains("success")) {
               getLog().info("File " + fileN + " created succesfully.");
-            else
+              initTranslations(_file);
+            }
+            else {
               getLog().warn("Cannot create file '" + _file.getFile().getPath() + "'. Reason:\n" + result);
+              if (_file.isShouldBeCleaned()) {
+                _file.getFile().delete();
+              }
+            }
           } else {
             if (getLog().isDebugEnabled()) {
               getLog().debug("*** Update file: " + _file.getCrowdinPath());
@@ -107,9 +113,9 @@ public class SyncSourcesMojo extends AbstractCrowdinMojo {
               getLog().info("File " + fileN + " updated succesfully.");
             else
               getLog().warn("Cannot update file '" + _file.getFile().getPath() + "'. Reason:\n" + result);
-          }
-          if (_file.isShouldBeCleaned()) {
-            _file.getFile().delete();
+            if (_file.isShouldBeCleaned()) {
+              _file.getFile().delete();
+            }
           }
         } else {
           if (getHelper().elementExists(_file.getCrowdinPath())) {

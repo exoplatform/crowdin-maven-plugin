@@ -1,6 +1,7 @@
 package org.exoplatform.crowdin.mojo;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,7 +12,9 @@ import java.util.Set;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.exoplatform.crowdin.model.CrowdinFile;
 import org.exoplatform.crowdin.model.CrowdinFileFactory;
+import org.exoplatform.crowdin.model.CrowdinTranslation;
 import org.exoplatform.crowdin.utils.CrowdinAPIHelper;
 
 import com.jayway.restassured.RestAssured;
@@ -236,6 +239,42 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
     }
     getLog().info("Checking done.");
     return existed;
+  }
+  
+  /**
+   * A function that initializes translations of the master file given in parameter.
+   * @param _master The master file of which translations will be detected and uploaded.
+   */
+  protected void initTranslations(CrowdinFile _master) {
+    File dir = _master.getFile().getParentFile();
+    if (_master.isShouldBeCleaned()) {
+      _master.getFile().delete();
+    }
+    File[] files = dir.listFiles(new FilenameFilter() {
+      @Override
+      public boolean accept(File dir, String name) {
+        return getFactory().isTranslation(name);
+      }
+    });
+    for (File file : files) {
+      String transName = file.getName();
+      String masterName = _master.getFile().getName().substring(0, _master.getFile().getName().lastIndexOf('.'));
+      if (transName.contains(masterName)) {
+        if (getLog().isDebugEnabled()) getLog().debug("*** Initializing: "+transName);
+        try {
+          if (getLog().isDebugEnabled()) getLog().debug("*** Upload translation: "+transName+"\n\t***** for master: "+_master.getName());
+          CrowdinTranslation cTran = getFactory().prepareCrowdinTranslation(_master, file);
+          String result = getHelper().uploadTranslation(cTran);
+          if (result.contains("success")) getLog().info("Translation '"+transName+"' added succesfully.");
+          else getLog().warn("Cannot upload translation '"+file.getPath()+" with lang '"+cTran.getLang()+"'. Reason:\n"+result);
+          if (cTran.isShouldBeCleaned()) {
+            cTran.getFile().delete();
+          }
+        } catch (MojoExecutionException e) {
+          getLog().error("Error while adding translation '"+file.getPath()+"'. Exception:\n"+e.getMessage());
+        }
+      }
+    }
   }
 	
 }

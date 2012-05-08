@@ -1,15 +1,12 @@
 package org.exoplatform.crowdin.mojo;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.util.Properties;
 import java.util.Set;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.exoplatform.crowdin.model.CrowdinFile;
-import org.exoplatform.crowdin.model.CrowdinTranslation;
-
 /**
  * @goal init
  * @author Philippe Aristote
@@ -44,8 +41,10 @@ public class InitCrowdinMojo extends AbstractCrowdinMojo {
 				String filePath = getStartDir()+proj+currentProj.getProperty(file.toString());
 				CrowdinFile master = getFactory().prepareCrowdinFile(filePath, file.toString(), baseDir);
         if (master.getFile().exists()) {
-          initFile(master);
-          initTranslations(master);
+          boolean initialized = initFile(master);
+          if (initialized) {
+            initTranslations(master);
+          }
         }
 			}
 			getLog().info("Finished project "+proj);
@@ -58,8 +57,9 @@ public class InitCrowdinMojo extends AbstractCrowdinMojo {
 	 *  - create the file if it doesn't exist
 	 *  - upload translations for each file if they don't exist
 	 * @param _file the File to initialize in Crowdin
+	 * @return true if file is created, false if file is existed on Crowdin
 	 */
-	private void initFile(CrowdinFile _file) {
+	private boolean initFile(CrowdinFile _file) {
 		String fileN = _file.getFile().getName();
 		if (getLog().isDebugEnabled()) getLog().debug("*** Initializing: "+fileN);
 		// Making sure the file is a master file and not a translation
@@ -71,47 +71,18 @@ public class InitCrowdinMojo extends AbstractCrowdinMojo {
 				if (!getHelper().elementExists(_file.getCrowdinPath())) {
 					if (getLog().isDebugEnabled()) getLog().debug("*** Add file: "+_file.getCrowdinPath());
 					String result = getHelper().addFile(_file);
-					if (result.contains("success")) getLog().info("File "+fileN+" created succesfully.");
-					else getLog().warn("Cannot create file '"+_file.getFile().getPath()+"'. Reason:\n"+result);
+					if (result.contains("success")) {
+					  getLog().info("File "+fileN+" created succesfully.");
+					  return true;
+					} else {
+					  getLog().warn("Cannot create file '"+_file.getFile().getPath()+"'. Reason:\n"+result);
+					}
 				}
 			} catch (MojoExecutionException e) {
 				getLog().error("Error while creating file '"+_file.getFile().getPath()+"'. Exception:\n"+e.getMessage());
 			}
 		}
+		return false;
 	}
-	/**
-	 * A function that initializes translations of the master file given in parameter.
-	 * @param _master The master file of which translations will be detected and uploaded.
-	 */
-	private void initTranslations(CrowdinFile _master) {
-		File dir = _master.getFile().getParentFile();
-    if (_master.isShouldBeCleaned()) {
-      _master.getFile().delete();
-    }
-		File[] files = dir.listFiles(new FilenameFilter() {
-			@Override
-			public boolean accept(File dir, String name) {
-				return getFactory().isTranslation(name);
-			}
-		});
-		for (File file : files) {
-			String transName = file.getName();
-			String masterName = _master.getFile().getName().substring(0, _master.getFile().getName().lastIndexOf('.'));
-			if (transName.contains(masterName)) {
-				if (getLog().isDebugEnabled()) getLog().debug("*** Initializing: "+transName);
-				try {
-					if (getLog().isDebugEnabled()) getLog().debug("*** Upload translation: "+transName+"\n\t***** for master: "+_master.getName());
-					CrowdinTranslation cTran = getFactory().prepareCrowdinTranslation(_master, file);
-					String result = getHelper().uploadTranslation(cTran);
-					if (result.contains("success")) getLog().info("Translation '"+transName+"' added succesfully.");
-					else getLog().warn("Cannot upload translation '"+file.getPath()+" with lang '"+cTran.getLang()+"'. Reason:\n"+result);
-          if (cTran.isShouldBeCleaned()) {
-            cTran.getFile().delete();
-          }
-				} catch (MojoExecutionException e) {
-					getLog().error("Error while adding translation '"+file.getPath()+"'. Exception:\n"+e.getMessage());
-				}
-			}
-		}
-	}
+	
 }
