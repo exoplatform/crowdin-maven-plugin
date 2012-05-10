@@ -14,6 +14,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.exoplatform.crowdin.model.CrowdinFileFactory;
 import org.exoplatform.crowdin.model.CrowdinTranslation;
 import org.exoplatform.crowdin.utils.PropsToXML;
+import org.exoplatform.crowdin.utils.PropsToXML.Type;
 
 /**
  * @goal update
@@ -79,6 +80,8 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
         entryName = entryName.replace('/', File.separatorChar);
         entryName = entryName.replace('\\', File.separatorChar);
         System.out.println("entryname " + entryName);
+
+        Type resourceBundleType = (key.indexOf("gadget") >= 0) ? Type.GADGET : Type.PORTLET;
         // Need improve, some portlets in CS use xml format for vi, ar locales
         boolean isXML = (entryName.indexOf(".xml")>0);
         if(isXML){
@@ -98,7 +101,7 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
         fileoutputstream.close();
         if(isXML){
         File propertiesFile = new File(entryName);
-        PropsToXML.parse(propertiesFile.getPath());
+        PropsToXML.parse(propertiesFile.getPath(), resourceBundleType);
         propertiesFile.delete();
         }
         

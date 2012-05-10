@@ -36,29 +36,34 @@ import org.jdom.output.XMLOutputter;
  */
 public class PropsToXML {
 
-  public static boolean parse(String inputFilePath) throws Exception {
-    File inputFile = new File(inputFilePath) ;
-    if(!inputFile.exists() || !inputFile.isFile()) return false; 
-    String fullFileName = inputFile.getName() ;
-    String fileName = fullFileName ;
-    if(fileName.contains(".")) {
-      fileName = fileName.substring(0, fileName.lastIndexOf(".")) ;
+  public static boolean parse(String inputFilePath, Type type) throws Exception {
+    File inputFile = new File(inputFilePath);
+    if (!inputFile.exists() || !inputFile.isFile())
+      return false;
+    String fullFileName = inputFile.getName();
+    String fileName = fullFileName;
+    if (fileName.contains(".")) {
+      fileName = fileName.substring(0, fileName.lastIndexOf("."));
     }
-    String outputPath = inputFile.getParent() ;
-    String outputFile = outputPath + (outputPath.endsWith("/") ? "" : "/") + fileName + ".xml" ;
+    String outputPath = inputFile.getParent();
+    String outputFile = outputPath + (outputPath.endsWith("/") ? "" : "/") + fileName + ".xml";
     BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(inputFile), "UTF-8"));
     String line;
     boolean isComment = false;
     String comment = "";
 
     Document doc = new Document();
-    Element root = new Element("bundle");
+    Element root = null;
+    if (Type.PORTLET.equals(type)) {
+      root = new Element("bundle");
+    } else if (Type.GADGET.equals(type)) {
+      root = new Element("messagebundle");
+    }
 
     while ((line = br.readLine()) != null) {
       if (line.trim().length() == 0)
         continue;
-
-      line = line.trim() ;
+      line = line.trim();
       if (line.startsWith("#")) {
         if (!isComment) {
           isComment = true;
@@ -71,7 +76,7 @@ public class PropsToXML {
           comment = "";
           isComment = false;
         }
-        makeListTag(line, root);
+        makeListTag(line, root, type);
       }
     }
     br.close();
@@ -84,30 +89,47 @@ public class PropsToXML {
   }
 
   @SuppressWarnings("unchecked")
-  private static void makeListTag(String line, Element root) {
+  private static void makeListTag(String line, Element root, Type type) {
     int eqPos = line.indexOf("=");
     String key = line.substring(0, eqPos).trim();
     String value = line.substring(eqPos + 1, line.length()).trim();
 
-    String[] tags = key.split("\\.");
-    Element parentEle = root;
-    for (int i = 0; i < tags.length; i++) {
-      Element temp = parentEle.getChild(tags[i]);
-      if (temp != null) {
-        parentEle = temp;
-        continue;
+    if (Type.PORTLET.equals(type)) {
+      String[] tags = key.split("\\.");
+      Element parentEle = root;
+      for (int i = 0; i < tags.length; i++) {
+        Element temp = parentEle.getChild(tags[i]);
+        if (temp != null) {
+          parentEle = temp;
+          continue;
+        }
+        Element ele = new Element(tags[i]);
+        if (i == tags.length - 1) {
+          if ((value.indexOf("<") >= 0 && value.indexOf(">") >= 0) || value.indexOf("&") >= 0) {
+            CDATA cdata = new CDATA(value);
+            ele.addContent(cdata);
+          } else
+            ele.setText(value);
+        }
+        parentEle.getChildren().add(ele);
+        parentEle = ele;
       }
-      Element ele = new Element(tags[i]);
-      if (i == tags.length - 1) {
-        if ((value.indexOf("<") >= 0 && value.indexOf(">") >= 0) || value.indexOf("&") >= 0) {
-          CDATA cdata = new CDATA(value);
-          ele.addContent(cdata);
-        } else
-          ele.setText(value);
+    } else if (Type.GADGET.equals(type)) {
+      Element ele = new Element("msg");
+      ele.setAttribute("name", key);
+      if ((value.indexOf("<") >= 0 && value.indexOf(">") >= 0) || value.indexOf("&") >= 0) {
+        CDATA cdata = new CDATA(value);
+        ele.addContent(cdata);
+      } else {
+        ele.setText(value);
       }
-      parentEle.getChildren().add(ele);
-      parentEle = ele;
+      root.getChildren().add(ele);
     }
+
+  }
+
+  public enum Type {
+    PORTLET, GADGET
   }
 
 }
