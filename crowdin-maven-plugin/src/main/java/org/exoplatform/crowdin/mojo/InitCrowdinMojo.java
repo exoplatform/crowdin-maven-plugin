@@ -1,6 +1,5 @@
 package org.exoplatform.crowdin.mojo;
 
-import java.io.File;
 import java.util.Properties;
 import java.util.Set;
 

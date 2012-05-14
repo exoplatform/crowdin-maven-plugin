@@ -65,4 +65,8 @@ public class CrowdinFile {
     return shouldBeCleaned;
   }
 
+  public enum Type {
+    PORTLET, GADGET
+  }
+  
 }

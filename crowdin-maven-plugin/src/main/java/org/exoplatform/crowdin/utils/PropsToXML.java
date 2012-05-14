@@ -23,6 +23,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 
+import org.exoplatform.crowdin.model.CrowdinFile.Type;
 import org.jdom.CDATA;
 import org.jdom.Comment;
 import org.jdom.Document;
@@ -127,9 +128,5 @@ public class PropsToXML {
     }
 
   }
-
-  public enum Type {
-    PORTLET, GADGET
-  }
-
+  
 }

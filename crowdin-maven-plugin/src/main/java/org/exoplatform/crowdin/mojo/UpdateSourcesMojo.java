@@ -11,10 +11,10 @@ import java.util.zip.ZipInputStream;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.exoplatform.crowdin.model.CrowdinFile.Type;
 import org.exoplatform.crowdin.model.CrowdinFileFactory;
 import org.exoplatform.crowdin.model.CrowdinTranslation;
 import org.exoplatform.crowdin.utils.PropsToXML;
-import org.exoplatform.crowdin.utils.PropsToXML.Type;
 
 /**
  * @goal update
@@ -65,6 +65,10 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
         Properties currentProj = getProperties().get(proj+"/");
         String key = zipentryName.substring(zipentryName.indexOf(proj) + proj.length() + 1);
         String value = currentProj.getProperty(key);
+        if (value == null) {
+          zipentry = zipinputstream.getNextEntry();
+          continue;
+        }
         zipentryName = zipentryName.substring(0, zipentryName.indexOf(proj) + proj.length());
         
         lang = CrowdinTranslation.encodeLanguageName(lang, false);
@@ -74,7 +78,17 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
         if(name.lastIndexOf("_en")>0){
           name = name.substring(0, name.lastIndexOf("_en"));
         }
-        fileName =  name+ "_" + lang + extension ;
+        
+        if (key.contains("gadget") || value.contains("gadget")) {
+          if ("default".equalsIgnoreCase(name)) {
+            fileName = lang + extension;
+          } else if (name.contains("_ALL")) {
+            fileName = lang + "_ALL" + extension;
+          }
+        } else {
+          fileName = name + "_" + lang + extension;
+        }
+        
         zipentryName = proj + "/" + value.substring(0, value.lastIndexOf(File.separatorChar)+1)+fileName;
         String entryName = destinationname + zipentryName;
         entryName = entryName.replace('/', File.separatorChar);

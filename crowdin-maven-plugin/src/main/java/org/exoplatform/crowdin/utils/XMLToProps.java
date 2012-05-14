@@ -23,6 +23,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.Iterator;
 
+import org.exoplatform.crowdin.model.CrowdinFile.Type;
 import org.jdom.Comment;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -40,12 +41,13 @@ public class XMLToProps {
   }
 
   @SuppressWarnings("unchecked")
-  public static boolean parse(String inputFilePath) throws Exception {
-    File inputFile = new File(inputFilePath) ;
-    if(!inputFile.exists() || !inputFile.isFile()) return false;
-    
+  public static boolean parse(String inputFilePath, Type type) throws Exception {
+    File inputFile = new File(inputFilePath);
+    if (!inputFile.exists() || !inputFile.isFile())
+      return false;
+
     String outputFile = inputFilePath.replaceAll(".xml", ".properties");
-    
+
     InputStream fis = new FileInputStream(inputFile);
     SAXBuilder builder = new SAXBuilder();
     Document doc = builder.build(fis);
@@ -59,7 +61,7 @@ public class XMLToProps {
       if (obj instanceof Text) {
         Text textEle = (Text) obj;
         if (textEle.getTextTrim().length() > 0)
-          content += makeKey(textEle) + "=" + textEle.getTextTrim() + "\n";
+          content += makeKey(textEle, type) + "=" + textEle.getTextTrim() + "\n";
         continue;
       }
       if (obj instanceof Comment) {
@@ -75,14 +77,19 @@ public class XMLToProps {
     return true;
   }
 
-  private static String makeKey(Text textEle) {
+  private static String makeKey(Text textEle, Type type) {
     Element parent = textEle.getParentElement();
-    String key = parent.getName();
-    parent = parent.getParentElement();
-    while (parent != null && !parent.isRootElement()) {
-      key = parent.getName() + "." + key;
+    if (Type.PORTLET.equals(type)) {
+      String key = parent.getName();
       parent = parent.getParentElement();
+      while (parent != null && !parent.isRootElement()) {
+        key = parent.getName() + "." + key;
+        parent = parent.getParentElement();
+      }
+      return key;
+    } else {
+      return parent.getAttributeValue("name");
     }
-    return key;
   }
+
 }

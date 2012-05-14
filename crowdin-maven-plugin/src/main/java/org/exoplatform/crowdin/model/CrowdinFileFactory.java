@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.exoplatform.crowdin.model.CrowdinFile.Type;
 import org.exoplatform.crowdin.mojo.AbstractCrowdinMojo;
 import org.exoplatform.crowdin.utils.XMLToProps;
 
@@ -92,10 +93,11 @@ public class CrowdinFileFactory {
 	private File fromXMLToProps(File _xmlFile) {
 		String path = _xmlFile.getPath();
 		try {
-			if (XMLToProps.parse(path)) {
-			    path = path.replaceAll(".xml", ".properties");
-			    return new File(path);
-			}
+      Type type = path.contains("gadget") ? Type.GADGET : Type.PORTLET;
+      if (XMLToProps.parse(path, type)) {
+        path = path.replaceAll(".xml", ".properties");
+        return new File(path);
+      }
 		} catch (Exception e) {
 			currentMojo.getLog().error("Cannot transform "+path+" into a properties file. Reason:\n"+e.getMessage());
 		}
@@ -115,12 +117,23 @@ public class CrowdinFileFactory {
 			_translationFile = fromXMLToProps(_translationFile);
 			shouldBeCleaned = true;
 		}
-		Matcher m = matchTranslation(_translationFile.getName());
-    	String lang = m.group(2);
-		if (m.group(3) != null) lang += m.group(3);
-	  	
-	  	String name = encodeMinusCharacterInPath(_translationFile.getName(), true);
-	  	
+		
+    String name, lang;
+    if (_translationFile.getPath().contains("gadget")) {
+      lang = _translationFile.getName().substring(0, _translationFile.getName().lastIndexOf('.'));
+      if ("default".equals(lang)) {
+        lang = "en";
+      } else if (lang.indexOf("_ALL") > 0) {
+        lang = lang.substring(0, lang.indexOf("_ALL"));
+      }
+    } else {
+      Matcher m = matchTranslation(_translationFile.getName());
+      lang = m.group(2);
+      if (m.group(3) != null)
+        lang += m.group(3);
+    }
+    name = encodeMinusCharacterInPath(_translationFile.getName(), true);
+
 		return new CrowdinTranslation(_translationFile, name, _master.getType(), _master.getProject(), lang, _master, shouldBeCleaned);
 	}
 	
