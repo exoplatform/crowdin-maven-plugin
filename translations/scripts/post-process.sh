@@ -23,8 +23,8 @@
 # eXoProjects directory 
 EXO_PROJECTS=`pwd`
 
-projects=( 'platform' 'ecms' 'cs' 'ks' 'social' )
-versions=( '3.5.x' '2.3.x' '2.2.x' '2.2.x' '1.2.x' )
+projects=( 'platform' 'ecms' 'cs' 'ks' 'social' 'exogtn' 'webos')
+versions=( '3.5.x' '2.3.x' '2.2.x' '2.2.x' '1.2.x' '3.2.x' '2.0.x' )
 length=${#projects[@]}
 
 echo "=========================Restoring projects structure========================="

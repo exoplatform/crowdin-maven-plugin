@@ -23,8 +23,8 @@
 # eXoProjects directory 
 EXO_PROJECTS=`pwd`
 
-projects=( 'platform' 'ecms' 'cs' 'ks' 'social' )
-versions=( '3.5.x' '2.3.x' '2.2.x' '2.2.x' '1.2.x' )
+projects=( 'platform' 'ecms' 'cs' 'ks' 'social' 'exogtn' 'webos')
+versions=( '3.5.x' '2.3.x' '2.2.x' '2.2.x' '1.2.x' '3.2.x' '2.0.x')
 length=${#projects[@]}
 
 echo "=========================Preparing projects structure========================="
@@ -53,8 +53,13 @@ for (( i=0;i<$length;i++)); do
   git remote add blessed git@github.com:exoplatform/${projects[${i}]}.git
   git fetch blessed
   echo "-------------------------Fetching done----------------------------------------"
-  git checkout remotes/blessed/stable/${versions[${i}]}
-  echo "-------------------------Switched to remotes/blessed/stable/${versions[${i}]}-------------"
+  if [ "${projects[${i}]}" != "webos" ]; then
+    git checkout remotes/blessed/stable/${versions[${i}]}
+    echo "-------------------------Switched to remotes/blessed/stable/${versions[${i}]}-------------"
+  else
+    git checkout remotes/blessed/master
+    echo "-------------------------Switched to remotes/blessed/master-------------"
+  fi
   cd ..
   mv ${projects[${i}]} ${projects[${i}]}-${versions[${i}]}
   echo "-------------------------Renamed ${projects[${i}]} to ${projects[${i}]}-${versions[${i}]}-------------------"

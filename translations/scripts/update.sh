@@ -23,9 +23,9 @@
 # eXoProjects directory 
 EXO_PROJECTS=`pwd`
 
-projects=( 'platform' 'ecms' 'cs' 'ks' 'social' )
-versions=( '3.5.x' '2.3.x' '2.2.x' '2.2.x' '1.2.x' )
-oldtags=( '3.5.2' '2.3.6' '2.2.8' '2.2.8' '1.2.8' )
+projects=( 'platform' 'ecms' 'cs' 'ks' 'social' 'exogtn' 'webos' )
+versions=( '3.5.x' '2.3.x' '2.2.x' '2.2.x' '1.2.x' '3.2.x' '2.0.x')
+oldtags=( '3.5.3' '2.3.7' '2.2.9' '2.2.9' '1.2.9' '3.2.4-PLF' '2.0.4' )
 length=${#projects[@]}
 
 echo "=========================Preparing projects structure========================="
