@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Properties;
 import java.util.Set;
+import java.util.regex.Matcher;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -258,7 +259,13 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
     });
     for (File file : files) {
       String transName = file.getName();
-      String masterName = getFactory().matchTranslation(_master.getFile().getName()).group(1);
+      String masterName;
+      Matcher matcher = getFactory().matchTranslation(_master.getFile().getName());
+      if (matcher.matches()) {
+        masterName = getFactory().matchTranslation(_master.getFile().getName()).group(1);
+      } else {
+        masterName = _master.getFile().getName().substring(0, _master.getFile().getName().lastIndexOf('.'));
+      }
       if (!transName.equalsIgnoreCase(_master.getFile().getName()) && transName.contains(masterName)) {
         if (getLog().isDebugEnabled()) getLog().debug("*** Initializing: "+transName);
         try {
