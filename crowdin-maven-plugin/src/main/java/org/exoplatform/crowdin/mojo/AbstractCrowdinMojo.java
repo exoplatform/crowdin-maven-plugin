@@ -248,25 +248,30 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
    */
   protected void initTranslations(CrowdinFile _master) {
     File dir = _master.getFile().getParentFile();
+    String masterFileName = _master.getFile().getName();
     if (_master.isShouldBeCleaned()) {
       _master.getFile().delete();
     }
     File[] files = dir.listFiles(new FilenameFilter() {
       @Override
       public boolean accept(File dir, String name) {
+        if (dir.getPath().contains("gadget")) {
+          return true;
+        }
         return getFactory().isTranslation(name);
       }
     });
     for (File file : files) {
       String transName = file.getName();
       String masterName;
-      Matcher matcher = getFactory().matchTranslation(_master.getFile().getName());
+      Matcher matcher = getFactory().matchTranslation(masterFileName);
       if (matcher.matches()) {
-        masterName = getFactory().matchTranslation(_master.getFile().getName()).group(1);
+        masterName = matcher.group(1);
       } else {
-        masterName = _master.getFile().getName().substring(0, _master.getFile().getName().lastIndexOf('.'));
+        masterName = masterFileName.substring(0, masterFileName.lastIndexOf('.'));
       }
-      if (!transName.equalsIgnoreCase(_master.getFile().getName()) && transName.contains(masterName)) {
+      if (!transName.equalsIgnoreCase(masterFileName)
+          && (transName.contains(masterName) || file.getPath().contains("gadget"))) {
         if (getLog().isDebugEnabled()) getLog().debug("*** Initializing: "+transName);
         try {
           if (getLog().isDebugEnabled()) getLog().debug("*** Upload translation: "+transName+"\n\t***** for master: "+_master.getName());
