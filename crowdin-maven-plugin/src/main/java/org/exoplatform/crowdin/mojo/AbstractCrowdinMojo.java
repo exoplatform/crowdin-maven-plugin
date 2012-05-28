@@ -1,8 +1,8 @@
 package org.exoplatform.crowdin.mojo;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.FileInputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -258,12 +258,17 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
     });
     for (File file : files) {
       String transName = file.getName();
-      String masterName = _master.getFile().getName().substring(0, _master.getFile().getName().lastIndexOf('.'));
-      if (transName.contains(masterName)) {
+      String masterName = getFactory().matchTranslation(_master.getFile().getName()).group(1);
+      if (!transName.equalsIgnoreCase(_master.getFile().getName()) && transName.contains(masterName)) {
         if (getLog().isDebugEnabled()) getLog().debug("*** Initializing: "+transName);
         try {
           if (getLog().isDebugEnabled()) getLog().debug("*** Upload translation: "+transName+"\n\t***** for master: "+_master.getName());
           CrowdinTranslation cTran = getFactory().prepareCrowdinTranslation(_master, file);
+          if (getLog().isDebugEnabled()) {
+            getLog().info("=============================================================================");
+            getLog().info(printFileContent(cTran.getFile()));
+            getLog().info("=============================================================================");
+          }
           String result = getHelper().uploadTranslation(cTran);
           if (result.contains("success")) getLog().info("Translation '"+transName+"' added succesfully.");
           else getLog().warn("Cannot upload translation '"+file.getPath()+" with lang '"+cTran.getLang()+"'. Reason:\n"+result);
@@ -275,6 +280,22 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
         }
       }
     }
+  }
+  
+  protected String printFileContent(File file) {
+    try {
+      InputStream fis = new FileInputStream(file);
+      StringBuffer sb = new StringBuffer();
+      int chr, i = 0;
+      // Read until the end of the stream
+      while ((chr = fis.read()) != -1)
+        sb.append((char) chr);
+
+      return sb.toString();
+    } catch (Exception e) {
+      getLog().warn("Unable to print file content", e);
+    }
+    return null;
   }
 	
 }
