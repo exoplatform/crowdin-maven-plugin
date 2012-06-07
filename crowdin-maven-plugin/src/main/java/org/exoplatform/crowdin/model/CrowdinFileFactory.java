@@ -99,7 +99,7 @@ public class CrowdinFileFactory {
         return new File(path);
       }
 		} catch (Exception e) {
-			currentMojo.getLog().error("Cannot transform "+path+" into a properties file. Reason:\n"+e.getMessage());
+			currentMojo.getLog().error("Cannot transform "+path+" into a properties file. Reason:\n", e);
 		}
 		return _xmlFile;
 	}

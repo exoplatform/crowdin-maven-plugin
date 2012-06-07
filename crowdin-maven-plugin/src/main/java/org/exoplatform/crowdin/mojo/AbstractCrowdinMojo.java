@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.HashMap;
 import java.util.Properties;
 import java.util.Set;
@@ -258,6 +260,15 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
         if (dir.getPath().contains("gadget")) {
           return true;
         }
+        // There are both format *.properties and *.xml for this files, so must ignore *.xml files
+        if (dir.getPath().contains("workflow") && name.indexOf(".xml") > 0) {
+          return false;
+        }
+        if (dir.getPath().contains("web/portal")) {
+          if (name.equals("expression_en.xml") || name.equals("expression_it.xml") || name.equals("services_en.xml")
+              || name.equals("services_it.xml"))
+            return false;
+        }
         return getFactory().isTranslation(name);
       }
     });
@@ -277,9 +288,9 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
           if (getLog().isDebugEnabled()) getLog().debug("*** Upload translation: "+transName+"\n\t***** for master: "+_master.getName());
           CrowdinTranslation cTran = getFactory().prepareCrowdinTranslation(_master, file);
           if (getLog().isDebugEnabled()) {
-            getLog().info("=============================================================================");
-            getLog().info(printFileContent(cTran.getFile()));
-            getLog().info("=============================================================================");
+            getLog().debug("=============================================================================");
+            getLog().debug(printFileContent(cTran.getFile()));
+            getLog().debug("=============================================================================");
           }
           String result = getHelper().uploadTranslation(cTran);
           if (result.contains("success")) getLog().info("Translation '"+transName+"' added succesfully.");
@@ -296,14 +307,10 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
   
   protected String printFileContent(File file) {
     try {
-      InputStream fis = new FileInputStream(file);
-      StringBuffer sb = new StringBuffer();
-      int chr, i = 0;
-      // Read until the end of the stream
-      while ((chr = fis.read()) != -1)
-        sb.append((char) chr);
-
-      return sb.toString();
+      Reader r = new InputStreamReader(new FileInputStream(file), "UTF-8");
+      char[] characters = new char[(int) file.length()];
+      r.read(characters);
+      return new String(characters);
     } catch (Exception e) {
       getLog().warn("Unable to print file content", e);
     }

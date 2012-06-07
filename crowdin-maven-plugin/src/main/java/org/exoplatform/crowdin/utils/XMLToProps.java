@@ -22,13 +22,17 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.Iterator;
+import java.util.LinkedList;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.exoplatform.crowdin.model.CrowdinFile.Type;
-import org.jdom.Comment;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.Text;
-import org.jdom.input.SAXBuilder;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
 /**
  * Created by The eXo Platform SAS Author : Tan Pham Dinh
@@ -46,49 +50,57 @@ public class XMLToProps {
     if (!inputFile.exists() || !inputFile.isFile())
       return false;
 
-    String outputFile = inputFilePath.replaceAll(".xml", ".properties");
-
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    DocumentBuilder builder = factory.newDocumentBuilder();
     InputStream fis = new FileInputStream(inputFile);
-    SAXBuilder builder = new SAXBuilder();
-    Document doc = builder.build(fis);
-    Element root = doc.getRootElement();
-    fis.close();
+    Document document = builder.parse(new InputSource(fis));
+    Element bundleElt = document.getDocumentElement();
+    StringBuffer bundle = new StringBuffer();
+    collect(new LinkedList<String>(), bundleElt, bundle, type);
 
-    String content = "";
-    Iterator<Object> objs = root.getDescendants();
-    while (objs.hasNext()) {
-      Object obj = objs.next();
-      if (obj instanceof Text) {
-        Text textEle = (Text) obj;
-        if (textEle.getTextTrim().length() > 0)
-          content += makeKey(textEle, type) + "=" + textEle.getTextTrim() + "\n";
-        continue;
-      }
-      if (obj instanceof Comment) {
-        Comment cm = (Comment) obj;
-        content += cm.getText() + "\n";
-        continue;
-      }
-    }
-
+    String outputFile = inputFilePath.replaceAll(".xml", ".properties");
     FileOutputStream fos = new FileOutputStream(outputFile, false);
-    fos.write(content.getBytes());
+    fos.write(bundle.toString().getBytes());
     fos.close();
     return true;
   }
 
-  private static String makeKey(Text textEle, Type type) {
-    Element parent = textEle.getParentElement();
-    if (Type.PORTLET.equals(type)) {
-      String key = parent.getName();
-      parent = parent.getParentElement();
-      while (parent != null && !parent.isRootElement()) {
-        key = parent.getName() + "." + key;
-        parent = parent.getParentElement();
+  /**
+   * Reuse from org.exoplatform.services.resources.XMLResourceBundleParser with modifications
+   * to include comments and Gadget locales
+   */
+  private static void collect(LinkedList<String> path, Element currentElt, StringBuffer bundle, Type type) {
+    NodeList children = currentElt.getChildNodes();
+    boolean text = true;
+    for (int i = 0; i <= children.getLength() - 1; i++) {
+      Node child = children.item(i);
+      if (child.getNodeType() == Node.ELEMENT_NODE) {
+        text = false;
+        Element childElt = (Element) child;
+        String name = childElt.getTagName();
+        path.addLast(name);
+        collect(path, childElt, bundle, type);
+        path.removeLast();
+      } else if (child.getNodeType() == Node.COMMENT_NODE) {
+        bundle.append(child.getTextContent()).append("\n");
       }
-      return key;
-    } else {
-      return parent.getAttributeValue("name");
+    }
+    if (text && path.size() > 0) {
+      String value = currentElt.getTextContent();
+      StringBuffer sb = new StringBuffer();
+      if (Type.PORTLET.equals(type)) {
+        for (Iterator<String> i = path.iterator(); i.hasNext();) {
+          String name = i.next();
+          sb.append(name);
+          if (i.hasNext()) {
+            sb.append('.');
+          }
+        }
+      } else {
+        sb.append(currentElt.getParentNode().getAttributes().getNamedItem("name"));
+      }
+      String key = sb.toString();
+      bundle.append(key).append("=").append(value).append("\n");
     }
   }
 
