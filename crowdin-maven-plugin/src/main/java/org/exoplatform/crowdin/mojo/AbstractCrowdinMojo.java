@@ -281,8 +281,10 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
       } else {
         masterName = masterFileName.substring(0, masterFileName.lastIndexOf('.'));
       }
-      if (!transName.equalsIgnoreCase(masterFileName)
-          && (transName.contains(masterName) || file.getPath().contains("gadget"))) {
+      String tName = transName.substring(0, transName.lastIndexOf('.'));
+      String mName = masterFileName.substring(0, masterFileName.lastIndexOf('.'));
+      if (!tName.equalsIgnoreCase(mName)
+          && (transName.indexOf(masterName) == 0 && transName.indexOf(masterName + "-") < 0 || file.getPath().contains("gadget"))) {
         if (getLog().isDebugEnabled()) getLog().debug("*** Initializing: "+transName);
         try {
           if (getLog().isDebugEnabled()) getLog().debug("*** Upload translation: "+transName+"\n\t***** for master: "+_master.getName());

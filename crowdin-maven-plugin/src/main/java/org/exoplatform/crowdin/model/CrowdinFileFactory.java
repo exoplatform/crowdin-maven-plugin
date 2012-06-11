@@ -119,7 +119,7 @@ public class CrowdinFileFactory {
 		}
 		
     String name, lang;
-    if (_translationFile.getPath().contains("gadget")) {
+    if (_translationFile.getPath().contains("gadget") && !_translationFile.getPath().contains("GadgetPortlet")) {
       lang = _translationFile.getName().substring(0, _translationFile.getName().lastIndexOf('.'));
       if ("default".equals(lang)) {
         lang = "en";
