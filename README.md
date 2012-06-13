@@ -5,7 +5,7 @@ Maven plugin for crowdin (http://crowdin.net/)
 
 
 Requirements:
-*************
+-------------
 
 A tool to handle synchronization of the source code with translations made on Crowdin.
 There are three main interactions with Crowdin:
@@ -29,7 +29,7 @@ There are three main interactions with Crowdin:
 
 
 Why a maven plugin?
-*******************
+-------------------
 
 -- Easy to develop in Java
 -- Easy to package and execute from the command line
@@ -38,13 +38,14 @@ Why a maven plugin?
    
 
 Usage:
-******
+------
 
-Clone the translation project (https://github.com/exoplatform/plf-studies/tree/master/PLF-2787/translations)
-Open a terminal in the cloned folder, and run the following commands:
+Checkout the translation branch (https://github.com/exoplatform/crowdin-maven-plugin/tree/translations/3.0.x, https://github.com/exoplatform/crowdin-maven-plugin/tree/translations/3.5.x)
+Open a terminal in the translation branch, and run the following commands:
 
 1. Initialization
--- mvn clean install -Pinit
+
+**mvn clean install -Pinit**
 
 This will execute the plugin with the goal 'init':
 -- load the properties of each project
@@ -52,14 +53,13 @@ This will execute the plugin with the goal 'init':
 -- create folders on Crowdin if they don't exist
 -- upload the master files and translations of each master file on Crowdin if they don't exist
 
-Note: If there are nonexistent master files in file system, there will be a warning like
-----------------------------------------------------------------------------------------
-There are nonexistent properties files! Check again and update properties configuration files or run following command to continue:
-  mvn clean install -Pinit -Dforce=true
-----------------------------------------------------------------------------------------
+> **Note: If there are nonexistent master files in file system, there will be a warning like**
+> > *There are nonexistent properties files! Check again and update properties configuration files or run following command to continue:*
+> >  **mvn clean install -Pinit -Dforce=true**
 
 2. Synchronization
--- mvn clean install -Psync
+
+**mvn clean install -Psync**
 
 This will execute the plugin with the goal 'sync':
 -- load the properties of each project
@@ -68,18 +68,18 @@ This will execute the plugin with the goal 'sync':
 -- update master files content on Crowdin (old entries in the properties of each project and exist in file system)
 -- delete old folders and files (old entries in the properties of each project and not exist in file system)
 
-Note: If there are nonexistent master files in file system, there will be a warning like
-----------------------------------------------------------------------------------------
-There are nonexistent properties files! Check again and update properties configuration files or run following command to continue:
-  mvn clean install -Psync -Dforce=true
-Warning: All Crowdin files corresponding to nonexistent properties files will be deleted after execute above command
-----------------------------------------------------------------------------------------
+> **Note: If there are nonexistent master files in file system, there will be a warning like**
+> > *There are nonexistent properties files! Check again and update properties configuration files or run following command to continue:*
+> >  **mvn clean install -Psync -Dforce=true**
 
-==> We can rely on above message to know if there are some master files renamed in source code. In this case, we need update manually these
-master files by content and translations from Crowdin before do a synchronization again with -Dforce=true
+> **Warning: All Crowdin files corresponding to nonexistent properties files will be deleted after execute above command**
+
+*We can rely on above message to know if there are some master files renamed in source code. In this case, we need update manually these
+master files by content and translations from Crowdin before do a synchronization again with* **-Dforce=true**
 
 3. Updating
--- mvn clean install -Pupdate
+
+**mvn clean install -Pupdate**
 
 This will execute the plugin with the goal 'update':
 -- export and download all translations
@@ -87,34 +87,34 @@ This will execute the plugin with the goal 'update':
 -- replace existing files in "Crowdin" branches by new ones
 -- commit changes to "Crowdin" branches
 
-Note: We need merge manually "Crowdin" branches to working branches to fix conflicts and commit after that
+**Note: We need merge manually "Crowdin" branches to working branches to fix conflicts and commit after that**
 
 
 
 4. Command line options
 
--- dryRun
+-- **dryRun**
    If true, no communication with Crowdin will be done; Default: false.
    Useful to see the evolution of the process. Combined with maven debug option -X, displays actual Rest calls and XmlPath queries.
 
 
 Architecture:
-*************
+-------------
 
 There are three main elements: the plugin, the communication with Crowdin API, the file model.
 
 1. File model
 The model consists in 2 classes: CrowdinFile and CrowdinTranslation.
 CrowdinFile represents a master file on Crowdin, with the following attributes:
-- a pointer to the actual File
-- the path and name on Crowdin
-- the project (cs, ks etc) to use in the full file name
-- the type of file (properties only at the moment)
-- information indicate this file whether a temporary file or not (temporary files are generated when convert xml files to properties files)
+-- a pointer to the actual File
+-- the path and name on Crowdin
+-- the project (cs, ks etc) to use in the full file name
+-- the type of file (properties only at the moment)
+-- information indicate this file whether a temporary file or not (temporary files are generated when convert xml files to properties files)
 
 CrowdinTranslation inherits from CrowdinFile, and adds the following attributes:
-- a pointer to the master CrowdinFile
-- the lang
+-- a pointer to the master CrowdinFile
+-- the lang
 
 A third class CrowdinFileFactory allows to easily retrieve objects of the two classes above, after performing some
 common operation. One of the most important is the recognition of XML resource bundle files, to transform them automatically
@@ -157,16 +157,16 @@ AbstractCrowdinMojo defines few attributes
 
 
 Testing and debugging:
-**********************
+----------------------
 
 1. Build
 
--- mvn clean install
+-- **mvn clean install**
 -- This will create the plugin artifacts in your local repository.
 
 
 Resources:
-**********
+----------
 
 -- http://code.google.com/p/rest-assured/wiki/Usage?ts=1317978378&updated=Usage#Example_1_-_JSON
 -- http://blog.jayway.com/2011/10/09/simple-parsing-of-complex-json-and-xml-documents-in-java/
