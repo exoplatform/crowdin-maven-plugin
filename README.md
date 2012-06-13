@@ -10,13 +10,13 @@ Requirements:
 A tool to handle synchronization of the source code with translations made on Crowdin.
 There are three main interactions with Crowdin:
 
-1. Initial setup of Crowdin
+**1\. Initial setup of Crowdin**
 
 -- create all the directory structure
 
 -- upload all files with their translations
 
-2. Synchronizing Crowdin with the changes in the source
+**2\. Synchronizing Crowdin with the changes in the source**
 
 -- create new folders, upload new files
 
@@ -26,7 +26,7 @@ There are three main interactions with Crowdin:
 
 -- update master files content on Crowdin (master file = file with no specific language code)
 
-3. Updating the source code from changes in Crowdin
+**3\. Updating the source code from changes in Crowdin**
 
 -- export and download all translations
 
@@ -55,7 +55,7 @@ Usage:
 Checkout the translation branch (https://github.com/exoplatform/crowdin-maven-plugin/tree/translations/3.0.x, https://github.com/exoplatform/crowdin-maven-plugin/tree/translations/3.5.x)
 Open a terminal in the translation branch, and run the following commands:
 
-1. Initialization
+**1\. Initialization**
 
 **mvn clean install -Pinit**
 
@@ -73,7 +73,7 @@ This will execute the plugin with the goal 'init':
 > > *There are nonexistent properties files! Check again and update properties configuration files or run following command to continue:*
 > >  **mvn clean install -Pinit -Dforce=true**
 
-2. Synchronization
+**2\. Synchronization**
 
 **mvn clean install -Psync**
 
@@ -98,7 +98,7 @@ This will execute the plugin with the goal 'sync':
 *We can rely on above message to know if there are some master files renamed in source code. In this case, we need update manually these
 master files by content and translations from Crowdin before do a synchronization again with* **-Dforce=true**
 
-3. Updating
+**3\. Updating**
 
 **mvn clean install -Pupdate**
 
@@ -116,7 +116,7 @@ This will execute the plugin with the goal 'update':
 
 
 
-4. Command line options
+**4\. Command line options**
 
 -- **dryRun**
    If true, no communication with Crowdin will be done; Default: false.
@@ -128,7 +128,8 @@ Architecture:
 
 There are three main elements: the plugin, the communication with Crowdin API, the file model.
 
-1. File model
+**1\. File model**
+
 The model consists in 2 classes: CrowdinFile and CrowdinTranslation.
 CrowdinFile represents a master file on Crowdin, with the following attributes:
 
@@ -148,14 +149,13 @@ CrowdinTranslation inherits from CrowdinFile, and adds the following attributes:
 
 -- the lang
 
-A third class CrowdinFileFactory allows to easily retrieve objects of the two classes above, after performing some
-common operation. One of the most important is the recognition of XML resource bundle files, to transform them automatically
-into Properties.
+A third class CrowdinFileFactory allows to easily retrieve objects of the two classes above, after performing some common operation. One of the most important is the recognition of XML resource bundle files, to transform them automatically into Properties.
 
-2. Using the Crowdin API
+**2\. Using the Crowdin API**
+
 The plugin interacts with Crowdin thanks to its API (http://crowdin.net/page/api/).
-To separate the logic of the plugin (parse folders, etc) and the operations on Crowdin (upload, create folders, etc),
-the plugin defines the class CrowdinAPIHelper. It contains functions that call the following methods from the API:
+To separate the logic of the plugin (parse folders, etc) and the operations on Crowdin (upload, create folders, etc), the plugin defines the class CrowdinAPIHelper. It contains functions that call the following methods from the API:
+
    API method name / helper function name and arguments
 
 -- add-directory / addDirectory(String _dirName)
@@ -176,15 +176,12 @@ Two convenience functions are provided to get details about the project, and to 
 
 -- N/A / elementExists(String _eltPath)
 
-3. Plugin Maven
-It contains 3 MOJOs, one for each interaction with Crowdin (init, sync, update)
-It's structured around an abstract parent class (AbstractCrowdinMojo) and three children classes, one for each MOJO.
-InitCrowdinMojo (MOJO init), SyncSourcesMojo (MOJO synchronize), UpdateSourcesMojo (MOJO update)
+**3\. Plugin Maven**
 
-Note: Plugin still doesn't support for gadget properties files. Also in update phase, the plugin produce translation files with the same
-extension name with master file (Some time in source code, master file and it's translation files are not same extension name).
-Also there is a case where there are duplicated master files with different extensions: properties and xml ( Bonita and Jbpm workflow resource
-bundles ), plugin only take files with properties extension in this case.
+It contains 3 MOJOs, one for each interaction with Crowdin (init, sync, update)
+It's structured around an abstract parent class (AbstractCrowdinMojo) and three children classes, one for each MOJO: InitCrowdinMojo (MOJO init), SyncSourcesMojo (MOJO synchronize), UpdateSourcesMojo (MOJO update)
+
+*Note: In update phase, the plugin produce translation files with the same extension name with master file (Some time in source code, master file and it's translation files are not same extension name). Also there is a case where there are duplicated master files with different extensions: properties and xml ( Bonita and Jbpm workflow resource bundles ), plugin only take files with properties extension in this case.*
 
 AbstractCrowdinMojo defines few attributes
 
@@ -206,7 +203,7 @@ AbstractCrowdinMojo defines few attributes
 Testing and debugging:
 ----------------------
 
-1. Build
+**1\. Build**
 
 -- **mvn clean install**
 
