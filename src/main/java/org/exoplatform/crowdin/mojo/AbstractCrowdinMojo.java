@@ -76,6 +76,15 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
 	 */
 	private HashMap<String, Properties> properties;
 	
+  /**
+   * @parameter expression="${exo.crowdin.ignore}"
+   */
+  private String ignore;
+  /**
+   * The list of ignored files which  are not processed by plugin
+   */
+  private Properties ignoredFiles;
+	
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		// Initialization of the CrowdinFileFactory and CrowdinAPIHelper
@@ -101,6 +110,14 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
 				properties.put(key.toString(), loadProperties(mainProps.getProperty(key.toString())));
 			}
 			keys = null;
+
+      if (ignore != null) {
+        if (getLog().isDebugEnabled()) {
+          getLog().debug("*** Loading the ignored files list (" + ignore + ")...");
+        }
+        ignoredFiles = loadProperties(ignore);
+      }
+
 		} catch (IOException e) {
 			getLog().error("Could not load the properties. Exception: "+e.getMessage());
 			if (getLog().isDebugEnabled()) {
@@ -257,7 +274,7 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
     File[] files = dir.listFiles(new FilenameFilter() {
       @Override
       public boolean accept(File dir, String name) {
-        if (dir.getPath().contains("gadget")) {
+        if (dir.getPath().contains("gadget") && !dir.getPath().contains("GadgetPortlet")) {
           return true;
         }
         // There are both format *.properties and *.xml for this files, so must ignore *.xml files
@@ -268,6 +285,14 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
           if (name.equals("expression_en.xml") || name.equals("expression_it.xml") || name.equals("services_en.xml")
               || name.equals("services_it.xml"))
             return false;
+        }
+        if (ignoredFiles != null) {
+          String filePath = dir.getPath() + "/" + name;
+          for (Object key : ignoredFiles.keySet()) {
+            if (filePath.indexOf((String) key) >= 0) {
+              return false;
+            }
+          }
         }
         return getFactory().isTranslation(name);
       }
