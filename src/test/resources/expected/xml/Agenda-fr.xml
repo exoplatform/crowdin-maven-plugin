@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<messagebundle>
+  <msg name="default">Défaut</msg>
+  <msg name="titlegadget">Mon Agenda</msg>
+  <msg name="title">Evénements</msg>
+  <msg name="baseurl">URL de base:</msg>
+  <msg name="subscribeurl">URL de Service:</msg>
+  <msg name="limit">Nombre d'item affichés</msg>
+  <msg name="format">Format de l'heure:</msg>
+  <msg name="calendars">Calendrier:</msg>
+  <msg name="showall">Montrer mes calendriers</msg>
+  <msg name="back">Précédent</msg>
+  <msg name="noevent">Aucun événement</msg>
+  <msg name="titleTask">Tâches</msg>
+  <msg name="notask">Aucune tâche</msg>
+  <msg name="setting">Réglage</msg>
+  <msg name="save">Enregistrer</msg>
+  <msg name="cancel">Annuler</msg>
+  <msg name="confirm">Êtes-vous sûr que cette tâche est terminée?</msg>
+</messagebundle>

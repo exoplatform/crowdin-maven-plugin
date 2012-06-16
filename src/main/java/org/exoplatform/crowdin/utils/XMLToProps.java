@@ -58,7 +58,7 @@ public class XMLToProps {
     StringBuffer bundle = new StringBuffer();
     collect(new LinkedList<String>(), bundleElt, bundle, type);
 
-    String outputFile = inputFilePath.replaceAll(".xml", ".properties");
+    String outputFile = inputFilePath.replaceAll("\\.xml", ".properties");
     FileOutputStream fos = new FileOutputStream(outputFile, false);
     fos.write(bundle.toString().getBytes());
     fos.close();
@@ -82,7 +82,11 @@ public class XMLToProps {
         collect(path, childElt, bundle, type);
         path.removeLast();
       } else if (child.getNodeType() == Node.COMMENT_NODE) {
-        bundle.append(child.getTextContent()).append("\n");
+        String comment = child.getTextContent();
+        comment = makeComment(comment);
+        if (comment != null) {
+          bundle.append(comment).append("\n");
+        }
       }
     }
     if (text && path.size() > 0) {
@@ -97,11 +101,40 @@ public class XMLToProps {
           }
         }
       } else {
-        sb.append(currentElt.getParentNode().getAttributes().getNamedItem("name"));
+        sb.append(currentElt.getAttributes().getNamedItem("name").getNodeValue());
+        value = value.trim();
       }
       String key = sb.toString();
-      bundle.append(key).append("=").append(value).append("\n");
+      bundle.append(key).append("=").append(value.replaceAll("\n", " ")).append("\n");
     }
+  }
+  
+  private static String makeComment(String comment) {
+    if (comment != null) {
+      comment = comment.trim();
+      String[] lines = comment.split("\n");
+      if (lines.length <= 0) {
+        if (!comment.startsWith("#")) {
+          return "#" + comment;
+        } else {
+          return comment;
+        }
+      }
+      StringBuilder sb = new StringBuilder();
+      for (int i = 0; i < lines.length; i++) {
+        lines[i] = lines[i].trim();
+        if (!lines[i].startsWith("#")) {
+          sb.append("#").append(lines[i]);
+        } else {
+          sb.append(lines[i]);
+        }
+        if (i < lines.length - 1) {
+          sb.append("\n");
+        }
+      }
+      return sb.toString();
+    }
+    return null;
   }
 
 }
