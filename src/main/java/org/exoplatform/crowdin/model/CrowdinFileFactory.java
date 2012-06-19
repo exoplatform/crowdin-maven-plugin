@@ -93,7 +93,7 @@ public class CrowdinFileFactory {
 	private File fromXMLToProps(File _xmlFile) {
 		String path = _xmlFile.getPath();
 		try {
-      Type type = path.contains("gadget") ? Type.GADGET : Type.PORTLET;
+      Type type = path.contains("gadget") && !path.contains("GadgetPortlet") ? Type.GADGET : Type.PORTLET;
       if (XMLToProps.parse(path, type)) {
         path = path.replaceAll(".xml", ".properties");
         return new File(path);
