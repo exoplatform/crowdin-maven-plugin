@@ -184,6 +184,9 @@ public class PropsToXML {
       Element parentEle = root;
       int i = 0;
       for (String tag : tagList) {
+        if (tag.endsWith("\\")) {
+          continue;
+        }
         i++;
         Element child = getChildNode(parentEle, tag);
         if (child != null) {
