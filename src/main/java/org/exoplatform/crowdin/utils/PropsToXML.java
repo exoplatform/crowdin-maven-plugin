@@ -177,6 +177,7 @@ public class PropsToXML {
   private static void makeListTag(String line, Document doc, Element root, Type type) {
     int eqPos = line.indexOf("=");
     String key = line.substring(0, eqPos).trim();
+    key = key.replace(XMLToProps.COLON_IN_KEY, ":"); // return back the ':' characters in message's key
     String value = line.substring(eqPos + 1, line.length()).trim();
 
     if (Type.PORTLET.equals(type)) {

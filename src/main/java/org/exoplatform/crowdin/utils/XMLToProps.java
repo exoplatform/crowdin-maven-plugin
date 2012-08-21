@@ -39,7 +39,8 @@ import org.xml.sax.InputSource;
  * tan.pham@exoplatform.com Mar 4, 2009
  */
 public class XMLToProps {
-
+  public static final String COLON_IN_KEY = "__COLON__";
+  
   public XMLToProps() {
 
   }
@@ -105,6 +106,7 @@ public class XMLToProps {
         value = value.trim();
       }
       String key = sb.toString();
+      key = key.replace(":", COLON_IN_KEY); // alter all ':' characters in message's key before uploading to Crowdin
       bundle.append(key).append("=").append(value.replaceAll("\n", " ")).append("\n");
     }
   }
