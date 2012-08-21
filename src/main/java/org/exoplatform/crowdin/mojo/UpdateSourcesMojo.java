@@ -78,6 +78,11 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
         
         String cp = crowdinProj + File.separator + proj;
         Properties currentProj = getProperties().get(proj+"/");
+        // ignore projects that is not managed by the plugin
+        if (currentProj == null) {
+          zipentry = zipinputstream.getNextEntry();
+          continue;
+        }        
         String key = zipentryName.substring(zipentryName.indexOf(cp) + cp.length() + 1);
         String value = currentProj.getProperty(key);
         if (value == null) {
