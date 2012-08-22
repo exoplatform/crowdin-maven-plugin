@@ -174,24 +174,24 @@ public class CrowdinAPIHelper {
 	}
 	
 	/**
-	 * 
+	 * @param String lang: language of the translations to be downloaded
 	 * @return the File that contains all translations if the request is successful, null otherwise
 	 * @throws MojoExecutionException
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 */
-	public File downloadTranslations() throws MojoExecutionException, FileNotFoundException, IOException {
+	public File downloadTranslations(String lang) throws MojoExecutionException, FileNotFoundException, IOException {
 		// we export the latest translations on the server
 		// this is allowed only every 30 mins by Crowdin, TODO: could be handled here with a timer
 		given().
 				post("/export?key="+projectKey).andReturn().asString();
 		// create the file in which all translations will be downloaded
-		File translations = new File("target/all.zip");
+		File translations = new File("target/" + lang + ".zip");
 		try {
 			FileOutputStream fos = new FileOutputStream(translations);
 			// write the translations (as a byte array) in the File
 			fos.write(given().
-					post("/download/all.zip?key="+projectKey).andReturn().asByteArray());
+					post("/download/" + lang + ".zip?key="+projectKey).andReturn().asByteArray());
 			fos.close();
 		} catch (FileNotFoundException e) {
 			translations = null;

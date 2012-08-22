@@ -29,7 +29,7 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
   @Override
   public void executeMojo() throws MojoExecutionException, MojoFailureException {
     try {
-      getHelper().downloadTranslations();
+      getHelper().downloadTranslations(getLang());
     } catch (FileNotFoundException e) {
       getLog().error("Error downloading the translations from Crowdin. Exception:\n"
           + e.getMessage());
@@ -37,7 +37,7 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
       getLog().error("Error downloading the translations from Crowdin. Exception:\n"
           + e.getMessage());
     }
-    File zip = new File("target/all.zip");
+    File zip = new File("target/" + getLang() + ".zip");
     if (zip.exists()) {
       extractZip(getStartDir()+"temp/crowdin/translations/", zip.getPath());
     }
@@ -64,9 +64,18 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
         zipentryName = zipentryName.replace('/', File.separatorChar);
         zipentryName = zipentryName.replace('\\', File.separatorChar);
         String[] path = zipentryName.split(File.separator);
-        String lang = path[0];
-        String crowdinProj = path[1];
-        String proj = path[2];
+
+        String lang, crowdinProj, proj;
+        if("all".equals(getLang())){
+          lang = path[0];
+          crowdinProj = path[1];
+          proj = path[2];          
+        } else {
+          lang = getLang();
+          crowdinProj = path[0];
+          proj = path[1];
+        }
+        
         String cp = crowdinProj + File.separator + proj;
         Properties currentProj = getProperties().get(proj+"/");
         String key = zipentryName.substring(zipentryName.indexOf(cp) + cp.length() + 1);
