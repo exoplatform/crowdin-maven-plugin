@@ -140,7 +140,7 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
 	 * @return the Properties file
 	 * @throws IOException
 	 */
-	private Properties loadProperties(String _propertiesFile) throws IOException {
+	protected Properties loadProperties(String _propertiesFile) throws IOException {
 		Properties res = new Properties();
 		InputStream in = new FileInputStream(_propertiesFile);
 		res.load(in);
