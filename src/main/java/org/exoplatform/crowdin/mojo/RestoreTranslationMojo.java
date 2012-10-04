@@ -98,13 +98,13 @@ public class RestoreTranslationMojo extends AbstractCrowdinMojo {
         String ret = getHelper().addDirectory(crowdinPath);
         if (ret.contains("success")){
           getLog().info("Creating folder: " + crowdinPath + " [successed]");
-          dir2crowdin(file.getAbsolutePath());
         } else {
           getLog().warn("Creating folder: " + crowdinPath + " [FAILED]");
           if(getLog().isDebugEnabled()) {
             getLog().debug(ret);
           }
         }
+        dir2crowdin(file.getAbsolutePath());
       } else {
         CrowdinFile cf = getFactory().prepareCrowdinFile(file.getAbsolutePath(), crowdinPath.substring(crowdinPath.lastIndexOf(File.separatorChar)), dirPath.replace(ZIP_DIR + "en/", ""));
         String ret = getHelper().addFile(cf);
