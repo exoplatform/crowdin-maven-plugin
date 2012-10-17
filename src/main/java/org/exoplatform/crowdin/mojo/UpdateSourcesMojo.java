@@ -9,6 +9,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -28,19 +30,17 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
 
   @Override
   public void executeMojo() throws MojoExecutionException, MojoFailureException {
-    try {
-      getHelper().downloadTranslations(getLang());
-    } catch (FileNotFoundException e) {
-      getLog().error("Error downloading the translations from Crowdin. Exception:\n"
-          + e.getMessage());
-    } catch (IOException e) {
-      getLog().error("Error downloading the translations from Crowdin. Exception:\n"
-          + e.getMessage());
+    File zip = new File("target/all.zip");
+    if (!zip.exists()) {
+      try {
+        getLog().info("Downloading Crowdin translation zip...");
+        getHelper().downloadTranslations();
+        getLog().info("Downloading done!");
+      } catch (Exception e) {
+        getLog().error("Error downloading the translations from Crowdin. Exception:\n" + e.getMessage());
+      }      
     }
-    File zip = new File("target/" + getLang() + ".zip");
-    if (zip.exists()) {
-      extractZip(getStartDir()+"temp/crowdin/translations/", zip.getPath());
-    }
+    extractZip(getStartDir()+"temp/crowdin/translations/", zip.getPath());    
   }
 
   private void extractZip(String _destFolder, String _zipFile) {
@@ -48,6 +48,7 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
       String destinationname = _destFolder;
       deleteDir(new File(_destFolder));
       byte[] buf = new byte[1024];
+      List<String> langs = Arrays.asList(getLangs().split(","));
       ZipInputStream zipinputstream = null;
       ZipEntry zipentry;
       zipinputstream = new ZipInputStream(new FileInputStream(_zipFile));
@@ -64,16 +65,13 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
         zipentryName = zipentryName.replace('/', File.separatorChar);
         zipentryName = zipentryName.replace('\\', File.separatorChar);
         String[] path = zipentryName.split(File.separator);
-
-        String lang, crowdinProj, proj;
-        if("all".equals(getLang())){
-          lang = path[0];
-          crowdinProj = path[1];
-          proj = path[2];          
-        } else {
-          lang = getLang();
-          crowdinProj = path[0];
-          proj = path[1];
+        String lang = path[0];
+        String crowdinProj = path[1];
+        String proj = path[2];
+        
+        if(!langs.contains(lang)) {
+          zipentry = zipinputstream.getNextEntry();
+          continue;
         }
         
         String cp = crowdinProj + File.separator + proj;
@@ -113,8 +111,6 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
         String entryName = destinationname + zipentryName;
         entryName = entryName.replace('/', File.separatorChar);
         entryName = entryName.replace('\\', File.separatorChar);
-        System.out.println("entryname " + entryName);
-
         Type resourceBundleType = (key.indexOf("gadget") >= 0) ? Type.GADGET : Type.PORTLET;
         // Need improve, some portlets in CS use xml format for vi, ar locales
         boolean isXML = (entryName.indexOf(".xml")>0);
@@ -127,7 +123,7 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
         newFile.mkdirs();
 
         fileoutputstream = new FileOutputStream(entryName);
-
+        
         while ((n = zipinputstream.read(buf, 0, 1024)) > -1) {
           fileoutputstream.write(buf, 0, n);
         }
@@ -148,7 +144,6 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
         
         zipinputstream.closeEntry();
         zipentry = zipinputstream.getNextEntry();
-
       }// while
 
       zipinputstream.close();
@@ -184,5 +179,4 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
     out.write(sb.toString());
     out.close();
   }
-
 }

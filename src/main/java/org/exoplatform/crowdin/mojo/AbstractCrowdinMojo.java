@@ -48,10 +48,10 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
   private boolean force;
 
   /**
-   * Language of the translations to be downloaded, or "all" to get all languages
-   * @parameter expression="${lang}" default-value="all"
+   * Languages of the translations to be processed, or "all" to process all languages
+   * @parameter expression="${langs}" default-value="all"
    */
-  private String lang;
+  private String langs;
 
   private CrowdinFileFactory factory;
   private CrowdinAPIHelper helper;
@@ -197,8 +197,8 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
     return mainProps;
   }
 
-  public String getLang() {
-    return lang;
+  public String getLangs() {
+    return langs;
   }
 
   /**
