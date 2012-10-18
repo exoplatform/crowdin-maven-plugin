@@ -40,13 +40,12 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
         getLog().error("Error downloading the translations from Crowdin. Exception:\n" + e.getMessage());
       }      
     }
-    extractZip(getStartDir()+"temp/crowdin/translations/", zip.getPath());    
+    extractZip(getStartDir(), zip.getPath());
   }
 
   private void extractZip(String _destFolder, String _zipFile) {
     try {
       String destinationname = _destFolder;
-      deleteDir(new File(_destFolder));
       byte[] buf = new byte[1024];
       List<String> langs = Arrays.asList(getLangs().split(","));
       ZipInputStream zipinputstream = null;
@@ -150,19 +149,6 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
     } catch (Exception e) {
       e.printStackTrace();
     }
-  }
-  
-  private boolean deleteDir(File dir) {
-    if (dir.isDirectory()) {
-      String[] children = dir.list();
-      for (int i = 0; i < children.length; i++) {
-        boolean success = deleteDir(new File(dir, children[i]));
-        if (!success) {
-          return false;
-        }
-      }
-    }
-    return dir.delete();
   }
   
   private void deleteFirstLine(String filePath) throws Exception {

@@ -17,27 +17,31 @@ package org.exoplatform.crowdin.utils;
  * along with this program; if not, see<http://www.gnu.org/licenses/>.
  */
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
+import java.io.FileNotFoundException;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Enumeration;
+import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
 import org.exoplatform.crowdin.model.CrowdinFile.Type;
-import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
@@ -48,9 +52,6 @@ public class PropsToXML {
 
   /** Character flags for XML 1.1. */
   private static final byte XML11CHARS[] = new byte[1 << 16];
-
-  /** XML 1.1 Name start character mask. */
-  private static final int MASK_XML11_NAME_START = 0x04;
 
   static {
     // Initializing the Character Flag Array
@@ -113,54 +114,67 @@ public class PropsToXML {
     Arrays.fill(XML11CHARS, 65008, 65534, (byte) -19); // Fill 526 of value (byte) -19
   }
   
-  public static boolean parse(String inputFilePath, Type type) throws Exception {
-    File inputFile = new File(inputFilePath);
-    if (!inputFile.exists() || !inputFile.isFile())
+  
+  public static boolean isLeafNode(Node node){
+    return node.getChildNodes().getLength() == 1 && node.getFirstChild().getNodeType() == Node.TEXT_NODE;
+  }
+
+  public static boolean parse(String propsFilePath, Type type) throws Exception {
+    File propsFile = new File(propsFilePath);
+    if (!propsFile.exists() || !propsFile.isFile())
       return false;
-    String fullFileName = inputFile.getName();
+    String fullFileName = propsFile.getName();
     String fileName = fullFileName;
     if (fileName.contains(".")) {
       fileName = fileName.substring(0, fileName.lastIndexOf("."));
     }
-    String outputPath = inputFile.getParent();
-    String outputFile = outputPath + (outputPath.endsWith("/") ? "" : "/") + fileName + ".xml";
-    BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(inputFile), "UTF-8"));
-    String line;
-    boolean isComment = false;
-    String comment = "";
 
-    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-    DocumentBuilder builder = factory.newDocumentBuilder();
-    Document doc = builder.newDocument();
-    Element root = null;
-    if (Type.PORTLET.equals(type)) {
-      root = doc.createElement("bundle");
-    } else if (Type.GADGET.equals(type)) {
-      root = doc.createElement("messagebundle");
-    }
+    String outputPath = propsFile.getParent();
+    outputPath = outputPath + (outputPath.endsWith("/") ? "" : "/");
+    String outputFile = outputPath + fileName + ".xml";
 
-    while ((line = br.readLine()) != null) {
-      if (line.trim().length() == 0)
-        continue;
-      line = line.trim();
-      if (line.startsWith("#")) {
-        if (!isComment) {
-          isComment = true;
-          comment += "\n  ";
+    String baseXmlFilePath = "";
+    Pattern p = Pattern.compile("^([a-zA-Z_0-9-/]*)_([a-z]{2})(_[A-Z]{2})?.([a-z]*)$");
+    Matcher m = p.matcher(fullFileName);
+    if(m.matches()) {
+      baseXmlFilePath = outputPath + m.group(1) + ".xml";
+      if(!(new File(baseXmlFilePath)).exists()){
+        baseXmlFilePath = outputPath + m.group(1) + "_en.xml";
+        if(!(new File(baseXmlFilePath)).exists()){
+          throw new FileNotFoundException("Cannot create or update " + outputFile + " as the base file " + m.group(1) + ".xml (or " + m.group(1) + "_en.xml)" + " does not exist!");
         }
-        comment += line + "\n  ";
-      } else {
-        if (isComment) {
-          root.appendChild(doc.createComment(comment));
-          comment = "";
-          isComment = false;
-        }
-        makeListTag(line, doc, root, type);
       }
     }
-    br.close();
+    
+    Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(baseXmlFilePath);
+    XPathFactory factory = XPathFactory.newInstance();
 
-    doc.appendChild(root);
+    Properties props = new Properties();
+    props.load(new FileInputStream(propsFile));    
+    Enumeration e = props.propertyNames();
+    // loop through all properties
+    while (e.hasMoreElements()) {
+      String key = (String) e.nextElement();
+      XPath xpath = factory.newXPath();
+      // find the nodes those match the property
+      NodeList nodes = null;
+      try{
+        nodes = (NodeList) xpath.evaluate("//" + key.replace(".", "/"), doc, XPathConstants.NODESET);
+      }catch(XPathExpressionException xpe){
+        System.out.println("[WARNING] XPath exception when looking for key '" + key + "': " + xpe.getCause().getMessage());        
+        continue;
+      }
+      
+      for (int i = 0; i < nodes.getLength(); i++) {
+        Node node = nodes.item(i);
+        // update only the 1st leaf node matched
+        if(isLeafNode(node)) {
+          node.setTextContent(props.getProperty(key));
+          break;
+        }
+      }
+    }
+    
     TransformerFactory transformFactory = TransformerFactory.newInstance();
     Transformer transformer = transformFactory.newTransformer();
     transformer.setOutputProperty("method", "xml");
@@ -171,101 +185,6 @@ public class PropsToXML {
     Result result = new StreamResult(new File(outputFile));
     transformer.transform(source, result);
     return true;
-  }
-
-  @SuppressWarnings("unchecked")
-  private static void makeListTag(String line, Document doc, Element root, Type type) {
-    int eqPos = line.indexOf("=");
-    String key = line.substring(0, eqPos).trim();
-    key = key.replace(XMLToProps.COLON_IN_KEY, ":"); // return back the ':' characters in message's key
-    String value = line.substring(eqPos + 1, line.length()).trim();
-
-    if (Type.PORTLET.equals(type)) {
-      List<String> tagList = getTagList(key);
-      Element parentEle = root;
-      int i = 0;
-      for (String tag : tagList) {
-        if (tag.endsWith("\\")) {
-          continue;
-        }
-        i++;
-        Element child = getChildNode(parentEle, tag);
-        if (child != null) {
-          parentEle = child;
-          continue;
-        }
-        Element ele = doc.createElement(tag);
-        if (i == tagList.size()) {
-          if ((value.indexOf("<") >= 0 && value.indexOf(">") >= 0) || value.indexOf("&") >= 0) {
-            CDATASection cdata = doc.createCDATASection(value);
-            ele.appendChild(cdata);
-          } else
-            ele.setTextContent(value);
-        }
-        parentEle.appendChild(ele);
-        parentEle = ele;
-      }
-    } else if (Type.GADGET.equals(type)) {
-      Element ele = doc.createElement("msg");
-      ele.setAttribute("name", key);
-      if ((value.indexOf("<") >= 0 && value.indexOf(">") >= 0) || value.indexOf("&") >= 0) {
-        CDATASection cdata = doc.createCDATASection(value);
-        ele.appendChild(cdata);
-      } else {
-        ele.setTextContent(value);
-      }
-      root.appendChild(ele);
-    }
-
-  }
-  
-  private static Element getChildNode(Element parentEle, String name) {
-    NodeList nodes = parentEle.getChildNodes();
-    if (nodes != null && nodes.getLength() > 0) {
-      for (int i = 0; i < nodes.getLength(); i++) {
-        if (nodes.item(i).getNodeName().equals(name)) {
-          return (Element) nodes.item(i);
-        }
-      }
-    }
-    return null;
-  }
-  
-  private static List<String> getTagList(String key) {
-    String[] tags = key.split("\\.");
-    List<String> tagList = new ArrayList<String>();
-    String temp = "";
-    for (int i = tags.length - 1; i >= 0; i--) {
-      char ch = tags[i].charAt(0);
-      if (isXML11NameStart(ch)) {
-        if (temp.length() == 0) {
-          tagList.add(0, tags[i]);
-        } else {
-          temp = tags[i] + "." + temp;
-          tagList.add(0, temp);
-          temp = "";
-        }
-      } else {
-        if (temp.length() == 0) {
-          temp = tags[i];
-        } else {
-          temp = tags[i] + "." + temp;
-        }
-      }
-    }
-    return tagList;
-  }
-
-  /**
-   * Returns true if the specified character is a valid name start character as
-   * defined by production [4] in the XML 1.1 specification.
-   * 
-   * @param c
-   *          The character to check.
-   */
-  private static boolean isXML11NameStart(int c) {
-    return (c < 0x10000 && (XML11CHARS[c] & MASK_XML11_NAME_START) != 0)
-        || (0x10000 <= c && c < 0xF0000);
   }
   
 }
