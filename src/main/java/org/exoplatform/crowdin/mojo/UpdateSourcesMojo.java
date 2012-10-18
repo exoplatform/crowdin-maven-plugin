@@ -110,6 +110,7 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
         String entryName = destinationname + zipentryName;
         entryName = entryName.replace('/', File.separatorChar);
         entryName = entryName.replace('\\', File.separatorChar);
+        String outputFileName = entryName;
         Type resourceBundleType = (key.indexOf("gadget") >= 0) ? Type.GADGET : Type.PORTLET;
         // Need improve, some portlets in CS use xml format for vi, ar locales
         boolean isXML = (entryName.indexOf(".xml")>0);
@@ -143,6 +144,7 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
         
         zipinputstream.closeEntry();
         zipentry = zipinputstream.getNextEntry();
+        execShellCommand("sh ./scripts/per-file-processing.sh " + outputFileName);
       }// while
 
       zipinputstream.close();
@@ -164,5 +166,25 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
     BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(filePath)), "UTF-8"));
     out.write(sb.toString());
     out.close();
+  }
+
+  public void execShellCommand(String cmd) {
+    try {
+      Runtime rt = Runtime.getRuntime();
+      Process pr = rt.exec(cmd);
+
+      BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
+
+      String line=null;
+      while((line=input.readLine()) != null) {
+        System.out.println(line);
+      }
+
+      int exitVal = pr.waitFor();
+      getLog().debug("'" + cmd + "' exited with error code " + exitVal);
+
+    } catch(Exception e) {
+      getLog().debug(e.toString());
+    }
   }
 }
