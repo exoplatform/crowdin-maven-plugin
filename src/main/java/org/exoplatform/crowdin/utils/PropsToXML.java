@@ -128,51 +128,79 @@ public class PropsToXML {
     if (fileName.contains(".")) {
       fileName = fileName.substring(0, fileName.lastIndexOf("."));
     }
-
+    
     String outputPath = propsFile.getParent();
     outputPath = outputPath + (outputPath.endsWith("/") ? "" : "/");
     String outputFile = outputPath + fileName + ".xml";
 
     String baseXmlFilePath = "";
-    Pattern p = Pattern.compile("^([a-zA-Z_0-9-/]*)_([a-z]{2})(_[A-Z]{2})?.([a-z]*)$");
-    Matcher m = p.matcher(fullFileName);
-    if(m.matches()) {
-      baseXmlFilePath = outputPath + m.group(1) + ".xml";
+    
+    if(type.equals(Type.PORTLET)){
+      String origFileName = fileName.substring(0, fileName.lastIndexOf("_"));
+      baseXmlFilePath = outputPath + origFileName + ".xml";
       if(!(new File(baseXmlFilePath)).exists()){
-        baseXmlFilePath = outputPath + m.group(1) + "_en.xml";
+        baseXmlFilePath = outputPath + origFileName + "_en.xml";
         if(!(new File(baseXmlFilePath)).exists()){
-          throw new FileNotFoundException("Cannot create or update " + outputFile + " as the base file " + m.group(1) + ".xml (or " + m.group(1) + "_en.xml)" + " does not exist!");
+          throw new FileNotFoundException("Cannot create or update " + outputFile + " as the base file " + origFileName + ".xml (or " + origFileName + "_en.xml)" + " does not exist!");
         }
       }
+    } else if(type.equals(Type.GADGET)){
+      baseXmlFilePath = outputPath + "default.xml";
+      if(!(new File(baseXmlFilePath)).exists()){
+        baseXmlFilePath = outputPath + "ALL_ALL.xml";
+        if(!(new File(baseXmlFilePath)).exists()){
+          baseXmlFilePath = outputPath + "en_ALL.xml";
+          if(!(new File(baseXmlFilePath)).exists()){
+            throw new FileNotFoundException("Cannot create or update " + outputFile + " as the base file default.xml (or ALL_ALL.xml, en_ALL.xml) does not exist!");
+          }
+        }
+      }      
     }
     
     Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(baseXmlFilePath);
+    doc.setXmlStandalone(true);
     XPathFactory factory = XPathFactory.newInstance();
 
     Properties props = new Properties();
     props.load(new FileInputStream(propsFile));    
     Enumeration e = props.propertyNames();
-    // loop through all properties
-    while (e.hasMoreElements()) {
-      String key = (String) e.nextElement();
-      XPath xpath = factory.newXPath();
-      // find the nodes those match the property
-      NodeList nodes = null;
-      try{
-        nodes = (NodeList) xpath.evaluate("//" + key.replace(".", "/"), doc, XPathConstants.NODESET);
-      }catch(XPathExpressionException xpe){
-        System.out.println("[WARNING] XPath exception when looking for key '" + key + "': " + xpe.getCause().getMessage());        
-        continue;
-      }
-      
-      for (int i = 0; i < nodes.getLength(); i++) {
-        Node node = nodes.item(i);
-        // update only the 1st leaf node matched
-        if(isLeafNode(node)) {
-          node.setTextContent(props.getProperty(key));
-          break;
+    String key = "";  
+    
+    if(type.equals(Type.PORTLET)){
+      // loop through all properties
+      while (e.hasMoreElements()) {
+        key = (String) e.nextElement();
+        XPath xpath = factory.newXPath();
+        // find the nodes those match the property
+        NodeList nodes = null;
+        try{
+            nodes = (NodeList) xpath.evaluate("//" + key.replace(".", "/"), doc, XPathConstants.NODESET);
+            for (int i = 0; i < nodes.getLength(); i++) {
+              Node node = nodes.item(i);
+              // update only the 1st leaf node matched
+              if(isLeafNode(node)) {
+                node.setTextContent(props.getProperty(key));
+                break;
+              }
+            }                  
+        }catch(XPathExpressionException xpe){
+          System.out.println("[WARNING] XPath exception when looking for key '" + key + "': " + xpe.getCause().getMessage());        
+          continue;
         }
-      }
+      }       
+    } else if(type.equals(Type.GADGET)){
+      while (e.hasMoreElements()) {
+        try{
+          key = (String) e.nextElement();
+          XPath xpath = factory.newXPath();
+          // find that node that match the property
+          Node node = (Node) xpath.evaluate("//messagebundle/msg[@name='" + key + "']", doc, XPathConstants.NODE);
+          node.setTextContent(props.getProperty(key));
+        }catch(XPathExpressionException xpe){
+          System.out.println("[WARNING] XPath exception when looking for key '" + key + "': " + xpe.getCause().getMessage());        
+          continue;
+        }
+      }       
     }
     
     TransformerFactory transformFactory = TransformerFactory.newInstance();
