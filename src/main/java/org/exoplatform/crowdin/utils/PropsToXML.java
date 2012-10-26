@@ -17,9 +17,11 @@ package org.exoplatform.crowdin.utils;
  * along with this program; if not, see<http://www.gnu.org/licenses/>.
  */
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStreamReader;
 import java.util.Enumeration;
 import java.util.Properties;
 
@@ -45,7 +47,7 @@ import org.w3c.dom.NodeList;
  */
 public class PropsToXML {
 
-  public static boolean isLeafNode(Node node){
+  private static boolean isLeafNode(Node node){
     return node.getChildNodes().getLength() == 1 && node.getFirstChild().getNodeType() == Node.TEXT_NODE;
   }
 
@@ -99,7 +101,7 @@ public class PropsToXML {
               Node node = nodes.item(i);
               // update only the 1st leaf node matched
               if(isLeafNode(node)) {
-                node.setTextContent(props.getProperty(key));
+                node.setTextContent(props.getProperty(key).trim());
                 break;
               }
             }                  
@@ -122,7 +124,7 @@ public class PropsToXML {
             System.out.println("[WARNING] Cannot get the node for key '" + key + "' in '" + masterFile);        
             continue;
           }
-          node.setTextContent(props.getProperty(key));
+          node.setTextContent(props.getProperty(key).trim());
         }catch(XPathExpressionException xpe){
           System.out.println("[WARNING] XPath exception when looking for key '" + key + "' in '" + masterFile + "' : " + xpe.getCause().getMessage());        
           continue;
@@ -137,17 +139,42 @@ public class PropsToXML {
     transformer.setOutputProperty("indent", "yes");
     transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
     Source source = new DOMSource(doc);
-    File f = new File(outputFile);
+    File fout = new File(outputFile);
     // if language is English, update master file and the English file if it exists (do not create new)
     if(propsFilePath.endsWith("en.properties") || propsFilePath.equalsIgnoreCase("en_ALL.properties")) {
       transformer.transform(source, new StreamResult(new File(masterFile)));
-      if(f.exists()) transformer.transform(source, new StreamResult(f));
+      execShellCommand("sh ./scripts/per-file-processing.sh " + masterFile); // perform post-processing for the output file
+      if(fout.exists()) {
+        transformer.transform(source, new StreamResult(fout));
+        execShellCommand("sh ./scripts/per-file-processing.sh " + outputFile); 
+      }
     } else {
       // always create new (or update) for other languages
-      transformer.transform(source, new StreamResult(f));
+      transformer.transform(source, new StreamResult(fout));
+      execShellCommand("sh ./scripts/per-file-processing.sh " + outputFile);
     }
     
     return true;
   }
-  
+
+  public static void execShellCommand(String cmd) {
+    try {
+      Runtime rt = Runtime.getRuntime();
+      Process pr = rt.exec(cmd);
+
+      BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
+
+      String line=null;
+      while((line=input.readLine()) != null) {
+        System.out.println(line);
+      }
+
+      int exitVal = pr.waitFor();
+      //System.out.println("'" + cmd + "' exited with error code " + exitVal);
+
+    } catch(Exception e) {
+      System.out.println(e.toString());
+    }
+  }
+
 }
