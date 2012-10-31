@@ -52,6 +52,13 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
    * @parameter expression="${langs}" default-value="all"
    */
   private String langs;
+  
+  /**
+   * Option to get only the approved translations or not
+   * @parameter expression="${apply_approved_only}" default-value="true"
+   */
+  private String apply_approved_only;
+  
 
   private CrowdinFileFactory factory;
   private CrowdinAPIHelper helper;
@@ -199,6 +206,11 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
 
   public String getLangs() {
     return langs;
+  }
+  
+  public String getApplyApprovedOnlyOption(){
+	  if ("true".equals(apply_approved_only)) {return "1";}
+	  else return "0";
   }
 
   /**

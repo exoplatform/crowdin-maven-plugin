@@ -30,6 +30,7 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
     File zip = new File("target/all.zip");
     if (!zip.exists()) {
       try {
+    	getHelper().setApprovedOnlyOption();
         getLog().info("Downloading Crowdin translation zip...");
         getHelper().downloadTranslations();
         getLog().info("Downloading done!");
@@ -87,6 +88,7 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
         zipentryName = zipentryName.substring(0, zipentryName.indexOf(proj) + proj.length());
         
         lang = CrowdinTranslation.encodeLanguageName(lang, false);
+        
         String fileName = value.substring(value.lastIndexOf(File.separatorChar)+1);
         String name = fileName.substring(0, fileName.lastIndexOf("."));
         String extension = fileName.substring(fileName.lastIndexOf("."));

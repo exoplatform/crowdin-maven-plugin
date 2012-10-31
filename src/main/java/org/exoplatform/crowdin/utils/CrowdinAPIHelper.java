@@ -183,8 +183,10 @@ public class CrowdinAPIHelper {
 	public File downloadTranslations() throws MojoExecutionException, FileNotFoundException, IOException {
 		// we export the latest translations on the server
 		// this is allowed only every 30 mins by Crowdin, TODO: could be handled here with a timer
+		System.out.println("buiding Crowdin fresh package ...");
 		given().
 				post("/export?key="+projectKey).andReturn().asString();
+		System.out.println("buiding Crowdin fresh package done");
 		// create the file in which all translations will be downloaded
 		File translations = new File("target/all.zip");
 		try {
@@ -202,4 +204,16 @@ public class CrowdinAPIHelper {
 		}
 		return translations;
 	}
+	
+	/**
+	 * Calls the function http://crowdin.net/page/api/edit-project
+	 * @return an XML string with all information about the result
+	 * @throws MojoExecutionException
+	 */
+	public String setApprovedOnlyOption() throws MojoExecutionException {
+		return given().
+				multiPart("export_approved_only", currentMojo.getApplyApprovedOnlyOption()).
+		        post("/edit-project?key="+projectKey).andReturn().asString();
+	}
+	
 }

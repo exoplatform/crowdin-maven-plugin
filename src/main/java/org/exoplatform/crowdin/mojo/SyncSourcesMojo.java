@@ -109,6 +109,7 @@ public class SyncSourcesMojo extends AbstractCrowdinMojo {
               getLog().debug("*** Update file: " + _file.getCrowdinPath());
             }
             String result = getHelper().updateFile(_file);
+            System.out.println(result);
             if (result.contains("success"))
               getLog().info("File " + fileN + " updated succesfully.");
             else
