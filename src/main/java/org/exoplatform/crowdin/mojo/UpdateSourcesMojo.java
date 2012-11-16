@@ -1,9 +1,12 @@
 package org.exoplatform.crowdin.mojo;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
@@ -39,6 +42,29 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
       }      
     }
     extractZip(getStartDir(), zip.getPath());
+    //get the translations status
+    File status_trans=new File("report/translation_status.xml");
+    BufferedWriter writer = null;
+	try
+	{
+		writer = new BufferedWriter( new FileWriter( status_trans));
+		writer.write( getHelper().getTranslationStatus());
+	}
+	catch ( IOException e)
+	{
+	}
+	finally
+	{
+		try
+		{
+			if ( writer != null)
+				writer.close( );
+		}
+		catch ( IOException e)
+		{
+		}
+     }
+	
   }
 
   private void extractZip(String _destFolder, String _zipFile) {

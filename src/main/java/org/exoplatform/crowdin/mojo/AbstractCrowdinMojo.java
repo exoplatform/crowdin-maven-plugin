@@ -142,6 +142,11 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
     // Create the target/ directory
     File target = new File("target");
     if (!target.exists()) target.mkdir();
+    
+    // Create the report/ directory
+    File report = new File("report");
+    if (!report.exists()) report.mkdir();
+    
     // Call to the abstract method, that must be overriden in each concrete mojo
     executeMojo();
   }

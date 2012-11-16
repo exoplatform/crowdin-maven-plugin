@@ -216,4 +216,14 @@ public class CrowdinAPIHelper {
 		        post("/edit-project?key="+projectKey).andReturn().asString();
 	}
 	
+	/**
+	 * Calls the function http://crowdin.net/page/api/edit-project
+	 * @return an XML string with the status of translations
+	 * @throws MojoExecutionException
+	 */
+	public String getTranslationStatus() throws MojoExecutionException {
+		return given().
+				post("/status?key="+projectKey).andReturn().asString();
+	}
+	
 }
