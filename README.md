@@ -1,5 +1,6 @@
 crowdin-maven-plugin
 ====================
+A command line tool to handle synchronization of the source code with translations made on Crowdin.
 
 Maven plugin for crowdin (http://crowdin.net/)
 
@@ -7,52 +8,34 @@ Maven plugin for crowdin (http://crowdin.net/)
 Requirements:
 -------------
 
-A tool to handle synchronization of the source code with translations made on Crowdin.
-There are three main interactions with Crowdin:
+* Git is installed and configured properly.
+* Have a valid Crowdin Project ID and its key.
+* Maven is installed 
 
-**1\. Initial setup of Crowdin**
+Configuration:
+--------------
 
--- create all the directory structure
-
--- upload all files with their translations
-
-**2\. Synchronizing Crowdin with the changes in the source**
-
--- create new folders, upload new files
-
--- delete old folders and files
-
--- update folders names, files names
-
--- update master files content on Crowdin (master file = file with no specific language code)
-
-**3\. Updating the source code from changes in Crowdin**
-
--- export and download all translations
-
--- create "Crowdin" branches in source code from last tags
-
--- replace existing files in "Crowdin" branches by new ones
-
--- commit changes to "Crowdin" branches
-
--- merge "Crowdin" branches to working branches (do manually to fix conflicts)
+Add the Following properties in the maven settings.xml (contact with admin of crowdin exo-platform-35 project to get project key and id):
 
 
-Why a maven plugin?
--------------------
+   <exo.crowdin.project.id>{projectId}</exo.crowdin.project.id>
+   <exo.crowdin.project.key>{projectKey}</exo.crowdin.project.key>
 
--- Easy to develop in Java
 
--- Easy to package and execute from the command line
+Download:
+---------
 
--- Possibility to setup the plugin in each pom, with a special profile to include Source <-> Crowdin synchronization in the release process (can be dangerous)
-   
+Get the latest version of the code:
+
+    git clone https://github.com/exoplatform/crowdin-maven-plugin.git
+
+This will create a folder and copy the necessary files into it.
 
 Usage:
 ------
 
-Checkout the translation branch (https://github.com/exoplatform/crowdin-maven-plugin/tree/translations/3.0.x, https://github.com/exoplatform/crowdin-maven-plugin/tree/translations/3.5.x)
+Build master branch with : mvn clean install
+Switch to translation branch.
 Open a terminal in the translation branch, and run the following commands:
 
 **1\. Initialization**
@@ -85,7 +68,7 @@ This will execute the plugin with the goal 'sync':
 
 -- create new folders, upload new master files and translations (new entries in the properties of each project)
 
--- update master files content on Crowdin (old entries in the properties of each project and exist in file system)
+-- update master files content on Crowdin (add new keys, rename existing keys, delete keys)
 
 -- delete old folders and files (old entries in the properties of each project and not exist in file system)
 
@@ -100,115 +83,60 @@ master files by content and translations from Crowdin before do a synchronizatio
 
 **3\. Updating**
 
-**mvn clean install -Pupdate**
+**mvn [clean] install -Pupdate [-Dlangs=<all | en,fr,it,...>] [-Dapply_approved_only=<true|false>]**
 
 This will execute the plugin with the goal 'update':
 
 -- export and download all translations
 
--- create "Crowdin" branches in source code from last tags
+-- create "Crowdin" branches in source code if they were not existing or update them with latest changes from stable branch
 
--- replace existing files in "Crowdin" branches by new ones
-
--- commit changes to "Crowdin" branches
-
-**Note: We need merge manually "Crowdin" branches to working branches to fix conflicts and commit after that**
+-- inject the translations of the specified languages into the code. The languages are defined via the 'langs' parameter.
 
 
+**Note: We need commit manually "Crowdin" branches and push them to github repository**
 
-**4\. Command line options**
+**4\. Upload Translation**
+
+**mvn clean install -Pupload-translation**
+
+This is used to update changes in projects' translation files to Crowdin. It uses the information provided in the properties files (upload-translation.properties and <exo-project>.properties files) under upload-translation folder to determine the projects and their translation files need to be updated (in the same convention as the plugin's crowdin.properties and <exo-project>.properties files) 
+
+Steps:
+
+* Identify the list of projects need to be changed, put them into upload-translation.properties. Each entry is a key/value pair with key = <project name>-<version> and value = <path to project's description file>
+* For each project create the project description file named <project>.properties. In this file provide the path to the project in the 'baseDir' property and list all the translation files need to be updated in the form of <path in Crowdin>=<path in source code>
+* Run 'mvn clean install -Pupload-translation'
+
+**5\. Restore translation**
+
+**mvn clean install -Prestore-translation [-Dprepare=true | -Dcontinue=true] [-Daction=createProject]**
+
+This restores a Crowdin project's directory structure and translations from its zip file. This zip file should be built with 'Export Only Approved' and 'Don't Export Untranslated' options unchecked so it will backup the untranslated and all suggested translations (not only the approved ones) as they will need to be restored also. Since this zip contains the project's directory structure and all of its translations, it can be considered as a project's backup and should be rebuilt (with 'Build Fresh Package' under Crowdin's 'Downloads' tab) and kept safe before doing any activity that may mess up the project.
+
+This can also be used to clone a Crowdin project from its zip file (by changing the project's API key to point to another project). 
+
+Steps:
+
+* Rename the project's zip file as 'all.zip' and put it under the plugin's crowdin-zip folder
+* If the master files do not exist (e.g in case you want to do a clone, or you had deleted them all using Crowdin's 'File Manager' to rebuild from scratch - this is recommended), you must first re-create the project's structure with '-Daction=createProject' option, the plugin will extract the zip and walk through its directories and files to create the same structure on Crowdin.
+* When having the master files ready, run 'mvn clean install -Prestore-translation', the plugin will (by default) upload translations of every languages it finds in the zip.
+
+If you want to decide what to be uploaded to Crowdin, you can: first run with 'Dprepare=true' option to get the plugin stops after preparing the extracted folder for you to modify, e.g to remove some languages or projects you don't want to upload. When you're done, let the plugin continues by running with '-Dcontinue=true' option, it will upload your modified folder instead of the original zip. 
+
+**6\. Command line options**
 
 -- **dryRun**
    If true, no communication with Crowdin will be done; Default: false.
    Useful to see the evolution of the process. Combined with maven debug option -X, displays actual Rest calls and XmlPath queries.
 
-
-Architecture:
+Contributing:
 -------------
-
-There are three main elements: the plugin, the communication with Crowdin API, the file model.
-
-**1\. File model**
-
-The model consists in 2 classes: CrowdinFile and CrowdinTranslation.
-CrowdinFile represents a master file on Crowdin, with the following attributes:
-
--- a pointer to the actual File
-
--- the path and name on Crowdin
-
--- the project (cs, ks etc) to use in the full file name
-
--- the type of file (properties only at the moment)
-
--- information indicate this file whether a temporary file or not (temporary files are generated when convert xml files to properties files)
-
-CrowdinTranslation inherits from CrowdinFile, and adds the following attributes:
-
--- a pointer to the master CrowdinFile
-
--- the lang
-
-A third class CrowdinFileFactory allows to easily retrieve objects of the two classes above, after performing some common operation. One of the most important is the recognition of XML resource bundle files, to transform them automatically into Properties.
-
-**2\. Using the Crowdin API**
-
-The plugin interacts with Crowdin thanks to its API (http://crowdin.net/page/api/).
-To separate the logic of the plugin (parse folders, etc) and the operations on Crowdin (upload, create folders, etc), the plugin defines the class CrowdinAPIHelper. It contains functions that call the following methods from the API:
-
-   API method name / helper function name and arguments
-
--- add-directory / addDirectory(String _dirName)
-
--- add-file / addFile(CrowdinFile _file)
-
--- update-file / updateFile(CrowdinFile _file)
-
--- delete-file / deleteFile(CrowdinFile _file)
-
--- upload-translation / uploadTranslation(CrowdinFile _file)
-
--- export then download / downloadTranslations()
-
-Two convenience functions are provided to get details about the project, and to verify whether files or folder exist on Crowdin:
-
--- info / getProjectInfo()
-
--- N/A / elementExists(String _eltPath)
-
-**3\. Plugin Maven**
-
-It contains 3 MOJOs, one for each interaction with Crowdin (init, sync, update)
-It's structured around an abstract parent class (AbstractCrowdinMojo) and three children classes, one for each MOJO: InitCrowdinMojo (MOJO init), SyncSourcesMojo (MOJO synchronize), UpdateSourcesMojo (MOJO update)
-
-*Note: In update phase, the plugin produce translation files with the same extension name with master file (Some time in source code, master file and it's translation files are not same extension name). Also there is a case where there are duplicated master files with different extensions: properties and xml ( Bonita and Jbpm workflow resource bundles ), plugin only take files with properties extension in this case.*
-
-AbstractCrowdinMojo defines few attributes
-
--- startDir : cf command line options, the working directory for the plugin
-
--- dryRun   : cf command line options, run in dryRun mode or not
-
--- helper   : a reference to the CrowdinAPIHelper class, to call functions that communicate with Crowdin
-
--- projectId and projectKey : credentials to authenticate ourselves (exo) on Crowdin. they are set in the main settings.xml file
-
--- propertiesFile : the path to the main configuration file, set in the translations' pom.xml file
-
--- mainProps : the properties from the main config file (project-name-version = project-config-file)
-
--- properties : a map with all referenced properties (project-name-version <-> project-properties)
-
-
-Testing and debugging:
-----------------------
-
-**1\. Build**
-
--- **mvn clean install**
-
--- This will create the plugin artifacts in your local repository.
-
+    1. Fork it
+    2. Create your feature branch (git checkout -b my-new-feature)
+    3. Commit your changes (git commit -am 'Added some feature')
+    4. Push to the branch (git push origin my-new-feature)
+    5. Create new Pull Request
 
 Resources:
 ----------
@@ -228,4 +156,8 @@ Resources:
 -- http://www.regexplanet.com/advanced/java/index.html
 
 -- http://docs.oracle.com/javase/6/docs/api/index.html
+
+-- http://int.exoplatform.org/portal/intranet/wiki/group/spaces/platform_team/Crowdin_Maven_Plugin_Developer_guide
+
+-- http://int.exoplatform.org/portal/intranet/wiki/group/spaces/platform_team/Crowdin_Maven_Plugin_User_Guide
 
