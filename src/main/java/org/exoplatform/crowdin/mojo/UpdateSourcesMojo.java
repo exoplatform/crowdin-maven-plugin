@@ -178,15 +178,15 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
           // if language is English, update master file and the English file if it exists (do not create new)
           if("en".equals(lang)) {
             config.save(masterFile);
-            PropsToXML.execShellCommand("sh ./scripts/per-file-processing.sh " + masterFile); // perform post-processing for the output file
+            PropsToXML.execShellCommand("sh ./src/scripts/per-file-processing.sh " + masterFile); // perform post-processing for the output file
             if(new File(entryName).exists()) {
               config.save(entryName);
-              PropsToXML.execShellCommand("sh ./scripts/per-file-processing.sh " + entryName);
+              PropsToXML.execShellCommand("sh ./src/scripts/per-file-processing.sh " + entryName);
             }
           } else {
             // always create new (or update) for other languages
             config.save(entryName);  
-            PropsToXML.execShellCommand("sh ./scripts/per-file-processing.sh " + entryName);
+            PropsToXML.execShellCommand("sh ./src/scripts/per-file-processing.sh " + entryName);
           }
         }
         
