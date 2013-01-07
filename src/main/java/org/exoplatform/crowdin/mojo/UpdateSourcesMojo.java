@@ -155,6 +155,7 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
           fileoutputstream.close();
           
           File propertiesFile = new File(entryName);
+          PropsToXML.execShellCommand("native2ascii -encoding UTF8 " + propertiesFile.getPath() + " " + propertiesFile.getPath());
           PropsToXML.parse(propertiesFile.getPath(), resourceBundleType);
           propertiesFile.delete();
         } else {
