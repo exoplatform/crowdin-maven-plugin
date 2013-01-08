@@ -79,6 +79,9 @@ public class PropsToXML {
       if(!(new File(masterFile)).exists()) throw new FileNotFoundException("Cannot create or update " + outputFile + " as the master file default.xml (or ALL_ALL.xml, en_ALL.xml) does not exist!");
     }
     
+    // Replace special characters in master file
+    execShellCommand("sh ./src/scripts/handle-special-characters.sh " + masterFile);
+    
     Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(masterFile);
     doc.setXmlStandalone(true);
     XPathFactory factory = XPathFactory.newInstance();
@@ -143,15 +146,17 @@ public class PropsToXML {
     // if language is English, update master file and the English file if it exists (do not create new)
     if(propsFilePath.endsWith("en.properties") || propsFilePath.equalsIgnoreCase("en_ALL.properties")) {
       transformer.transform(source, new StreamResult(new File(masterFile)));
-      execShellCommand("sh ./scripts/per-file-processing.sh " + masterFile); // perform post-processing for the output file
+      execShellCommand("sh ./src/scripts/per-file-processing.sh " + masterFile); // perform post-processing for the output file
       if(fout.exists()) {
         transformer.transform(source, new StreamResult(fout));
-        execShellCommand("sh ./scripts/per-file-processing.sh " + outputFile); 
+        execShellCommand("sh ./src/scripts/per-file-processing.sh " + outputFile); 
       }
     } else {
       // always create new (or update) for other languages
       transformer.transform(source, new StreamResult(fout));
-      execShellCommand("sh ./scripts/per-file-processing.sh " + outputFile);
+      execShellCommand("sh ./src/scripts/per-file-processing.sh " + outputFile);
+      // revert changes in master file
+      execShellCommand("sh ./src/scripts/per-file-processing.sh " + masterFile);
     }
     
     return true;
