@@ -80,7 +80,7 @@ public class PropsToXML {
     }
     
     // Replace special characters in master file
-    execShellCommand("sh ./src/scripts/handle-special-characters.sh " + masterFile);
+    ShellScriptUtils.execShellscript("scripts/handle-special-characters.sh", masterFile);
     
     Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(masterFile);
     doc.setXmlStandalone(true);
@@ -146,17 +146,18 @@ public class PropsToXML {
     // if language is English, update master file and the English file if it exists (do not create new)
     if(propsFilePath.endsWith("en.properties") || propsFilePath.equalsIgnoreCase("en_ALL.properties")) {
       transformer.transform(source, new StreamResult(new File(masterFile)));
-      execShellCommand("sh ./src/scripts/per-file-processing.sh " + masterFile); // perform post-processing for the output file
+      // perform post-processing for the output file
+      ShellScriptUtils.execShellscript("scripts/per-file-processing.sh", masterFile);
       if(fout.exists()) {
         transformer.transform(source, new StreamResult(fout));
-        execShellCommand("sh ./src/scripts/per-file-processing.sh " + outputFile); 
+        ShellScriptUtils.execShellscript("scripts/per-file-processing.sh", outputFile);
       }
     } else {
       // always create new (or update) for other languages
       transformer.transform(source, new StreamResult(fout));
-      execShellCommand("sh ./src/scripts/per-file-processing.sh " + outputFile);
+      ShellScriptUtils.execShellscript("scripts/per-file-processing.sh", outputFile);
       // revert changes in master file
-      execShellCommand("sh ./src/scripts/per-file-processing.sh " + masterFile);
+      ShellScriptUtils.execShellscript("scripts/per-file-processing.sh", masterFile);
     }
     
     return true;

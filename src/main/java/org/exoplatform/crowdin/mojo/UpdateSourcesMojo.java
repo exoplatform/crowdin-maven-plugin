@@ -21,6 +21,7 @@ import org.exoplatform.crowdin.model.CrowdinFile.Type;
 import org.exoplatform.crowdin.model.CrowdinFileFactory;
 import org.exoplatform.crowdin.model.CrowdinTranslation;
 import org.exoplatform.crowdin.utils.PropsToXML;
+import org.exoplatform.crowdin.utils.ShellScriptUtils;
 
 /**
  * @goal update
@@ -179,15 +180,16 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
           // if language is English, update master file and the English file if it exists (do not create new)
           if("en".equals(lang)) {
             config.save(masterFile);
-            PropsToXML.execShellCommand("sh ./src/scripts/per-file-processing.sh " + masterFile); // perform post-processing for the output file
+              // perform post-processing for the output file
+              ShellScriptUtils.execShellscript("scripts/per-file-processing.sh", masterFile);
             if(new File(entryName).exists()) {
               config.save(entryName);
-              PropsToXML.execShellCommand("sh ./src/scripts/per-file-processing.sh " + entryName);
+              ShellScriptUtils.execShellscript("scripts/per-file-processing.sh", entryName);
             }
           } else {
             // always create new (or update) for other languages
             config.save(entryName);  
-            PropsToXML.execShellCommand("sh ./src/scripts/per-file-processing.sh " + entryName);
+            ShellScriptUtils.execShellscript("scripts/per-file-processing.sh", entryName);
           }
         }
         
