@@ -70,7 +70,16 @@ public class PropsToXML {
     if(type.equals(Type.PORTLET)){
       String origFileName = fileName.substring(0, fileName.lastIndexOf("_"));
       masterFile = outputPath + origFileName + ".xml";
+      
       if(!(new File(masterFile)).exists()) masterFile = outputPath + origFileName + "_en.xml";
+      
+      //find master file for file has name like "ContentListViewer_pt_BR.xml"
+      if(!(new File(masterFile)).exists()){
+        origFileName = origFileName.substring(0, origFileName.lastIndexOf("_"));
+        masterFile = outputPath + origFileName + ".xml";
+        if(!(new File(masterFile)).exists()) masterFile = outputPath + origFileName + "_en.xml";
+      }
+      
       if(!(new File(masterFile)).exists()) throw new FileNotFoundException("Cannot create or update " + outputFile + " as the master file " + origFileName + ".xml (or " + origFileName + "_en.xml)" + " does not exist!");
     } else if(type.equals(Type.GADGET)){
       masterFile = outputPath + "default.xml";
