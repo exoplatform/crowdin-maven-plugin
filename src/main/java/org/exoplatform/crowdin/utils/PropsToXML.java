@@ -89,7 +89,11 @@ public class PropsToXML {
     }
     
     // Replace special characters in master file
-    ShellScriptUtils.execShellscript("scripts/handle-special-characters.sh", masterFile);
+    //use shell script
+    //ShellScriptUtils.execShellscript("scripts/handle-special-characters.sh", masterFile);
+    //use java code
+    FileUtils.replaceStringInFile(masterFile, ":", "__COLON__");
+    
     
     Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(masterFile);
     doc.setXmlStandalone(true);
@@ -156,17 +160,29 @@ public class PropsToXML {
     if(propsFilePath.endsWith("en.properties") || propsFilePath.equalsIgnoreCase("en_ALL.properties")) {
       transformer.transform(source, new StreamResult(new File(masterFile)));
       // perform post-processing for the output file
-      ShellScriptUtils.execShellscript("scripts/per-file-processing.sh", masterFile);
+      //use shell script
+      //ShellScriptUtils.execShellscript("scripts/per-file-processing.sh", masterFile);
+      //use java
+      FileUtils.fileContentProcessing(masterFile);
       if(fout.exists()) {
         transformer.transform(source, new StreamResult(fout));
-        ShellScriptUtils.execShellscript("scripts/per-file-processing.sh", outputFile);
+        //use shell script
+        //ShellScriptUtils.execShellscript("scripts/per-file-processing.sh", outputFile);
+        //use java
+        FileUtils.fileContentProcessing(outputFile);
       }
     } else {
       // always create new (or update) for other languages
       transformer.transform(source, new StreamResult(fout));
-      ShellScriptUtils.execShellscript("scripts/per-file-processing.sh", outputFile);
+      //use shell script
+      //ShellScriptUtils.execShellscript("scripts/per-file-processing.sh", outputFile);
+      //use java
+      FileUtils.fileContentProcessing(outputFile);
+      
       // revert changes in master file
-      ShellScriptUtils.execShellscript("scripts/per-file-processing.sh", masterFile);
+      //use shell script
+      //ShellScriptUtils.execShellscript("scripts/per-file-processing.sh", masterFile);
+      FileUtils.fileContentProcessing(masterFile);
     }
     
     return true;
