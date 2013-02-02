@@ -185,14 +185,15 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
             //use shell script
             //ShellScriptUtils.execShellscript("scripts/per-file-processing.sh", masterFile);
             //use java
-            FileUtils.fileContentProcessing(masterFile);
+            FileUtils.replaceCharactersInFile(masterFile, "config/special_character_processing.properties", "UpdateSourceSpecialCharacters");
             
             if(new File(entryName).exists()) {
               config.save(entryName);
               //use shell script
               //ShellScriptUtils.execShellscript("scripts/per-file-processing.sh", entryName);
               //use java
-              FileUtils.fileContentProcessing(entryName);
+              FileUtils.replaceCharactersInFile(entryName, "config/special_character_processing.properties", "UpdateSourceSpecialCharacters");
+              
             }
           } else {
             // always create new (or update) for other languages
@@ -200,7 +201,8 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
             //use shell script
             //ShellScriptUtils.execShellscript("scripts/per-file-processing.sh", entryName);
             //user java
-            FileUtils.fileContentProcessing(entryName);
+            FileUtils.replaceCharactersInFile(entryName, "config/special_character_processing.properties", "UpdateSourceSpecialCharacters");
+          
           }
         }
         

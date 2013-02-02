@@ -92,7 +92,7 @@ public class PropsToXML {
     //use shell script
     //ShellScriptUtils.execShellscript("scripts/handle-special-characters.sh", masterFile);
     //use java code
-    FileUtils.replaceStringInFile(masterFile, ":", "__COLON__");
+    FileUtils.replaceCharactersInFile(masterFile, "config/special_character_processing.properties", "PropertiesToXMLSpecialCharacters");
     
     
     Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(masterFile);
@@ -163,13 +163,15 @@ public class PropsToXML {
       //use shell script
       //ShellScriptUtils.execShellscript("scripts/per-file-processing.sh", masterFile);
       //use java
-      FileUtils.fileContentProcessing(masterFile);
+      FileUtils.replaceCharactersInFile(masterFile, "config/special_character_processing.properties", "UpdateSourceSpecialCharacters");
+      
       if(fout.exists()) {
         transformer.transform(source, new StreamResult(fout));
         //use shell script
         //ShellScriptUtils.execShellscript("scripts/per-file-processing.sh", outputFile);
         //use java
-        FileUtils.fileContentProcessing(outputFile);
+        FileUtils.replaceCharactersInFile(outputFile, "config/special_character_processing.properties", "UpdateSourceSpecialCharacters");
+        
       }
     } else {
       // always create new (or update) for other languages
@@ -177,12 +179,13 @@ public class PropsToXML {
       //use shell script
       //ShellScriptUtils.execShellscript("scripts/per-file-processing.sh", outputFile);
       //use java
-      FileUtils.fileContentProcessing(outputFile);
+      FileUtils.replaceCharactersInFile(outputFile, "config/special_character_processing.properties", "UpdateSourceSpecialCharacters");
       
       // revert changes in master file
       //use shell script
       //ShellScriptUtils.execShellscript("scripts/per-file-processing.sh", masterFile);
-      FileUtils.fileContentProcessing(masterFile);
+      FileUtils.replaceCharactersInFile(masterFile, "config/special_character_processing.properties", "UpdateSourceSpecialCharacters");
+      
     }
     
     return true;
