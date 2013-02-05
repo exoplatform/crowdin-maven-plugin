@@ -45,58 +45,6 @@ public class FileUtils {
   }
 
   /**
-   * Replace special characters of "filePath" by others
-   * Because crowdin add some special character into translation files.
-   * This method will help to remove them before merge the translation into source code
-   * @param filePath
-   * @return
-   */
-  public static boolean fileContentProcessing(String filePath)
-  {
-
-    try
-    {
-      File file = new File(filePath);
-      BufferedReader reader = new BufferedReader(new FileReader(file));
-      String line = "";
-      StringBuffer oldtext = new StringBuffer("");
-      while((line = reader.readLine()) != null)
-      {
-        oldtext.append(line + "\r\n");
-      }
-      reader.close();
-      // replace a word in a file
-
-      //Restoring replaced special characters
-      String newtext = oldtext.toString().replaceAll("__COLON__",":");
-
-      //Restoring escaped characters (:#!=)
-      newtext=newtext.replaceAll("\\:",":");
-      newtext=newtext.replaceAll("\\#","#");
-      newtext=newtext.replaceAll("\\!","!");
-      newtext=newtext.replaceAll("\\=","=");
-
-      //Remove \t after at the end of text
-      newtext=newtext.replaceAll("\t","");
-
-      //Remove blank before and after =
-      newtext=newtext.replaceAll(" =","=");
-      newtext=newtext.replaceAll("= ","=");
-
-
-      FileWriter writer = new FileWriter(filePath);
-      writer.write(newtext);
-      writer.close();
-    }
-    catch (IOException ioe)
-    {
-      ioe.printStackTrace();
-      return false;
-    }
-    return true;
-  }
-
-  /**
    * Replace special character in file "filePath".
    * The couple (regex,replacement) are defined by "replaceListConfigkey" in .properties file "propertiesFilePath"
    * @param filePath
@@ -128,7 +76,7 @@ public class FileUtils {
       String newtext = oldtext.toString();
 
       String replaceListConfig=configProp.getProperty(replaceListConfigkey);
-      String[] replaceListArr= replaceListConfig.split(",");
+      String[] replaceListArr= replaceListConfig.split("__AND__");
 
       for (String obj : replaceListArr) {
         String[] keyValue=obj.replaceAll("\\[", "").replaceAll("\\]", "").split("BY");
