@@ -168,6 +168,7 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
 
           // use the master file as a skeleton and fill in with translations from Crowdin
           PropertiesConfiguration config =  new PropertiesConfiguration(masterFile);
+          PropertiesConfiguration.setDefaultListDelimiter('=');
           config.setEncoding("UTF-8");
 
           Properties props = new Properties();
