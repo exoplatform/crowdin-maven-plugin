@@ -20,7 +20,9 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.exoplatform.crowdin.model.CrowdinFile.Type;
 import org.exoplatform.crowdin.model.CrowdinFileFactory;
 import org.exoplatform.crowdin.model.CrowdinTranslation;
+import org.exoplatform.crowdin.utils.FileUtils;
 import org.exoplatform.crowdin.utils.PropsToXML;
+import org.exoplatform.crowdin.utils.ShellScriptUtils;
 
 /**
  * @goal update
@@ -166,6 +168,7 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
 
           // use the master file as a skeleton and fill in with translations from Crowdin
           PropertiesConfiguration config =  new PropertiesConfiguration(masterFile);
+          PropertiesConfiguration.setDefaultListDelimiter('=');
           config.setEncoding("UTF-8");
 
           Properties props = new Properties();
@@ -179,15 +182,28 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
           // if language is English, update master file and the English file if it exists (do not create new)
           if("en".equals(lang)) {
             config.save(masterFile);
-            PropsToXML.execShellCommand("sh ./src/scripts/per-file-processing.sh " + masterFile); // perform post-processing for the output file
+            // perform post-processing for the output file
+            //use shell script
+            //ShellScriptUtils.execShellscript("scripts/per-file-processing.sh", masterFile);
+            //use java
+            FileUtils.replaceCharactersInFile(masterFile, "config/special_character_processing.properties", "UpdateSourceSpecialCharacters");
+            
             if(new File(entryName).exists()) {
               config.save(entryName);
-              PropsToXML.execShellCommand("sh ./src/scripts/per-file-processing.sh " + entryName);
+              //use shell script
+              //ShellScriptUtils.execShellscript("scripts/per-file-processing.sh", entryName);
+              //use java
+              FileUtils.replaceCharactersInFile(entryName, "config/special_character_processing.properties", "UpdateSourceSpecialCharacters");
+              
             }
           } else {
             // always create new (or update) for other languages
-            config.save(entryName);  
-            PropsToXML.execShellCommand("sh ./src/scripts/per-file-processing.sh " + entryName);
+            config.save(entryName);
+            //use shell script
+            //ShellScriptUtils.execShellscript("scripts/per-file-processing.sh", entryName);
+            //user java
+            FileUtils.replaceCharactersInFile(entryName, "config/special_character_processing.properties", "UpdateSourceSpecialCharacters");
+          
           }
         }
         

@@ -70,7 +70,16 @@ public class PropsToXML {
     if(type.equals(Type.PORTLET)){
       String origFileName = fileName.substring(0, fileName.lastIndexOf("_"));
       masterFile = outputPath + origFileName + ".xml";
+      
       if(!(new File(masterFile)).exists()) masterFile = outputPath + origFileName + "_en.xml";
+      
+      //find master file for file has name like "ContentListViewer_pt_BR.xml"
+      if(!(new File(masterFile)).exists()){
+        origFileName = origFileName.substring(0, origFileName.lastIndexOf("_"));
+        masterFile = outputPath + origFileName + ".xml";
+        if(!(new File(masterFile)).exists()) masterFile = outputPath + origFileName + "_en.xml";
+      }
+      
       if(!(new File(masterFile)).exists()) throw new FileNotFoundException("Cannot create or update " + outputFile + " as the master file " + origFileName + ".xml (or " + origFileName + "_en.xml)" + " does not exist!");
     } else if(type.equals(Type.GADGET)){
       masterFile = outputPath + "default.xml";
@@ -80,7 +89,11 @@ public class PropsToXML {
     }
     
     // Replace special characters in master file
-    execShellCommand("sh ./src/scripts/handle-special-characters.sh " + masterFile);
+    //use shell script
+    //ShellScriptUtils.execShellscript("scripts/handle-special-characters.sh", masterFile);
+    //use java code
+    FileUtils.replaceCharactersInFile(masterFile, "config/special_character_processing.properties", "PropertiesToXMLSpecialCharacters");
+    
     
     Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(masterFile);
     doc.setXmlStandalone(true);
@@ -146,17 +159,33 @@ public class PropsToXML {
     // if language is English, update master file and the English file if it exists (do not create new)
     if(propsFilePath.endsWith("en.properties") || propsFilePath.equalsIgnoreCase("en_ALL.properties")) {
       transformer.transform(source, new StreamResult(new File(masterFile)));
-      execShellCommand("sh ./src/scripts/per-file-processing.sh " + masterFile); // perform post-processing for the output file
+      // perform post-processing for the output file
+      //use shell script
+      //ShellScriptUtils.execShellscript("scripts/per-file-processing.sh", masterFile);
+      //use java
+      FileUtils.replaceCharactersInFile(masterFile, "config/special_character_processing.properties", "UpdateSourceSpecialCharacters");
+      
       if(fout.exists()) {
         transformer.transform(source, new StreamResult(fout));
-        execShellCommand("sh ./src/scripts/per-file-processing.sh " + outputFile); 
+        //use shell script
+        //ShellScriptUtils.execShellscript("scripts/per-file-processing.sh", outputFile);
+        //use java
+        FileUtils.replaceCharactersInFile(outputFile, "config/special_character_processing.properties", "UpdateSourceSpecialCharacters");
+        
       }
     } else {
       // always create new (or update) for other languages
       transformer.transform(source, new StreamResult(fout));
-      execShellCommand("sh ./src/scripts/per-file-processing.sh " + outputFile);
+      //use shell script
+      //ShellScriptUtils.execShellscript("scripts/per-file-processing.sh", outputFile);
+      //use java
+      FileUtils.replaceCharactersInFile(outputFile, "config/special_character_processing.properties", "UpdateSourceSpecialCharacters");
+      
       // revert changes in master file
-      execShellCommand("sh ./src/scripts/per-file-processing.sh " + masterFile);
+      //use shell script
+      //ShellScriptUtils.execShellscript("scripts/per-file-processing.sh", masterFile);
+      FileUtils.replaceCharactersInFile(masterFile, "config/special_character_processing.properties", "UpdateSourceSpecialCharacters");
+      
     }
     
     return true;
