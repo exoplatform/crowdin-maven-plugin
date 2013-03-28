@@ -56,7 +56,7 @@ for (( i=0;i<$length;i++)); do
     cd ${projects[${i}]}     
       git checkout .
       git clean -f
-      #git pull origin master
+      git pull origin master
       echo "----------------------updated the existing local branch----------------"
     cd ..
   fi
