@@ -183,10 +183,10 @@ public class CrowdinAPIHelper {
 	public File downloadTranslations() throws MojoExecutionException, FileNotFoundException, IOException {
 		// we export the latest translations on the server
 		// this is allowed only every 30 mins by Crowdin, TODO: could be handled here with a timer
-		System.out.println("buiding Crowdin fresh package ...");
+		System.out.println("building Crowdin fresh package ...");
 		given().
 				post("/export?key="+projectKey).andReturn().asString();
-		System.out.println("buiding Crowdin fresh package done");
+		System.out.println("building Crowdin fresh package done");
 		// create the file in which all translations will be downloaded
 		File translations = new File("target/all.zip");
 		try {

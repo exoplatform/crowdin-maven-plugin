@@ -53,11 +53,16 @@ for (( i=0;i<$length;i++)); do
 #      echo "-------------------------Switched to origin/stable/${versions[${i}]}-------------"
 #    cd ..
   else
-    cd ${projects[${i}]}     
-      git checkout .
-      git clean -f
+    cd ${projects[${i}]}
+    git checkout .
+    git clean -f
+    git fetch origin
+    if [ ${projects[${i}]} == "gatein-portal" ]; then
+      git pull origin 3.5.x-PLF
+    else
       git pull origin master
-      echo "----------------------updated the existing local branch----------------"
+    fi
+    echo "----------------------updated the existing local branch----------------"
     cd ..
   fi
 
