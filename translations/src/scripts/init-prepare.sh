@@ -44,8 +44,13 @@ for (( i=0;i<$length;i++)); do
   echo "+++++++++++++++++++++++++Preparing the ${projects[${i}]} project+++++++++++++++++++++++"
   
   if [ ! -d $EXO_PROJECTS/${projects[${i}]} ]; then
-    echo "--------------Cloning project from url: https://github.com/exodev/${projects[${i}]}.git---"
-    git clone https://github.com/exodev/${projects[${i}]}.git
+    if [ ${projects[${i}]} == "gatein-portal" ]; then
+      echo "--------------Cloning project from url: https://github.com/exoplatform/${projects[${i}]}.git---"
+      git clone https://github.com/exoplatform/${projects[${i}]}.git
+    else
+      echo "--------------Cloning project from url: https://github.com/exodev/${projects[${i}]}.git---"
+      git clone https://github.com/exodev/${projects[${i}]}.git
+    fi
     echo "-------------------------Cloning done----------------------------------------"
   
 #    cd ${projects[${i}]}
