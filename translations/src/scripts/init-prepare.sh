@@ -44,12 +44,14 @@ for (( i=0;i<$length;i++)); do
   echo "+++++++++++++++++++++++++Preparing the ${projects[${i}]} project+++++++++++++++++++++++"
   
   if [ ! -d $EXO_PROJECTS/${projects[${i}]} ]; then
-    if [ ${projects[${i}]} == "gatein-portal" ]; then
       echo "--------------Cloning project from url: https://github.com/exoplatform/${projects[${i}]}.git---"
       git clone https://github.com/exoplatform/${projects[${i}]}.git
+    if [ ${projects[${i}]} == "gatein-portal" ]; then
+      echo "Only gatein-portal works on 3.5.x-PLF branch"
     else
-      echo "--------------Cloning project from url: https://github.com/exodev/${projects[${i}]}.git---"
-      git clone https://github.com/exodev/${projects[${i}]}.git
+      cd ${projects[${i}]}
+      git checkout -b stable/${versions[${i}]} origin/stable/${versions[${i}]}
+      cd ..
     fi
     echo "-------------------------Cloning done----------------------------------------"
   
@@ -65,7 +67,7 @@ for (( i=0;i<$length;i++)); do
     if [ ${projects[${i}]} == "gatein-portal" ]; then
       git pull origin 3.5.x-PLF
     else
-      git pull origin master
+      git pull origin stable/${versions[${i}]}
     fi
     echo "----------------------updated the existing local branch----------------"
     cd ..
