@@ -130,6 +130,10 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
           } else if (name.contains("_ALL")) {
             fileName = lang + "_ALL" + extension;
           }
+          else{
+            fileName = name + "_" + lang + extension;
+          }
+            
         } else {
           fileName = name + "_" + lang + extension;
         }
