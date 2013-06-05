@@ -6,6 +6,7 @@ import java.util.Set;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.exoplatform.crowdin.model.CrowdinFile;
+import org.exoplatform.crowdin.utils.FileUtils;
 /**
  * @goal init
  * @author Philippe Aristote
@@ -68,14 +69,25 @@ public class InitCrowdinMojo extends AbstractCrowdinMojo {
 			try {
 				if (getLog().isDebugEnabled()) getLog().debug("*** Checking whether file: "+_file.getCrowdinPath()+" exists.");
 				if (!getHelper().elementExists(_file.getCrowdinPath())) {
-					if (getLog().isDebugEnabled()) getLog().debug("*** Add file: "+_file.getCrowdinPath());
+				  
+		      //escape special character before init
+		      FileUtils.replaceCharactersInFile(_file.getFile().getPath(), "config/special_character_processing.properties", "EscapeSpecialCharactersBeforeSyncFromCodeToCrowdin");
+					
+		      if (getLog().isDebugEnabled()) getLog().debug("*** Add file: "+_file.getCrowdinPath());
 					String result = getHelper().addFile(_file);
 					if (result.contains("success")) {
 					  getLog().info("File "+fileN+" created succesfully.");
-					  return true;
+					  
+					  //remove escape special character before init
+	          FileUtils.replaceCharactersInFile(_file.getFile().getPath(), "config/special_character_processing.properties", "EscapeSpecialCharactersAfterSyncFromCodeToCrowdin");
+	          
+	          return true;
 					} else {
 					  getLog().warn("Cannot create file '"+_file.getFile().getPath()+"'. Reason:\n"+result);
 					}
+		      
+					//remove escape special character before init
+		      FileUtils.replaceCharactersInFile(_file.getFile().getPath(), "config/special_character_processing.properties", "EscapeSpecialCharactersAfterSyncFromCodeToCrowdin");
 				}
 			} catch (MojoExecutionException e) {
 				getLog().error("Error while creating file '"+_file.getFile().getPath()+"'. Exception:\n"+e.getMessage());
