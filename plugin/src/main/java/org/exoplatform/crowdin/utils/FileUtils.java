@@ -6,9 +6,30 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 import java.util.Properties;
+import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.plugin.logging.SystemStreamLog;
 
 public class FileUtils {
+  
+  static Log log;
+
+  public static void setLog( Log varLog )
+  {
+      log = varLog;
+  }
+
+  public static Log getLog()
+  {
+      if ( log == null )
+      {
+          log = new SystemStreamLog();
+      }
+
+      return log;
+  }
+  
   /**
    * Replace all String "regex" by String "replacement" in file "filePath"
    * @param filePath
@@ -66,6 +87,10 @@ public class FileUtils {
 
     try {
       File file = new File(filePath);
+      if (!file.exists()){
+        getLog().info("File " + file + " is not existed.");
+        return false;
+      }
       BufferedReader reader = new BufferedReader(new FileReader(file));
       String line = "";
       StringBuffer oldtext = new StringBuffer("");

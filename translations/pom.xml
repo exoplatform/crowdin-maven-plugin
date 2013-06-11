@@ -49,6 +49,17 @@
                   <goal>exec</goal>
                 </goals>
               </execution>
+              <execution>
+                <id>reset</id>
+                <phase>package</phase>
+                <configuration>
+                  <executable>${basedir}/src/scripts/reset-local.sh</executable>
+                  <workingDirectory>${basedir}/eXoProjects/</workingDirectory>
+                </configuration>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+              </execution>
             </executions>
           </plugin>
           <plugin>
@@ -96,6 +107,17 @@
                 <phase>package</phase>
                 <configuration>
                   <executable>${basedir}/src/scripts/post-process.sh</executable>
+                  <workingDirectory>${basedir}/eXoProjects/</workingDirectory>
+                </configuration>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>reset</id>
+                <phase>package</phase>
+                <configuration>
+                  <executable>${basedir}/src/scripts/reset-local.sh</executable>
                   <workingDirectory>${basedir}/eXoProjects/</workingDirectory>
                 </configuration>
                 <goals>

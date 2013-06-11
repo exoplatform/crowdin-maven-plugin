@@ -22,6 +22,7 @@ import java.util.Set;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.exoplatform.crowdin.model.CrowdinFile;
+import org.exoplatform.crowdin.utils.FileUtils;
 
 /**
  * Created by The eXo Platform SAS
@@ -90,6 +91,10 @@ public class SyncSourcesMojo extends AbstractCrowdinMojo {
       initDir(_file.getCrowdinPath());
       try {
         if (_file.getFile().exists()) {
+          
+          //escape special character before sync
+          FileUtils.replaceCharactersInFile(_file.getFile().getPath(), "config/special_character_processing.properties", "EscapeSpecialCharactersBeforeSyncFromCodeToCrowdin");
+          
           if (!getHelper().elementExists(_file.getCrowdinPath())) {
             if (getLog().isDebugEnabled())
               getLog().debug("*** Add file: " + _file.getCrowdinPath());
@@ -117,6 +122,10 @@ public class SyncSourcesMojo extends AbstractCrowdinMojo {
             if (_file.isShouldBeCleaned()) {
               _file.getFile().delete();
             }
+            
+            //remove escape special character before sync
+            FileUtils.replaceCharactersInFile(_file.getFile().getPath(), "config/special_character_processing.properties", "EscapeSpecialCharactersAfterSyncFromCodeToCrowdin");
+            
           }
         } else {
           if (getHelper().elementExists(_file.getCrowdinPath())) {
