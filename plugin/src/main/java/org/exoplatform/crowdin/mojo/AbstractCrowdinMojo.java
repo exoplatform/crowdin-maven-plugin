@@ -12,15 +12,16 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Matcher;
 
+
+import com.jayway.restassured.RestAssured;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.exoplatform.crowdin.model.CrowdinFile;
 import org.exoplatform.crowdin.model.CrowdinFileFactory;
 import org.exoplatform.crowdin.model.CrowdinTranslation;
 import org.exoplatform.crowdin.utils.CrowdinAPIHelper;
-
-import com.jayway.restassured.RestAssured;
 
 /**
  * @author Philippe Aristote
@@ -97,7 +98,13 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
    */
   private Properties ignoredFiles;
 
-  @Override
+  /**
+   * The base directory of the project being tested. This can be obtained in your integration test via
+   * System.getProperty("basedir").
+   */
+  @Parameter( defaultValue = "${basedir}" )
+  private File basedir;
+
   public void execute() throws MojoExecutionException, MojoFailureException {
     // Initialization of the CrowdinFileFactory and CrowdinAPIHelper
     factory = new CrowdinFileFactory(this);
@@ -119,7 +126,7 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
       Set<Object> keys = mainProps.keySet();
       for (Object key : keys) {
         if (getLog().isDebugEnabled()) getLog().debug("*** Loading the properties file ("+mainProps.getProperty(key.toString())+")...");
-        properties.put(key.toString(), loadProperties(mainProps.getProperty(key.toString())));
+        properties.put(key.toString(), loadProperties(new File(basedir,mainProps.getProperty(key.toString())).getAbsolutePath()));
       }
       keys = null;
 
