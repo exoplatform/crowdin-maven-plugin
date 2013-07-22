@@ -46,7 +46,7 @@ for (( i=0;i<$length;i++)); do
   
   if [ ! -d $EXO_PROJECTS/${projects[${i}]} ]; then
       echo "--------------Cloning project from url: git@github.com:exoplatform/${projects[${i}]}.git---"
-	git clone --progress git@github.com:exoplatform/${projects[${i}]}.git
+	git clone git@github.com:exoplatform/${projects[${i}]}.git
     if [ ${projects[${i}]} == "gatein-portal" ]; then
       echo "Only gatein-portal works on 3.5.x-PLF branch"
     else
