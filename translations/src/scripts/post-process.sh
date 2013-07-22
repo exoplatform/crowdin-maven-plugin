@@ -33,6 +33,7 @@ echo ""
 for (( i=0;i<$length;i++)); do
   if [ -d $EXO_PROJECTS/${projects[${i}]}-${versions[${i}]} ]; then
     mv ${projects[${i}]}-${versions[${i}]} ${projects[${i}]}
+    rm -f ${projects[${i}]}/temp.patch
     echo "Renamed ${projects[${i}]}-${versions[${i}]} to ${projects[${i}]}"
   fi
 done
