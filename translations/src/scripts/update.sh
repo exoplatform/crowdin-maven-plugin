@@ -30,6 +30,6 @@ length=${#projects[@]}
 
 for (( i=0;i<$length;i++)); do
   cd ${projects[${i}]}-${versions[${i}]}
-  git diff -w > temp.patch && git checkout . && git apply temp.patch && rm -f temp.patch
+  git diff -w > temp.patch && git checkout . && git apply --whitespace=fix temp.patch && rm -f temp.patch
   cd ..
 done
