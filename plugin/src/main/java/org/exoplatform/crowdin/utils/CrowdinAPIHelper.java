@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) 2003-2013 eXo Platform SAS.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
 package org.exoplatform.crowdin.utils;
 
 import static com.jayway.restassured.RestAssured.given;
@@ -174,35 +192,33 @@ public class CrowdinAPIHelper {
 	}
 	
 	/**
-	 * @param String lang: language of the translations to be downloaded
-	 * @return the File that contains all translations if the request is successful, null otherwise
+	 * @param translationsFile the File that contains all translations if the request is successful, null otherwise
 	 * @throws MojoExecutionException
 	 * @throws FileNotFoundException
 	 * @throws IOException
 	 */
-	public File downloadTranslations() throws MojoExecutionException, FileNotFoundException, IOException {
+	public void downloadTranslations(File translationsFile) throws MojoExecutionException, FileNotFoundException, IOException {
 		// we export the latest translations on the server
 		// this is allowed only every 30 mins by Crowdin, TODO: could be handled here with a timer
-		System.out.println("building Crowdin fresh package ...");
+		currentMojo.getLog().info("Building Crowdin fresh package ...");
 		given().
 				post("/export?key="+projectKey).andReturn().asString();
-		System.out.println("building Crowdin fresh package done");
+		currentMojo.getLog().info("Building Crowdin fresh package done");
+    currentMojo.getLog().info("Let's download it ...");
 		// create the file in which all translations will be downloaded
-		File translations = new File("target/all.zip");
 		try {
-			FileOutputStream fos = new FileOutputStream(translations);
+			FileOutputStream fos = new FileOutputStream(translationsFile);
 			// write the translations (as a byte array) in the File
 			fos.write(given().
 					post("/download/all.zip?key="+projectKey).andReturn().asByteArray());
 			fos.close();
 		} catch (FileNotFoundException e) {
-			translations = null;
+			translationsFile = null;
 			throw e;
 		} catch (IOException e) {
-			translations = null;
+			translationsFile = null;
 			throw e;
 		}
-		return translations;
 	}
 	
 	/**

@@ -1,39 +1,41 @@
 /*
- * Copyright (C) 2003-2012 eXo Platform SAS.
+ * Copyright (C) 2003-2013 eXo Platform SAS.
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
+ * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 package org.exoplatform.crowdin.mojo;
 
 import java.util.Properties;
 import java.util.Set;
 
+
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Mojo;
 import org.exoplatform.crowdin.model.CrowdinFile;
 import org.exoplatform.crowdin.utils.FileUtils;
 
 /**
  * Created by The eXo Platform SAS
  * Author : viet nguyen
- *          vietnt@exoplatform.com
- * May 4, 2012  
+ * vietnt@exoplatform.com
+ * May 4, 2012
  */
 
-/**
- * @goal sync
- */
+@Mojo(name = "sync")
 public class SyncSourcesMojo extends AbstractCrowdinMojo {
 
   /**
@@ -45,9 +47,9 @@ public class SyncSourcesMojo extends AbstractCrowdinMojo {
     if (!isAllPropertyFilesExisted() && !isForce()) {
       getLog().info("\n\n\n");
       getLog().info("----------------------------------------------------------------------------------------\n\n"
-          + "There are nonexistent properties files! Check again and update properties configuration files or run following command to "
-          + "continue:\n mvn clean install -Psync -Dforce=true \n"
-          + "Warning: All Crowdin files corresponding to nonexistent properties files will be deleted after execute above command.\n");
+                        + "There are nonexistent properties files! Check again and update properties configuration files or run following command to "
+                        + "continue:\n mvn clean install -Psync -Dforce=true \n"
+                        + "Warning: All Crowdin files corresponding to nonexistent properties files will be deleted after execute above command.\n");
       getLog().info("----------------------------------------------------------------------------------------\n\n\n");
       return;
     }
@@ -77,7 +79,7 @@ public class SyncSourcesMojo extends AbstractCrowdinMojo {
    * A function that initializes a File in Crowdin - creates parent folder(s) if
    * they don't exist - create the file if it doesn't exist - upload
    * translations for each file if they don't exist
-   * 
+   *
    * @param _file the File to initialize in Crowdin
    */
   private void updateFile(CrowdinFile _file) {
@@ -91,10 +93,10 @@ public class SyncSourcesMojo extends AbstractCrowdinMojo {
       initDir(_file.getCrowdinPath());
       try {
         if (_file.getFile().exists()) {
-          
+
           //escape special character before sync
           FileUtils.replaceCharactersInFile(_file.getFile().getPath(), "config/special_character_processing.properties", "EscapeSpecialCharactersBeforeSyncFromCodeToCrowdin");
-          
+
           if (!getHelper().elementExists(_file.getCrowdinPath())) {
             if (getLog().isDebugEnabled())
               getLog().debug("*** Add file: " + _file.getCrowdinPath());
@@ -102,8 +104,7 @@ public class SyncSourcesMojo extends AbstractCrowdinMojo {
             if (result.contains("success")) {
               getLog().info("File " + fileN + " created succesfully.");
               initTranslations(_file);
-            }
-            else {
+            } else {
               getLog().warn("Cannot create file '" + _file.getFile().getPath() + "'. Reason:\n" + result);
               if (_file.isShouldBeCleaned()) {
                 _file.getFile().delete();
@@ -122,10 +123,10 @@ public class SyncSourcesMojo extends AbstractCrowdinMojo {
             if (_file.isShouldBeCleaned()) {
               _file.getFile().delete();
             }
-            
+
             //remove escape special character before sync
             FileUtils.replaceCharactersInFile(_file.getFile().getPath(), "config/special_character_processing.properties", "EscapeSpecialCharactersAfterSyncFromCodeToCrowdin");
-            
+
           }
         } else {
           if (getHelper().elementExists(_file.getCrowdinPath())) {

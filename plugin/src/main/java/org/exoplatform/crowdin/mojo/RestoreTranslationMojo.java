@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) 2003-2013 eXo Platform SAS.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
 package org.exoplatform.crowdin.mojo;
 
 import java.io.BufferedReader;
@@ -11,32 +29,27 @@ import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.exoplatform.crowdin.model.CrowdinFile;
 import org.exoplatform.crowdin.model.CrowdinFileFactory;
 import org.exoplatform.crowdin.model.CrowdinTranslation;
 
-/**
- * @goal restore-translation
- */
+@Mojo(name = "restore-translation")
 public class RestoreTranslationMojo extends AbstractCrowdinMojo {
   private static String ZIP_DIR;
   private static String ZIP_FILE;
-  
-  /**
-   * @parameter expression="${prepare}" default-value="false"
-   */
+
+  @Parameter(property="prepare",defaultValue="false")
   private boolean isPrepare;
 
-  /**
-   * @parameter expression="${continue}" default-value="false"
-   */
+  @Parameter(property="continue",defaultValue="false")
   private boolean isContinue;
 
-  /**
-   * @parameter expression="${action}" default-value="uploadTranslations"
-   */
+  @Parameter(property="action",defaultValue="uploadTranslations")
   private String action;
 
   @Override
@@ -47,15 +60,15 @@ public class RestoreTranslationMojo extends AbstractCrowdinMojo {
         getLog().warn("Crowdin translation zip (../crowdin-zip/all.zip) not found. Nothing to do");
         return;
       }
-      
+
       ZIP_FILE = zip.getAbsolutePath();
       ZIP_DIR = ZIP_FILE.substring(0, ZIP_FILE.lastIndexOf(".zip")) + "/";
 
-      if(!isContinue){
+      if (!isContinue) {
         deleteDir(new File(ZIP_DIR));
         extractZip();
         getLog().info("Crowdin translation folder (../crowdin-zip/all/) is ready.");
-        if(isPrepare){
+        if (isPrepare) {
           getLog().info("Please make the necessary modification then continue by running with '-Dcontinue=true'");
         }
       } else {
@@ -65,8 +78,8 @@ public class RestoreTranslationMojo extends AbstractCrowdinMojo {
         }
       }
 
-      if(!isPrepare){
-        if("createProject".equals(action)){
+      if (!isPrepare) {
+        if ("createProject".equals(action)) {
           getLog().info("*** Creating Crowdin project's directory structure...");
           dir2crowdin(ZIP_DIR + "en/");
           return;
@@ -82,7 +95,7 @@ public class RestoreTranslationMojo extends AbstractCrowdinMojo {
           }
         }
       }
-      
+
     } catch (Exception e) {
       getLog().error("Exception when running restore-translation: " + e.getMessage(), e);
     }
@@ -91,16 +104,16 @@ public class RestoreTranslationMojo extends AbstractCrowdinMojo {
   private void dir2crowdin(String dirPath) throws Exception {
     File root = new File(dirPath);
     File[] list = root.listFiles();
-    
+
     for (File file : list) {
       String crowdinPath = file.getAbsolutePath().replace(ZIP_DIR + "en/", "");
       if (file.isDirectory()) {
         String ret = getHelper().addDirectory(crowdinPath);
-        if (ret.contains("success")){
+        if (ret.contains("success")) {
           getLog().info("Creating folder: " + crowdinPath + " [successed]");
         } else {
           getLog().warn("Creating folder: " + crowdinPath + " [FAILED]");
-          if(getLog().isDebugEnabled()) {
+          if (getLog().isDebugEnabled()) {
             getLog().debug(ret);
           }
         }
@@ -108,22 +121,22 @@ public class RestoreTranslationMojo extends AbstractCrowdinMojo {
       } else {
         CrowdinFile cf = getFactory().prepareCrowdinFile(file.getAbsolutePath(), crowdinPath.substring(crowdinPath.lastIndexOf(File.separatorChar)), dirPath.replace(ZIP_DIR + "en/", ""));
         String ret = getHelper().addFile(cf);
-        if (ret.contains("success")){
+        if (ret.contains("success")) {
           getLog().info("Adding file:   " + crowdinPath + " [successed]");
         } else {
           getLog().warn("Adding file:   " + crowdinPath + " [FAILED]");
-          if(getLog().isDebugEnabled()) {
+          if (getLog().isDebugEnabled()) {
             getLog().debug(ret);
           }
         }
       }
     }
   }
-  
+
   private void trans2crowdin(String dirPath, String lang) throws Exception {
     File root = new File(dirPath);
     File[] list = root.listFiles();
-    
+
     for (File file : list) {
       String crowdinPath = file.getAbsolutePath().replace(ZIP_DIR + lang + "/", "");
       if (file.isDirectory()) {
@@ -132,19 +145,19 @@ public class RestoreTranslationMojo extends AbstractCrowdinMojo {
         CrowdinFile master = getFactory().prepareCrowdinFile(file.getAbsolutePath(), crowdinPath.substring(crowdinPath.lastIndexOf(File.separatorChar)), dirPath.replace(ZIP_DIR + lang + "/", ""));
         CrowdinTranslation cTran = new CrowdinTranslation(file, crowdinPath.substring(crowdinPath.lastIndexOf(File.separatorChar)), master.getType(), master.getProject(), lang, master, false);
         String ret = getHelper().uploadTranslation(cTran);
-        if (ret.contains("success")){
+        if (ret.contains("success")) {
           getLog().info("Uploading translation: " + crowdinPath + " [successed]");
         } else {
           getLog().warn("Uploading translation: " + crowdinPath + " [FAILED]");
-          if(getLog().isDebugEnabled()) {
+          if (getLog().isDebugEnabled()) {
             getLog().debug(ret);
           }
         }
       }
     }
   }
-  
-  
+
+
   private void extractZip() throws Exception {
     byte[] buf = new byte[1024];
     ZipInputStream zipinputstream = null;
@@ -164,12 +177,12 @@ public class RestoreTranslationMojo extends AbstractCrowdinMojo {
       tmp = tmp.replace('/', File.separatorChar);
       tmp = tmp.replace('\\', File.separatorChar);
       String[] path = tmp.split(File.separator);
-      Properties currentProj = getProperties().get(path[2]+"/");
+      Properties currentProj = getProperties().get(path[2] + "/");
       // ignore projects that is not managed by the plugin
       if (currentProj == null) {
         zipentry = zipinputstream.getNextEntry();
         continue;
-      }        
+      }
 
       String zipentryName = ZIP_DIR + zipentry.getName();
 
@@ -194,7 +207,7 @@ public class RestoreTranslationMojo extends AbstractCrowdinMojo {
 
     zipinputstream.close();
   }
-  
+
   private boolean deleteDir(File dir) {
     if (dir.isDirectory()) {
       String[] children = dir.list();
@@ -207,7 +220,7 @@ public class RestoreTranslationMojo extends AbstractCrowdinMojo {
     }
     return dir.delete();
   }
-  
+
   private void deleteFirstLine(String filePath) throws Exception {
     StringBuilder sb = new StringBuilder();
     BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(new File(filePath)), "UTF-8"));
@@ -222,5 +235,5 @@ public class RestoreTranslationMojo extends AbstractCrowdinMojo {
     out.write(sb.toString());
     out.close();
   }
-  
+
 } 
