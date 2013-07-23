@@ -35,15 +35,14 @@ package org.exoplatform.crowdin.utils;
  * along with this program; if not, see<http://www.gnu.org/licenses/>.
  */
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.Iterator;
 import java.util.LinkedList;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.exoplatform.crowdin.model.CrowdinFile.Type;
 import org.w3c.dom.Document;
@@ -108,7 +107,7 @@ public class XMLToProps {
       String value = currentElt.getTextContent();
       StringBuffer sb = new StringBuffer();
       if (Type.PORTLET.equals(type)) {
-        for (Iterator<String> i = path.iterator(); i.hasNext();) {
+        for (Iterator<String> i = path.iterator(); i.hasNext(); ) {
           String name = i.next();
           sb.append(name);
           if (i.hasNext()) {
@@ -124,7 +123,7 @@ public class XMLToProps {
       bundle.append(key).append("=").append(value.replaceAll("\n", " ")).append("\n");
     }
   }
-  
+
   private static String makeComment(String comment) {
     if (comment != null) {
       comment = comment.trim();

@@ -18,20 +18,25 @@
  */
 package org.exoplatform.crowdin.mojo;
 
+import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
+
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Arrays;
+import java.text.DateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-
 
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -40,7 +45,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.exoplatform.crowdin.model.CrowdinFile.Type;
 import org.exoplatform.crowdin.model.CrowdinFileFactory;
 import org.exoplatform.crowdin.model.CrowdinTranslation;
-import org.exoplatform.crowdin.utils.FileUtils;
+import org.exoplatform.crowdin.model.SourcesRepository;
 import org.exoplatform.crowdin.utils.PropsToXML;
 
 /**
@@ -50,21 +55,19 @@ import org.exoplatform.crowdin.utils.PropsToXML;
 public class UpdateSourcesMojo extends AbstractCrowdinMojo {
 
   @Override
-  public void executeMojo() throws MojoExecutionException, MojoFailureException {
-    File zip = new File(getProject().getBuild().getDirectory(), "all.zip");
-    if (!zip.exists()) {
-      try {
-        getHelper().setApprovedOnlyOption();
-        getLog().info("Downloading Crowdin translation zip...");
-        getHelper().downloadTranslations(zip);
-        getLog().info("Downloading done!");
-      } catch (Exception e) {
-        getLog().error("Error downloading the translations from Crowdin. Exception:\n" + e.getMessage());
-      }
+  public void crowdInMojoExecute() throws MojoExecutionException, MojoFailureException {
+    getLog().info("------------------------------------------------------------------------");
+    getLog().info("Preparing working environment ...");
+    getLog().info("------------------------------------------------------------------------");
+    for (SourcesRepository repository : getSourcesRepositories()) {
+      File bareRepository = prepareRepositoryCache(repository);
+      prepareWorkingRepository(repository, bareRepository);
     }
-    extractZip(getStartDir(), zip.getPath());
+    getLog().info("Projects ready.");
+    File zip = downloadCrowdInArchive();
+    Date downloadDate = new Date();
     //get the translations status
-    File status_trans = new File(getProject().getBasedir(),"report/translation_status.xml");
+    File status_trans = new File(getProject().getBasedir(), "report/translation_status.xml");
     BufferedWriter writer = null;
     try {
       writer = new BufferedWriter(new FileWriter(status_trans));
@@ -77,13 +80,164 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
       } catch (IOException e) {
       }
     }
+    List<String> languagesToProcess = new ArrayList<String>();
+    if (getLanguages().contains("all")) {
+      languagesToProcess = getLanguagesListFromCrowdInArchive(zip);
+    } else {
+      languagesToProcess = getLanguages();
+    }
+    for (String language : languagesToProcess) {
+      getLog().info("------------------------------------------------------------------------");
+      getLog().info("Updates for locale " + language);
+      getLog().info("------------------------------------------------------------------------");
+      applyTranslations(getWorkingDir(), zip.getPath(), language);
+      for (SourcesRepository repository : getSourcesRepositories()) {
+        try {
+          File localVersionRepository = new File(getWorkingDir(), repository.getLocalDirectory());
+          getLog().info("Extract/Apply/Commit/Push changes on " + repository.getName() + " (branch: " + repository.getBranch() + ")");
+          // Create a patch with local changes
+          getLog().info("Create patch(s) for " + repository.getLocalDirectory() + "...");
+          File patchFile = new File(getProject().getBuild().getDirectory(), repository.getLocalDirectory() + "-" + language + ".patch");
+          execGit(localVersionRepository, "diff --ignore-all-space > " + patchFile.getAbsolutePath());
+          getLog().info("Done.");
+          // Reset our local copy
+          getLog().info("Reset repository " + repository.getLocalDirectory() + "...");
+          execGit(localVersionRepository, "reset --hard HEAD");
+          execGit(localVersionRepository, "clean -fd");
+          getLog().info("Done.");
+          BufferedReader br = new BufferedReader(new FileReader(patchFile));
+          if (br.readLine() == null) {
+            getLog().info("No change for locale " + language + " on " + repository.getName() + " (branch: " + repository.getBranch() + " ) from crowdin extract done on " + DateFormat.getInstance().format(downloadDate));
+          } else {
+            // Apply the patch
+            getLog().info("Apply patch(s) for " + repository.getLocalDirectory() + "...");
+            execGit(localVersionRepository, "apply --ignore-whitespace " + patchFile.getAbsolutePath(), element("successCode", "0"), element("successCode", "1"));
+            getLog().info("Done.");
+            getLog().info("Commit changes for " + repository.getLocalDirectory() + "...");
+            // Commit changes
+            execGit(localVersionRepository, "commit -a -m 'Apply changes for locale " + language + " on " + repository.getName() + " (branch: " + repository.getBranch() + " ) from crowdin extract done on " + DateFormat.getInstance().format(downloadDate) + "'", element("successCode", "0"), element("successCode", "1"));
+            getLog().info("Done.");
+            // Push it
+            if (!isDryRun()) {
+              getLog().info("Pushing changes for " + repository.getLocalDirectory() + "...");
+              //execGit(localVersionRepository,"push origin "+repository.getBranch());
+              getLog().info("Done.");
+            }
+          }
+        } catch (Exception e) {
+          throw new MojoExecutionException("Error while updating project " + repository.getName(), e);
+        }
+      }
+    }
 
   }
 
-  private void extractZip(String _destFolder, String _zipFile) {
+  private List<String> getLanguagesListFromCrowdInArchive(File zip) {
+    List<String> languagesToProcess = new ArrayList<String>();
+    // Let's extract the list of languages from crowdIn archive
+    try {
+      ZipInputStream zipinputstream = new ZipInputStream(new FileInputStream(zip));
+      ZipEntry zipentry = zipinputstream.getNextEntry();
+      while (zipentry != null) {
+        // for each entry to be extracted
+        if (zipentry.isDirectory()) {
+          zipentry = zipinputstream.getNextEntry();
+          continue;
+        }
+        String zipentryName = zipentry.getName();
+        zipentryName = CrowdinFileFactory.encodeMinusCharacterInPath(zipentryName, false);
+        zipentryName = zipentryName.replace('/', File.separatorChar);
+        zipentryName = zipentryName.replace('\\', File.separatorChar);
+        String[] path = zipentryName.split(File.separator);
+        if (!languagesToProcess.contains(path[0])) languagesToProcess.add(path[0]);
+        zipentry = zipinputstream.getNextEntry();
+      }// while
+      zipinputstream.close();
+    } catch (Exception e) {
+      getLog().error("Update aborted !", e);
+    }
+    return languagesToProcess;
+  }
+
+  private File downloadCrowdInArchive() {
+    File zip = new File(getProject().getBuild().getDirectory(), "all.zip");
+    if (!zip.exists() || !isDryRun()) {
+      try {
+        getHelper().setApprovedOnlyOption();
+        getLog().info("Downloading Crowdin translation zip...");
+        getHelper().downloadTranslations(zip);
+        getLog().info("Downloading done!");
+      } catch (Exception e) {
+        getLog().error("Error downloading the translations from Crowdin. Exception:\n" + e.getMessage());
+      }
+    }
+    return zip;
+  }
+
+  private void prepareWorkingRepository(SourcesRepository repository, File bareRepository) throws MojoExecutionException, MojoFailureException {
+    // Create a copy for the given version
+    File localVersionRepository = new File(getWorkingDir(), repository.getLocalDirectory());
+    if (localVersionRepository.exists()) {
+      getLog().info("Reset repository " + repository.getLocalDirectory() + "...");
+      execGit(localVersionRepository, "remote set-url origin " + repository.getUri());
+      execGit(localVersionRepository, "remote update --prune");
+      execGit(localVersionRepository, "checkout --force " + repository.getBranch());
+      execGit(localVersionRepository, "reset --hard origin/" + repository.getBranch());
+    } else {
+      getLog().info("Creating working repository " + localVersionRepository + " ...");
+      execGit(getWorkingDir(), "clone --no-checkout --reference " + bareRepository.getAbsolutePath() + " " + repository.getUri() + " " + repository.getLocalDirectory());
+      execGit(localVersionRepository, "checkout --force " + repository.getBranch());
+    }
+    getLog().info("Done.");
+  }
+
+  private File prepareRepositoryCache(SourcesRepository repository) throws MojoExecutionException, MojoFailureException {
+    // Create or update the reference repository
+    File bareRepository = new File(getCacheDir(), repository.getName() + ".git");
+    if (bareRepository.exists()) {
+      getLog().info("Fetching repository " + repository.getName() + " ...");
+      execGit(bareRepository, "remote set-url origin " + repository.getUri());
+      execGit(bareRepository, "remote update --prune");
+      getLog().info("Done.");
+    } else {
+      getLog().info("Cloning repository " + repository.getName() + " ...");
+      execGit(getCacheDir(), "clone --bare " + repository.getUri() + " " + repository.getName() + ".git");
+      getLog().info("Done.");
+    }
+    return bareRepository;
+  }
+
+  private void execGit(File workingDirectory, String params) throws MojoExecutionException, MojoFailureException {
+    execGit(workingDirectory, params, element("successCode", "0"));
+  }
+
+  private void execGit(File workingDirectory, String params, Element... successCodes) throws MojoExecutionException, MojoFailureException {
+    getLog().info("Running : git " + params);
+    executeMojo(
+        plugin(
+            groupId("org.codehaus.mojo"),
+            artifactId("exec-maven-plugin"),
+            version("1.2.1")
+        ),
+        goal("exec"),
+        configuration(
+            element(name("executable"), "/bin/sh"),
+            element(name("commandlineArgs"), "-c \"(cd " + workingDirectory.getAbsolutePath() + " && exec git " + params + ")\""),
+            element(name("workingDirectory"), workingDirectory.getAbsolutePath()),
+            element(name("successCodes"), successCodes)
+        ),
+        executionEnvironment(
+            getProject(),
+            getMavenSession(),
+            getPluginManager()
+        )
+    );
+  }
+
+
+  private void applyTranslations(File _destFolder, String _zipFile, String locale) {
     try {
       byte[] buf = new byte[1024];
-      List<String> langs = Arrays.asList(getLangs().split(","));
       ZipInputStream zipinputstream = null;
       ZipEntry zipentry;
       zipinputstream = new ZipInputStream(new FileInputStream(_zipFile));
@@ -107,7 +261,7 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
         String fileName = "";
 
         // process only the languages specified
-        if (!(langs.contains("all") || langs.contains(lang))) {
+        if (!(lang.equalsIgnoreCase(locale))) {
           zipentry = zipinputstream.getNextEntry();
           continue;
         }
@@ -153,7 +307,7 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
             fileName = name + "_" + lang + extension;
           }
 
-          String parentDir = _destFolder + proj + "/" + value.substring(0, value.lastIndexOf(File.separatorChar) + 1);
+          String parentDir = _destFolder + File.separator + proj + File.separator + value.substring(0, value.lastIndexOf(File.separatorChar) + 1);
           parentDir = parentDir.replace('/', File.separatorChar).replace('\\', File.separatorChar);
           String entryName = parentDir + fileName;
           Type resourceBundleType = (key.indexOf("gadget") >= 0) ? Type.GADGET : Type.PORTLET;
@@ -205,14 +359,14 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
               //use shell script
               //ShellScriptUtils.execShellscript("scripts/per-file-processing.sh", masterFile);
               //use java
-              FileUtils.replaceCharactersInFile(masterFile, "config/special_character_processing.properties", "UpdateSourceSpecialCharacters");
+              org.exoplatform.crowdin.utils.FileUtils.replaceCharactersInFile(masterFile, "config/special_character_processing.properties", "UpdateSourceSpecialCharacters");
 
               if (new File(entryName).exists()) {
                 config.save(entryName);
                 //use shell script
                 //ShellScriptUtils.execShellscript("scripts/per-file-processing.sh", entryName);
                 //use java
-                FileUtils.replaceCharactersInFile(entryName, "config/special_character_processing.properties", "UpdateSourceSpecialCharacters");
+                org.exoplatform.crowdin.utils.FileUtils.replaceCharactersInFile(entryName, "config/special_character_processing.properties", "UpdateSourceSpecialCharacters");
 
               }
             } else {
@@ -221,7 +375,7 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
               //use shell script
               //ShellScriptUtils.execShellscript("scripts/per-file-processing.sh", entryName);
               //user java
-              FileUtils.replaceCharactersInFile(entryName, "config/special_character_processing.properties", "UpdateSourceSpecialCharacters");
+              org.exoplatform.crowdin.utils.FileUtils.replaceCharactersInFile(entryName, "config/special_character_processing.properties", "UpdateSourceSpecialCharacters");
 
             }
           }
@@ -238,5 +392,4 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
       getLog().error("Update aborted !", e);
     }
   }
-
 }

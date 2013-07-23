@@ -26,20 +26,24 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Matcher;
 
-
 import com.jayway.restassured.RestAssured;
+import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.BuildPluginManager;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.exoplatform.crowdin.model.CrowdinFile;
 import org.exoplatform.crowdin.model.CrowdinFileFactory;
 import org.exoplatform.crowdin.model.CrowdinTranslation;
+import org.exoplatform.crowdin.model.SourcesRepository;
 import org.exoplatform.crowdin.utils.CrowdinAPIHelper;
 
 /**
@@ -50,8 +54,20 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
   /**
    * The directory to start parsing from
    */
-  @Parameter(property = "startDir", defaultValue = ".")
-  private String startDir;
+  @Parameter(property = "workingDir", defaultValue = "${project.build.directory}/eXoProjects")
+  private File workingDir;
+
+  /**
+   * The directory to store the report
+   */
+  @Parameter(property = "reportDir", defaultValue = "${project.build.directory}/report")
+  private File reportDir;
+
+  /**
+   * The directory to cache repositories
+   */
+  @Parameter(property = "cacheDir", defaultValue = "${user.home}/.eXoProjectsCache")
+  private File cacheDir;
 
   /**
    * If true, no communication with Crowdin will be done; useful to test
@@ -70,7 +86,7 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
    * Languages of the translations to be processed, or "all" to process all languages
    */
   @Parameter(property = "langs", defaultValue = "all")
-  private String langs;
+  private List<String> languages;
 
   /**
    * Option to get only the approved translations or not
@@ -90,8 +106,17 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
   @Parameter(property = "exo.crowdin.ignore")
   private String ignore;
 
+  @Parameter
+  private List<SourcesRepository> sourcesRepositories;
+
   @Parameter(defaultValue = "${project}", readonly = true, required = true)
   private MavenProject project;
+
+  @Parameter(defaultValue = "${session}", readonly = true, required = true)
+  private MavenSession mavenSession;
+
+  @Component
+  private BuildPluginManager pluginManager;
 
   /**
    * The main properties file, that contains names of other properties
@@ -122,7 +147,7 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
       getLog().debug("*** RestAssured Port: " + RestAssured.port);
       getLog().debug("*** RestAssured Base Path: " + RestAssured.basePath);
       getLog().debug("*** RestAssured Request URI: " + RestAssured.baseURI + ":" + RestAssured.port + RestAssured.basePath);
-      getLog().debug("*** Current Working Directory: " + startDir);
+      getLog().debug("*** Current Working Directory: " + workingDir);
     }
     // Initialization of the properties
     mainProps = new Properties();
@@ -154,17 +179,9 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
       }
       throw new MojoExecutionException("Could not load the properties. Exception: " + e.getMessage());
     }
-    // Create the target/ directory
-
-    File target = new File(getProject().getBuild().getDirectory());
-    if (!target.exists()) target.mkdir();
-
-    // Create the report/ directory
-    File report = new File(getProject().getBasedir(),"report");
-    if (!report.exists()) report.mkdir();
 
     // Call to the abstract method, that must be overriden in each concrete mojo
-    executeMojo();
+    crowdInMojoExecute();
   }
 
   /**
@@ -188,14 +205,25 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
    * @throws MojoExecutionException
    * @throws MojoFailureException
    */
-  public abstract void executeMojo() throws MojoExecutionException, MojoFailureException;
+  public abstract void crowdInMojoExecute() throws MojoExecutionException, MojoFailureException;
 
   /*
    * Getters
    */
 
-  public String getStartDir() {
-    return startDir;
+  public File getWorkingDir() {
+    if (!workingDir.exists()) workingDir.mkdirs();
+    return workingDir;
+  }
+
+  public File getReportDir() {
+    if (!reportDir.exists()) reportDir.mkdirs();
+    return reportDir;
+  }
+
+  public File getCacheDir() {
+    if (!cacheDir.exists()) cacheDir.mkdirs();
+    return cacheDir;
   }
 
   public boolean isDryRun() {
@@ -227,8 +255,12 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
     return mainProps;
   }
 
-  public String getLangs() {
-    return langs;
+  public List<String> getLanguages() {
+    return languages;
+  }
+
+  public List<SourcesRepository> getSourcesRepositories() {
+    return sourcesRepositories;
   }
 
   public String getApplyApprovedOnlyOption() {
@@ -242,6 +274,14 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
    */
   public MavenProject getProject() {
     return project;
+  }
+
+  public MavenSession getMavenSession() {
+    return mavenSession;
+  }
+
+  public BuildPluginManager getPluginManager() {
+    return pluginManager;
   }
 
   /**
@@ -301,7 +341,7 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
           continue;
         }
         // Construct the full path to the file
-        String filePath = getStartDir() + proj + currentProj.getProperty(file.toString());
+        String filePath = getWorkingDir() + proj + currentProj.getProperty(file.toString());
         File f = new File(filePath);
         if (!f.exists()) {
           existed = false;
@@ -395,4 +435,5 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
     }
     return null;
   }
+
 }

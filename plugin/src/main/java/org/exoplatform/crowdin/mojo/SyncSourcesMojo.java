@@ -21,7 +21,6 @@ package org.exoplatform.crowdin.mojo;
 import java.util.Properties;
 import java.util.Set;
 
-
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -43,13 +42,13 @@ public class SyncSourcesMojo extends AbstractCrowdinMojo {
    * AbstractCrowdinMojo.
    */
   @Override
-  public void executeMojo() throws MojoExecutionException, MojoFailureException {
+  public void crowdInMojoExecute() throws MojoExecutionException, MojoFailureException {
     if (!isAllPropertyFilesExisted() && !isForce()) {
       getLog().info("\n\n\n");
       getLog().info("----------------------------------------------------------------------------------------\n\n"
-                        + "There are nonexistent properties files! Check again and update properties configuration files or run following command to "
-                        + "continue:\n mvn clean install -Psync -Dforce=true \n"
-                        + "Warning: All Crowdin files corresponding to nonexistent properties files will be deleted after execute above command.\n");
+          + "There are nonexistent properties files! Check again and update properties configuration files or run following command to "
+          + "continue:\n mvn clean install -Psync -Dforce=true \n"
+          + "Warning: All Crowdin files corresponding to nonexistent properties files will be deleted after execute above command.\n");
       getLog().info("----------------------------------------------------------------------------------------\n\n\n");
       return;
     }
@@ -67,7 +66,7 @@ public class SyncSourcesMojo extends AbstractCrowdinMojo {
         if (file.equals("baseDir"))
           continue;
         // Construct the full path to the file
-        String filePath = getStartDir() + proj + currentProj.getProperty(file.toString());
+        String filePath = getWorkingDir() + proj + currentProj.getProperty(file.toString());
         CrowdinFile master = getFactory().prepareCrowdinFile(filePath, file.toString(), baseDir);
         updateFile(master);
       }

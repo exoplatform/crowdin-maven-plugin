@@ -26,7 +26,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -42,7 +41,7 @@ public class UploadTranslationMojo extends AbstractCrowdinMojo {
   private HashMap<String, Properties> uploadTransProperties;
 
   @Override
-  public void executeMojo() throws MojoExecutionException, MojoFailureException {
+  public void crowdInMojoExecute() throws MojoExecutionException, MojoFailureException {
     // Initialization of the properties
     uploadTransMainProps = new Properties();
     uploadTransProperties = new HashMap<String, Properties>();
@@ -78,7 +77,7 @@ public class UploadTranslationMojo extends AbstractCrowdinMojo {
         // Skip the property baseDir
         if (key.equals("baseDir")) continue;
         // Construct the full path to the file
-        String filePath = getStartDir() + proj + currentProj.getProperty(key.toString());
+        String filePath = getWorkingDir() + proj + currentProj.getProperty(key.toString());
 
         Pattern p = Pattern.compile("^([a-zA-Z_0-9-/]*)_([a-z]{2})(_[A-Z]{2})?.([a-z]*)$");
         Matcher m = p.matcher(key.toString());

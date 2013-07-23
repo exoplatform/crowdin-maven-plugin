@@ -29,7 +29,6 @@ import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -43,17 +42,17 @@ public class RestoreTranslationMojo extends AbstractCrowdinMojo {
   private static String ZIP_DIR;
   private static String ZIP_FILE;
 
-  @Parameter(property="prepare",defaultValue="false")
+  @Parameter(property = "prepare", defaultValue = "false")
   private boolean isPrepare;
 
-  @Parameter(property="continue",defaultValue="false")
+  @Parameter(property = "continue", defaultValue = "false")
   private boolean isContinue;
 
-  @Parameter(property="action",defaultValue="uploadTranslations")
+  @Parameter(property = "action", defaultValue = "uploadTranslations")
   private String action;
 
   @Override
-  public void executeMojo() throws MojoExecutionException, MojoFailureException {
+  public void crowdInMojoExecute() throws MojoExecutionException, MojoFailureException {
     try {
       File zip = new File("crowdin-zip/all.zip");
       if (!zip.exists()) {

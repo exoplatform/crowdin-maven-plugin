@@ -18,14 +18,13 @@
  */
 package org.exoplatform.crowdin.test;
 
-import java.io.File;
-
-
 import org.codehaus.plexus.util.FileUtils;
 import org.exoplatform.crowdin.model.CrowdinFile;
 import org.exoplatform.crowdin.model.CrowdinFile.Type;
 import org.exoplatform.crowdin.utils.XMLToProps;
 import org.junit.Test;
+
+import java.io.File;
 
 import static org.junit.Assert.assertEquals;
 
