@@ -51,7 +51,7 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
 
   @Override
   public void executeMojo() throws MojoExecutionException, MojoFailureException {
-    File zip = new File(project.getBuild().getDirectory(), "all.zip");
+    File zip = new File(getProject().getBuild().getDirectory(), "all.zip");
     if (!zip.exists()) {
       try {
         getHelper().setApprovedOnlyOption();
@@ -64,7 +64,7 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
     }
     extractZip(getStartDir(), zip.getPath());
     //get the translations status
-    File status_trans = new File("report/translation_status.xml");
+    File status_trans = new File(getProject().getBasedir(),"report/translation_status.xml");
     BufferedWriter writer = null;
     try {
       writer = new BufferedWriter(new FileWriter(status_trans));

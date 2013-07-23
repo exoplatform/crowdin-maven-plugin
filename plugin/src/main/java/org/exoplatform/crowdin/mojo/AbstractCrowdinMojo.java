@@ -90,11 +90,8 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
   @Parameter(property = "exo.crowdin.ignore")
   private String ignore;
 
-  /**
-   * The Maven Project Object
-   */
   @Parameter(defaultValue = "${project}", readonly = true, required = true)
-  protected MavenProject project;
+  private MavenProject project;
 
   /**
    * The main properties file, that contains names of other properties
@@ -136,8 +133,8 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
       Set<Object> keys = mainProps.keySet();
       for (Object key : keys) {
         if (getLog().isDebugEnabled()) getLog().debug("*** Loading the properties file (" + mainProps.getProperty(key.toString()) + ")...");
-        getLog().debug("*** !!! " + project.getBasedir());
-        properties.put(key.toString(), loadProperties(new File(project.getBasedir(), mainProps.getProperty(key.toString())).getAbsolutePath()));
+        getLog().debug("*** !!! " + getProject().getBasedir());
+        properties.put(key.toString(), loadProperties(new File(getProject().getBasedir(), mainProps.getProperty(key.toString())).getAbsolutePath()));
       }
       keys = null;
 
@@ -159,11 +156,11 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
     }
     // Create the target/ directory
 
-    File target = new File(project.getBuild().getDirectory());
+    File target = new File(getProject().getBuild().getDirectory());
     if (!target.exists()) target.mkdir();
 
     // Create the report/ directory
-    File report = new File(project.getBasedir(),"report");
+    File report = new File(getProject().getBasedir(),"report");
     if (!report.exists()) report.mkdir();
 
     // Call to the abstract method, that must be overriden in each concrete mojo
@@ -238,6 +235,13 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
     if ("true".equals(apply_approved_only)) {
       return "1";
     } else return "0";
+  }
+
+  /**
+   * The Maven Project Object
+   */
+  public MavenProject getProject() {
+    return project;
   }
 
   /**
@@ -391,5 +395,4 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
     }
     return null;
   }
-
 }
