@@ -30,6 +30,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -66,6 +67,8 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
     getLog().info("Projects ready.");
     File zip = downloadCrowdInArchive();
     Date downloadDate = new Date();
+    //format 20130730-023900
+    SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd-HHmmss");
     //get the translations status
     File status_trans = new File(getProject().getBasedir(), "report/translation_status.xml");
     BufferedWriter writer = null;
@@ -114,8 +117,11 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
             execGit(localVersionRepository, "apply --ignore-whitespace " + patchFile.getAbsolutePath(), element("successCode", "0"), element("successCode", "1"));
             getLog().info("Done.");
             getLog().info("Commit changes for " + repository.getLocalDirectory() + "...");
-            // Commit changes
-            execGit(localVersionRepository, "commit -a -m 'Apply changes for locale " + language + " on " + repository.getName() + " (branch: " + repository.getBranch() + " ) from crowdin extract done on " + DateFormat.getInstance().format(downloadDate) + "'", element("successCode", "0"), element("successCode", "1"));
+            // Commit changes 7/31/13 4:03 PM
+//            execGit(localVersionRepository, "commit -a -m 'Apply changes for locale " + language + " on " + repository.getName() + " (branch: " + repository.getBranch() + " ) from crowdin extract done on " + DateFormat.getInstance().format(downloadDate) + "'", element("successCode", "0"), element("successCode", "1"));
+            //sv-SE injection on 20130730-023900
+            execGit(localVersionRepository, "commit -a -m ' " + language + " injection on " + format.format(downloadDate) + "'", element("successCode", "0"), element("successCode", "1"));
+
             getLog().info("Done.");
             // Push it
             if (!isDryRun()) {
