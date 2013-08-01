@@ -56,9 +56,9 @@ This will execute the plugin with the goal 'init':
 > > *There are nonexistent properties files! Check again and update properties configuration files or run following command to continue:*
 > >  **mvn clean install -Pinit -Dforce=true**
 
-**2\. Synchronization**
+**2\. Synchronization ( UPDATED VERSION )**
 
-**mvn clean install -Psync**
+**mvn install; mvn install -Psync**
 
 This will execute the plugin with the goal 'sync':
 
@@ -81,20 +81,17 @@ This will execute the plugin with the goal 'sync':
 *We can rely on above message to know if there are some master files renamed in source code. In this case, we need update manually these
 master files by content and translations from Crowdin before do a synchronization again with* **-Dforce=true**
 
-**3\. Updating**
+**3\. Updating ( UPDATED VERSION )**
 
-**mvn [clean] install -Pupdate [-Dlangs=<all | en,fr,it,...>] [-Dapply_approved_only=<true|false>]**
+**mvn install; mvn [clean] install -Pupdate [-Dlangs=<all | en,fr,it,...>] **
+
+2 options to update languages: by -Dlangs OR by /translation/pom.xml add in <language></language> tag
 
 This will execute the plugin with the goal 'update':
 
--- export and download all translations
-
--- create "Crowdin" branches in source code if they were not existing or update them with latest changes from stable branch
-
--- inject the translations of the specified languages into the code. The languages are defined via the 'langs' parameter.
-
-
-**Note: We need commit manually "Crowdin" branches and push them to github repository**
+- Clone all projects to ~/.eXoProjectCached
+- Download crowdin translation packaging (all.zip) in /translation/target/
+- Create patches files and apply to /feature/4.0.x-translation branch with commit
 
 **4\. Upload Translation**
 
