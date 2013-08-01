@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
@@ -108,7 +109,7 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
   private String ignore;
 
   @Parameter
-  private List<SourcesRepository> sourcesRepositories;
+  private List<SourcesRepository> sourcesRepositories = new ArrayList<SourcesRepository>();
 
   @Parameter(defaultValue = "${project}", readonly = true, required = true)
   private MavenProject project;
