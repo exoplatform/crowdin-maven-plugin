@@ -21,18 +21,12 @@ package org.exoplatform.crowdin.mojo;
 import static org.twdata.maven.mojoexecutor.MojoExecutor.element;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
@@ -50,34 +44,16 @@ import org.exoplatform.crowdin.model.SourcesRepository;
 import org.exoplatform.crowdin.utils.PropsToXML;
 
 /**
- * @author Philippe Aristote
+ * Update projects sources from crowdin translations
  */
 @Mojo(name = "update-sources")
 public class UpdateSourcesMojo extends AbstractCrowdinMojo {
 
   @Override
   public void crowdInMojoExecute() throws MojoExecutionException, MojoFailureException {
-    File zip = downloadCrowdInArchive();
-    Date downloadDate = new Date();
-    //format 20130730-023900
-    SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd-HHmmss");
-    //get the translations status
-    File status_trans = new File(getProject().getBasedir(), "report/translation_status.xml");
-    BufferedWriter writer = null;
-    try {
-      writer = new BufferedWriter(new FileWriter(status_trans));
-      writer.write(getHelper().getTranslationStatus());
-    } catch (IOException e) {
-    } finally {
-      try {
-        if (writer != null)
-          writer.close();
-      } catch (IOException e) {
-      }
-    }
     List<String> languagesToProcess = new ArrayList<String>();
     if (getLanguages().contains("all")) {
-      languagesToProcess = getLanguagesListFromCrowdInArchive(zip);
+      languagesToProcess = getLanguagesListFromCrowdInArchive(crowdInArchive);
     } else {
       languagesToProcess = getLanguages();
     }
@@ -85,7 +61,7 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
       getLog().info("------------------------------------------------------------------------");
       getLog().info("Updates for locale " + language);
       getLog().info("------------------------------------------------------------------------");
-      applyTranslations(getWorkingDir(), zip.getPath(), language);
+      applyTranslations(getWorkingDir(), crowdInArchive.getPath(), language);
       for (SourcesRepository repository : getSourcesRepositories()) {
         try {
           File localVersionRepository = new File(getWorkingDir(), repository.getLocalDirectory());
@@ -102,14 +78,14 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
           getLog().info("Done.");
           BufferedReader br = new BufferedReader(new FileReader(patchFile));
           if (br.readLine() == null) {
-            getLog().info("No change for locale " + language + " from crowdin extract done on " + DateFormat.getInstance().format(downloadDate));
+            getLog().info("No change for locale " + language + " from crowdin extract done on " + getCrowdinDownloadDate());
           } else {
             // Apply the patch
             getLog().info("Apply patch(s) for " + repository.getLocalDirectory() + "...");
             execGit(localVersionRepository, "apply --ignore-whitespace " + patchFile.getAbsolutePath(), element("successCode", "0"), element("successCode", "1"));
             getLog().info("Done.");
             getLog().info("Commit changes for " + repository.getLocalDirectory() + "...");
-            execGit(localVersionRepository, "commit -a -m '" + language + " injection on " + format.format(downloadDate) + "'", element("successCode", "0"), element("successCode", "1"));
+            execGit(localVersionRepository, "commit -a -m '" + language + " injection on " + getCrowdinDownloadDate() + "'", element("successCode", "0"), element("successCode", "1"));
             getLog().info("Done.");
             // Push it
             if (!isDryRun()) {
@@ -151,21 +127,6 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
       getLog().error("Update aborted !", e);
     }
     return languagesToProcess;
-  }
-
-  private File downloadCrowdInArchive() {
-    File zip = new File(getProject().getBuild().getDirectory(), "all.zip");
-    if (!zip.exists() || !isDryRun()) {
-      try {
-        getHelper().setApprovedOnlyOption();
-        getLog().info("Downloading Crowdin translation zip...");
-        getHelper().downloadTranslations(zip);
-        getLog().info("Downloading done!");
-      } catch (Exception e) {
-        getLog().error("Error downloading the translations from Crowdin. Exception:\n" + e.getMessage());
-      }
-    }
-    return zip;
   }
 
   private void applyTranslations(File _destFolder, String _zipFile, String locale) {

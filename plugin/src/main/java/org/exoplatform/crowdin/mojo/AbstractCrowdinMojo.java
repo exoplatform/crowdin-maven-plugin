@@ -55,6 +55,10 @@ import org.twdata.maven.mojoexecutor.MojoExecutor;
  */
 public abstract class AbstractCrowdinMojo extends AbstractMojo {
 
+  public static final String DOWNLOAD_DATE_PROPERTY = "downloadDate";
+  protected File crowdInArchive;
+  protected File crowdInArchiveProperties;
+  protected File translationStatusReport;
   /**
    * The directory to start parsing from
    */
@@ -141,6 +145,7 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
 
   private CrowdinFileFactory factory;
   private CrowdinAPIHelper helper;
+  private String downloadDate = null;
 
   public void execute() throws MojoExecutionException, MojoFailureException {
     // Initialization of the CrowdinFileFactory and CrowdinAPIHelper
@@ -184,6 +189,11 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
       }
       throw new MojoExecutionException("Could not load the properties. Exception: " + e.getMessage());
     }
+    File buildDir = new File(getProject().getBuild().getDirectory());
+    buildDir.mkdirs();
+    crowdInArchive = new File(buildDir, "translations.zip");
+    crowdInArchiveProperties = new File(buildDir, "translations.properties");
+    translationStatusReport = new File(buildDir, "translations_status.xml");
 
     // Call to the abstract method, that must be overriden in each concrete mojo
     crowdInMojoExecute();
@@ -466,5 +476,14 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
             getPluginManager()
         )
     );
+  }
+
+  protected String getCrowdinDownloadDate() throws IOException {
+    if (downloadDate == null) {
+      Properties downloadProperties = new Properties();
+      downloadProperties.load(new FileInputStream(crowdInArchiveProperties));
+      downloadDate = downloadProperties.getProperty(DOWNLOAD_DATE_PROPERTY);
+    }
+    return downloadDate;
   }
 }

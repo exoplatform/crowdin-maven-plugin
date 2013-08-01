@@ -255,36 +255,6 @@
       <id>update</id>
       <build>
         <plugins>
-          <!--
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>exec-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>update</id>
-                <phase>package</phase>
-                <goals>
-                  <goal>exec</goal>
-                </goals>
-                <configuration>
-                  <executable>${project.basedir}/src/scripts/update.sh</executable>
-                  <workingDirectory>${project.basedir}/eXoProjects/</workingDirectory>
-                </configuration>
-              </execution>
-              <execution>
-                <id>post-process</id>
-                <phase>package</phase>
-                <goals>
-                  <goal>exec</goal>
-                </goals>
-                <configuration>
-                  <executable>${project.basedir}/src/scripts/post-process.sh</executable>
-                  <workingDirectory>${project.basedir}/eXoProjects/</workingDirectory>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-          -->
           <plugin>
             <groupId>org.exoplatform.crowdin</groupId>
             <artifactId>crowdin-maven-plugin</artifactId>
@@ -295,6 +265,13 @@
                 <phase>initialize</phase>
                 <goals>
                   <goal>initialize</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>download-translations</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>download-translations</goal>
                 </goals>
               </execution>
               <execution>
@@ -378,6 +355,31 @@
                 <phase>compile</phase>
                 <goals>
                   <goal>restore-translation</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <!--
+    Profile download-translations does
+    * download-translations mojo
+    -->
+    <profile>
+      <id>download-translations</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.exoplatform.crowdin</groupId>
+            <artifactId>crowdin-maven-plugin</artifactId>
+            <version>${project.version}</version>
+            <executions>
+              <execution>
+                <id>download-translations</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>download-translations</goal>
                 </goals>
               </execution>
             </executions>
