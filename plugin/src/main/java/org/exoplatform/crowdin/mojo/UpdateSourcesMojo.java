@@ -189,6 +189,8 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
       getLog().info("Creating working repository " + localVersionRepository + " ...");
       execGit(getWorkingDir(), "clone --no-checkout --reference " + bareRepository.getAbsolutePath() + " " + repository.getUri() + " " + repository.getLocalDirectory());
       execGit(localVersionRepository, "checkout --force " + repository.getBranch());
+      execGit(localVersionRepository, "config user.name \"CrowdIn\"");
+      execGit(localVersionRepository, "config user.email \"noreply+crowdin@exoplatform.com\"");
     }
     getLog().info("Done.");
   }
