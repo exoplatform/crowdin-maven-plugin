@@ -224,7 +224,7 @@
     * init-crowdin mojo
     -->
     <profile>
-      <id>init</id>
+      <id>init-crowdin</id>
       <build>
         <plugins>
           <plugin>

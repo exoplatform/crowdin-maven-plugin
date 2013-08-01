@@ -18,6 +18,7 @@
  */
 package org.exoplatform.crowdin.mojo;
 
+import java.io.File;
 import java.util.Properties;
 import java.util.Set;
 
@@ -58,7 +59,7 @@ public class InitCrowdinMojo extends AbstractCrowdinMojo {
         // Skip the property baseDir
         if (file.equals("baseDir")) continue;
         // Construct the full path to the file
-        String filePath = getWorkingDir() + proj + currentProj.getProperty(file.toString());
+        String filePath = getWorkingDir() + File.separator + proj +File.separator + currentProj.getProperty(file.toString());
         CrowdinFile master = getFactory().prepareCrowdinFile(filePath, file.toString(), baseDir);
         if (master.getFile().exists()) {
           boolean initialized = initFile(master);
