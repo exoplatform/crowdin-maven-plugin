@@ -187,6 +187,39 @@
       </build>
     </profile>
     <!--
+    Profile update-crowdin does
+    * initialize mojo
+    * update-crowdin mojo
+    -->
+    <profile>
+      <id>update-crowdin</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.exoplatform.crowdin</groupId>
+            <artifactId>crowdin-maven-plugin</artifactId>
+            <version>${project.version}</version>
+            <executions>
+              <execution>
+                <id>initialize</id>
+                <phase>initialize</phase>
+                <goals>
+                  <goal>initialize</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>update-crowdin</id>
+                <phase>compile</phase>
+                <goals>
+                  <goal>update-crowdin</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <!--
     Profile init does
     * initialize mojo
     * init-crowdin mojo
@@ -212,39 +245,6 @@
                 <phase>compile</phase>
                 <goals>
                   <goal>init-crowdin</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    <!--
-    Profile sync does
-    * initialize mojo
-    * sync-sources mojo
-    -->
-    <profile>
-      <id>sync</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.exoplatform.crowdin</groupId>
-            <artifactId>crowdin-maven-plugin</artifactId>
-            <version>${project.version}</version>
-            <executions>
-              <execution>
-                <id>initialize</id>
-                <phase>initialize</phase>
-                <goals>
-                  <goal>initialize</goal>
-                </goals>
-              </execution>
-              <execution>
-                <id>sync</id>
-                <phase>compile</phase>
-                <goals>
-                  <goal>sync-sources</goal>
                 </goals>
               </execution>
             </executions>

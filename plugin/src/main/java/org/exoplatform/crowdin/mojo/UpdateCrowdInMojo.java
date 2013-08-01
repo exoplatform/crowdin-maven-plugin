@@ -34,8 +34,8 @@ import org.exoplatform.crowdin.utils.FileUtils;
  * May 4, 2012
  */
 
-@Mojo(name = "sync-sources")
-public class SyncSourcesMojo extends AbstractCrowdinMojo {
+@Mojo(name = "update-crowdin")
+public class UpdateCrowdInMojo extends AbstractCrowdinMojo {
 
   /**
    * Entry point of the goal. AbstractMojo.execute() is actually overridden in
