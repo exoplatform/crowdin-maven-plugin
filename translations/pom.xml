@@ -256,7 +256,7 @@
     </profile>
     <!--
     Profile update does
-    * update mojo
+    * update-sources mojo
     -->
     <profile>
       <id>update</id>
@@ -312,7 +312,7 @@
                 <id>update</id>
                 <phase>compile</phase>
                 <goals>
-                  <goal>update</goal>
+                  <goal>update-sources</goal>
                 </goals>
               </execution>
             </executions>

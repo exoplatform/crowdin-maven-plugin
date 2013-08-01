@@ -52,7 +52,7 @@ import org.exoplatform.crowdin.utils.PropsToXML;
 /**
  * @author Philippe Aristote
  */
-@Mojo(name = "update")
+@Mojo(name = "update-sources")
 public class UpdateSourcesMojo extends AbstractCrowdinMojo {
 
   @Override
