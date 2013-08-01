@@ -190,7 +190,7 @@
     <!--
     Profile sync does
     * init-prepare script
-    * sync mojo
+    * sync-sources mojo
     * post-process script
     * reset-local script
     -->
@@ -246,7 +246,7 @@
                 <id>sync</id>
                 <phase>compile</phase>
                 <goals>
-                  <goal>sync</goal>
+                  <goal>sync-sources</goal>
                 </goals>
               </execution>
             </executions>

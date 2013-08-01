@@ -34,7 +34,7 @@ import org.exoplatform.crowdin.utils.FileUtils;
  * May 4, 2012
  */
 
-@Mojo(name = "sync")
+@Mojo(name = "sync-sources")
 public class SyncSourcesMojo extends AbstractCrowdinMojo {
 
   /**
