@@ -58,9 +58,7 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
       languagesToProcess = getLanguages();
     }
     for (String language : languagesToProcess) {
-      getLog().info("------------------------------------------------------------------------");
       getLog().info("Updates for locale " + language);
-      getLog().info("------------------------------------------------------------------------");
       applyTranslations(getWorkingDir(), crowdInArchive.getPath(), language);
       for (SourcesRepository repository : getSourcesRepositories()) {
         try {
