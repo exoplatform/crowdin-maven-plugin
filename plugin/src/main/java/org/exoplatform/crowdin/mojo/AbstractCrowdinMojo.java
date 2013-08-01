@@ -66,12 +66,6 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
   private File workingDir;
 
   /**
-   * The directory to store the report
-   */
-  @Parameter(property = "reportDir", defaultValue = "${project.build.directory}/report")
-  private File reportDir;
-
-  /**
    * The directory to cache repositories
    */
   @Parameter(property = "cacheDir", defaultValue = "${user.home}/.eXoProjectsCache")
@@ -229,11 +223,6 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
   public File getWorkingDir() {
     if (!workingDir.exists()) workingDir.mkdirs();
     return workingDir;
-  }
-
-  public File getReportDir() {
-    if (!reportDir.exists()) reportDir.mkdirs();
-    return reportDir;
   }
 
   public File getCacheDir() {
