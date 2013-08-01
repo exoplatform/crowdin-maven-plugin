@@ -30,7 +30,7 @@ import org.exoplatform.crowdin.utils.FileUtils;
 /**
  * @author Philippe Aristote
  */
-@Mojo(name = "init")
+@Mojo(name = "init-crowdin")
 public class InitCrowdinMojo extends AbstractCrowdinMojo {
 
   /**
