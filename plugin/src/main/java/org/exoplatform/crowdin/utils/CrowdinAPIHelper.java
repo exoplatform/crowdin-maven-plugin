@@ -59,9 +59,9 @@ public class CrowdinAPIHelper {
       currentMojo.getLog().info("Adding directory '" + _dirName + "' in Dry Run mode...");
       if (currentMojo.getLog().isDebugEnabled())
         currentMojo.getLog().debug("*** Real mode would execute:\n" +
-                                       "given()." +
-                                       "multiPart(\"name\", " + _dirName + ")." +
-                                       "post(\"/add-directory?key=" + projectKey + ").andReturn().asString();");
+            "given()." +
+            "multiPart(\"name\", " + _dirName + ")." +
+            "post(\"/add-directory?key=" + projectKey + ").andReturn().asString();");
       return "<dryRun success/>";
     }
     return given().
@@ -82,10 +82,10 @@ public class CrowdinAPIHelper {
       currentMojo.getLog().info("Adding file '" + _file.getFile().getName() + "' in Dry Run mode...");
       if (currentMojo.getLog().isDebugEnabled())
         currentMojo.getLog().debug("*** Real mode would execute:\n" +
-                                       "given()." +
-                                       "multiPart(\"type\", " + _file.getType() + ")." +
-                                       "multiPart(\"files[\"" + _file.getCrowdinPath() + "\"]\", " + _file.getFile().getName() + ")." +
-                                       "post(\"/add-file?key=" + projectKey + ").andReturn().asString();");
+            "given()." +
+            "multiPart(\"type\", " + _file.getType() + ")." +
+            "multiPart(\"files[\"" + _file.getCrowdinPath() + "\"]\", " + _file.getFile().getName() + ")." +
+            "post(\"/add-file?key=" + projectKey + ").andReturn().asString();");
       return "<dryRun success/>";
     }
     return given().
@@ -106,9 +106,9 @@ public class CrowdinAPIHelper {
       currentMojo.getLog().info("Deleting file '" + _file.getFile().getName() + "' in Dry Run mode...");
       if (currentMojo.getLog().isDebugEnabled())
         currentMojo.getLog().debug("*** Real mode would execute:\n" +
-                                       "given()." +
-                                       "multiPart(\"file\", " + _file.getCrowdinPath() + ")." +
-                                       "post(\"/delete-file?key=" + projectKey + ").andReturn().asString();");
+            "given()." +
+            "multiPart(\"file\", " + _file.getCrowdinPath() + ")." +
+            "post(\"/delete-file?key=" + projectKey + ").andReturn().asString();");
       return "<dryRun success/>";
     }
     return given().
@@ -149,9 +149,9 @@ public class CrowdinAPIHelper {
       currentMojo.getLog().info("Updating file '" + _file.getFile().getName() + "' in Dry Run mode...");
       if (currentMojo.getLog().isDebugEnabled())
         currentMojo.getLog().debug("*** Real mode would execute:\n" +
-                                       "given()." +
-                                       "multiPart(\"files[\"" + _file.getCrowdinPath() + "\"]\", " + _file.getFile().getName() + ")." +
-                                       "post(\"/update-file?key=" + projectKey + ").andReturn().asString();");
+            "given()." +
+            "multiPart(\"files[\"" + _file.getCrowdinPath() + "\"]\", " + _file.getFile().getName() + ")." +
+            "post(\"/update-file?key=" + projectKey + ").andReturn().asString();");
       return "<dryRun success/>";
     }
     return given().
@@ -172,10 +172,10 @@ public class CrowdinAPIHelper {
       currentMojo.getLog().info("Uploading translation '" + _file.getFile().getName() + "' in Dry Run mode...");
       if (currentMojo.getLog().isDebugEnabled())
         currentMojo.getLog().debug("*** Real mode would execute:\n" +
-                                       "given()." +
-                                       "multiPart(\"language\", " + _file.getLang() + ")." +
-                                       "multiPart(\"files[\"" + _file.getMaster().getCrowdinPath() + "\"]\", " + _file.getFile().getName() + ")." +
-                                       "post(\"/upload-translation?key=" + projectKey + ").andReturn().asString();");
+            "given()." +
+            "multiPart(\"language\", " + _file.getLang() + ")." +
+            "multiPart(\"files[\"" + _file.getMaster().getCrowdinPath() + "\"]\", " + _file.getFile().getName() + ")." +
+            "post(\"/upload-translation?key=" + projectKey + ").andReturn().asString();");
       return "<dryRun success/>";
     }
     return given().

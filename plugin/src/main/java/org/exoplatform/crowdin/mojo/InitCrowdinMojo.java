@@ -41,8 +41,8 @@ public class InitCrowdinMojo extends AbstractCrowdinMojo {
     if (!isAllPropertyFilesExisted() && !isForce()) {
       getLog().info("\n\n\n");
       getLog().info("----------------------------------------------------------------------------------------\n\n"
-                        + "There are nonexistent properties files! Check again and update properties configuration files or run following command to "
-                        + "continue:\n mvn clean install -Pinit -Dforce=true\n");
+          + "There are nonexistent properties files! Check again and update properties configuration files or run following command to "
+          + "continue:\n mvn clean install -Pinit -Dforce=true\n");
       getLog().info("----------------------------------------------------------------------------------------\n\n\n");
       return;
     }
