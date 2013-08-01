@@ -122,7 +122,7 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
             // Push it
             if (!isDryRun()) {
               getLog().info("Pushing changes for " + repository.getLocalDirectory() + "...");
-              //execGit(localVersionRepository,"push origin "+repository.getBranch());
+              execGit(localVersionRepository,"push origin "+repository.getBranch());
               getLog().info("Done.");
             }
           }
