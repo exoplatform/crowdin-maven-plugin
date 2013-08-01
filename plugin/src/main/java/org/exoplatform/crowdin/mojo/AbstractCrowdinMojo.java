@@ -56,6 +56,7 @@ import org.twdata.maven.mojoexecutor.MojoExecutor;
 public abstract class AbstractCrowdinMojo extends AbstractMojo {
 
   public static final String DOWNLOAD_DATE_PROPERTY = "downloadDate";
+  public static final String SRC_CONFIG = "src/config/";
   protected File crowdInArchive;
   protected File crowdInArchiveProperties;
   protected File translationStatusReport;
@@ -87,7 +88,7 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
   /**
    * Languages of the translations to be processed, or "all" to process all languages
    */
-//  @Parameter(property = "langs", defaultValue = "all")
+  //  @Parameter(property = "langs", defaultValue = "all")
   @Parameter(property = "langs")
   private List<String> languages;
 
@@ -102,9 +103,6 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
 
   @Parameter(property = "exo.crowdin.project.key", required = true)
   private String projectKey;
-
-  @Parameter(property = "exo.crowdin.properties", required = true)
-  private String propertiesFile;
 
   @Parameter(property = "exo.crowdin.ignore")
   private String ignore;
@@ -121,10 +119,6 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
   @Component
   private BuildPluginManager pluginManager;
 
-  /**
-   * The main properties file, that contains names of other properties
-   */
-  private Properties mainProps;
   /**
    * The list of properties files that contain pointers to each file to manage with Crowdin <br/>
    * Format:  project-name-version <=> path/to/file.properties <br/>
@@ -154,18 +148,13 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
       getLog().debug("*** Current Working Directory: " + workingDir);
     }
     // Initialization of the properties
-    mainProps = new Properties();
     properties = new HashMap<String, Properties>();
     try {
-      if (getLog().isDebugEnabled()) getLog().debug("*** Loading the main properties file (" + propertiesFile + ")...");
-      mainProps = loadProperties(propertiesFile);
-      Set<Object> keys = mainProps.keySet();
-      for (Object key : keys) {
-        if (getLog().isDebugEnabled()) getLog().debug("*** Loading the properties file (" + mainProps.getProperty(key.toString()) + ")...");
-        getLog().debug("*** !!! " + getProject().getBasedir());
-        properties.put(key.toString(), loadProperties(new File(getProject().getBasedir(), mainProps.getProperty(key.toString())).getAbsolutePath()));
+      for (SourcesRepository repository : getSourcesRepositories()) {
+        if (getLog().isDebugEnabled())
+          getLog().debug("*** Loading the properties file (" + SRC_CONFIG + repository.getLocalDirectory() + ".properties)...");
+        properties.put(repository.getLocalDirectory(), loadProperties(new File(getProject().getBasedir(), SRC_CONFIG + repository.getLocalDirectory() + ".properties").getAbsolutePath()));
       }
-      keys = null;
 
       if (ignore != null) {
         if (getLog().isDebugEnabled()) {
@@ -221,12 +210,14 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
    */
 
   public File getWorkingDir() {
-    if (!workingDir.exists()) workingDir.mkdirs();
+    if (!workingDir.exists())
+      workingDir.mkdirs();
     return workingDir;
   }
 
   public File getCacheDir() {
-    if (!cacheDir.exists()) cacheDir.mkdirs();
+    if (!cacheDir.exists())
+      cacheDir.mkdirs();
     return cacheDir;
   }
 
@@ -254,11 +245,6 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
     return projectKey;
   }
 
-
-  public Properties getMainProperties() {
-    return mainProps;
-  }
-
   public List<String> getLanguages() {
     return languages;
   }
@@ -270,7 +256,8 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
   public String getApplyApprovedOnlyOption() {
     if ("true".equals(apply_approved_only)) {
       return "1";
-    } else return "0";
+    } else
+      return "0";
   }
 
   /**
@@ -345,7 +332,7 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
           continue;
         }
         // Construct the full path to the file
-        String filePath = getWorkingDir() + proj + currentProj.getProperty(file.toString());
+        String filePath = getWorkingDir() + File.separator + proj + File.separator + currentProj.getProperty(file.toString());
         File f = new File(filePath);
         if (!f.exists()) {
           existed = false;
@@ -378,8 +365,7 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
           return false;
         }
         if (dir.getPath().contains("web/portal")) {
-          if (name.equals("expression_en.xml") || name.equals("expression_it.xml") || name.equals("services_en.xml")
-              || name.equals("services_it.xml"))
+          if (name.equals("expression_en.xml") || name.equals("expression_it.xml") || name.equals("services_en.xml") || name.equals("services_it.xml"))
             return false;
         }
         if (ignoredFiles != null) {
@@ -404,11 +390,12 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
       }
       String tName = transName.substring(0, transName.lastIndexOf('.'));
       String mName = masterFileName.substring(0, masterFileName.lastIndexOf('.'));
-      if (!tName.equalsIgnoreCase(mName)
-          && (transName.indexOf(masterName) == 0 && transName.indexOf(masterName + "-") < 0 || file.getPath().contains("gadget"))) {
-        if (getLog().isDebugEnabled()) getLog().debug("*** Initializing: " + transName);
+      if (!tName.equalsIgnoreCase(mName) && (transName.indexOf(masterName) == 0 && transName.indexOf(masterName + "-") < 0 || file.getPath().contains("gadget"))) {
+        if (getLog().isDebugEnabled())
+          getLog().debug("*** Initializing: " + transName);
         try {
-          if (getLog().isDebugEnabled()) getLog().debug("*** Upload translation: " + transName + "\n\t***** for master: " + _master.getName());
+          if (getLog().isDebugEnabled())
+            getLog().debug("*** Upload translation: " + transName + "\n\t***** for master: " + _master.getName());
           CrowdinTranslation cTran = getFactory().prepareCrowdinTranslation(_master, file);
           if (getLog().isDebugEnabled()) {
             getLog().debug("=============================================================================");
@@ -416,8 +403,10 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
             getLog().debug("=============================================================================");
           }
           String result = getHelper().uploadTranslation(cTran);
-          if (result.contains("success")) getLog().info("Translation '" + transName + "' added succesfully.");
-          else getLog().warn("Cannot upload translation '" + file.getPath() + " with lang '" + cTran.getLang() + "'. Reason:\n" + result);
+          if (result.contains("success"))
+            getLog().info("Translation '" + transName + "' added succesfully.");
+          else
+            getLog().warn("Cannot upload translation '" + file.getPath() + " with lang '" + cTran.getLang() + "'. Reason:\n" + result);
           if (cTran.isShouldBeCleaned()) {
             cTran.getFile().delete();
           }
@@ -446,25 +435,7 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
 
   protected void execGit(File workingDirectory, String params, MojoExecutor.Element... successCodes) throws MojoExecutionException, MojoFailureException {
     getLog().info("Running : git " + params);
-    executeMojo(
-        plugin(
-            groupId("org.codehaus.mojo"),
-            artifactId("exec-maven-plugin"),
-            version("1.2.1")
-        ),
-        goal("exec"),
-        configuration(
-            element(name("executable"), "/bin/sh"),
-            element(name("commandlineArgs"), "-c \"(cd " + workingDirectory.getAbsolutePath() + " && exec git " + params + ")\""),
-            element(name("workingDirectory"), workingDirectory.getAbsolutePath()),
-            element(name("successCodes"), successCodes)
-        ),
-        executionEnvironment(
-            getProject(),
-            getMavenSession(),
-            getPluginManager()
-        )
-    );
+    executeMojo(plugin(groupId("org.codehaus.mojo"), artifactId("exec-maven-plugin"), version("1.2.1")), goal("exec"), configuration(element(name("executable"), "/bin/sh"), element(name("commandlineArgs"), "-c \"(cd " + workingDirectory.getAbsolutePath() + " && exec git " + params + ")\""), element(name("workingDirectory"), workingDirectory.getAbsolutePath()), element(name("successCodes"), successCodes)), executionEnvironment(getProject(), getMavenSession(), getPluginManager()));
   }
 
   protected String getCrowdinDownloadDate() throws IOException {

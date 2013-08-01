@@ -30,7 +30,6 @@
   <packaging>pom</packaging>
   <name>eXo Platform Translations</name>
   <properties>
-    <exo.crowdin.properties>${project.basedir}/src/config/crowdin.properties</exo.crowdin.properties>
     <!-- exo.crowdin.project.id and exo.crowdin.project.key are set in settings.xml -->
     <!--exo.crowdin.upload-translation.properties>upload-translation/upload-translation.properties</exo.crowdin.upload-translation.properties-->
   </properties>
