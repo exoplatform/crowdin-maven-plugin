@@ -35,15 +35,18 @@ package org.exoplatform.crowdin.utils;
  * along with this program; if not, see<http://www.gnu.org/licenses/>.
  */
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import org.exoplatform.crowdin.model.CrowdinFile.Type;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -73,9 +76,12 @@ public class XMLToProps {
     collect(new LinkedList<String>(), bundleElt, bundle, type);
 
     String outputFile = inputFilePath.replaceAll("\\.xml", ".properties");
-    FileOutputStream fos = new FileOutputStream(outputFile, false);
-    fos.write(bundle.toString().getBytes());
-    fos.close();
+    // We manage our properties files in UTF-8 :(
+    Writer out = new BufferedWriter(new OutputStreamWriter(
+        new FileOutputStream(outputFile), "UTF-8"));
+    out.append(bundle.toString());
+    out.flush();
+    out.close();
     return true;
   }
 
