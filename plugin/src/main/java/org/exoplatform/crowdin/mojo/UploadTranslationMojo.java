@@ -77,7 +77,7 @@ public class UploadTranslationMojo extends AbstractCrowdinMojo {
         // Skip the property baseDir
         if (key.equals("baseDir")) continue;
         // Construct the full path to the file
-        String filePath = getWorkingDir() + proj + currentProj.getProperty(key.toString());
+        String filePath = getWorkingDir() + File.separator + proj + File.separator + currentProj.getProperty(key.toString());
 
         Pattern p = Pattern.compile("^([a-zA-Z_0-9-/]*)_([a-z]{2})(_[A-Z]{2})?.([a-z]*)$");
         Matcher m = p.matcher(key.toString());
