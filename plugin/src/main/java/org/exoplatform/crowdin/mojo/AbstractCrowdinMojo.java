@@ -85,7 +85,8 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
   /**
    * Languages of the translations to be processed, or "all" to process all languages
    */
-  @Parameter(property = "langs", defaultValue = "all")
+//  @Parameter(property = "langs", defaultValue = "all")
+  @Parameter
   private List<String> languages;
 
   /**
