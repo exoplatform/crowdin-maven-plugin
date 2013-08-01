@@ -121,6 +121,72 @@
       </build>
     </profile>
     <!--
+    Profile download-translations does
+    * download-translations mojo
+    -->
+    <profile>
+      <id>download-translations</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.exoplatform.crowdin</groupId>
+            <artifactId>crowdin-maven-plugin</artifactId>
+            <version>${project.version}</version>
+            <executions>
+              <execution>
+                <id>download-translations</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>download-translations</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <!--
+    Profile update does
+    * initialize mojo
+    * download-translations mojo
+    * update-sources mojo
+    -->
+    <profile>
+      <id>update-sources</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.exoplatform.crowdin</groupId>
+            <artifactId>crowdin-maven-plugin</artifactId>
+            <version>${project.version}</version>
+            <executions>
+              <execution>
+                <id>initialize</id>
+                <phase>initialize</phase>
+                <goals>
+                  <goal>initialize</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>download-translations</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>download-translations</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>update</id>
+                <phase>compile</phase>
+                <goals>
+                  <goal>update-sources</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <!--
     Profile init does
     * initialize mojo
     * init-crowdin mojo
@@ -247,46 +313,6 @@
       </build>
     </profile>
     <!--
-    Profile update does
-    * initialize mojo
-    * update-sources mojo
-    -->
-    <profile>
-      <id>update</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.exoplatform.crowdin</groupId>
-            <artifactId>crowdin-maven-plugin</artifactId>
-            <version>${project.version}</version>
-            <executions>
-              <execution>
-                <id>initialize</id>
-                <phase>initialize</phase>
-                <goals>
-                  <goal>initialize</goal>
-                </goals>
-              </execution>
-              <execution>
-                <id>download-translations</id>
-                <phase>generate-resources</phase>
-                <goals>
-                  <goal>download-translations</goal>
-                </goals>
-              </execution>
-              <execution>
-                <id>update</id>
-                <phase>compile</phase>
-                <goals>
-                  <goal>update-sources</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    <!--
     Profile upload-translation does
     * initialize mojo
     * upload-translation mojo
@@ -355,31 +381,6 @@
                 <phase>compile</phase>
                 <goals>
                   <goal>restore-translation</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    <!--
-    Profile download-translations does
-    * download-translations mojo
-    -->
-    <profile>
-      <id>download-translations</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.exoplatform.crowdin</groupId>
-            <artifactId>crowdin-maven-plugin</artifactId>
-            <version>${project.version}</version>
-            <executions>
-              <execution>
-                <id>download-translations</id>
-                <phase>generate-resources</phase>
-                <goals>
-                  <goal>download-translations</goal>
                 </goals>
               </execution>
             </executions>
