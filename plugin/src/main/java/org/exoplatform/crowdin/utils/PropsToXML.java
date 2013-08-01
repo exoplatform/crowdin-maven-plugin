@@ -35,7 +35,16 @@ package org.exoplatform.crowdin.utils;
  * along with this program; if not, see<http://www.gnu.org/licenses/>.
  */
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStreamReader;
+import java.util.Enumeration;
+import java.util.Properties;
+
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -45,14 +54,6 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStreamReader;
-import java.util.Enumeration;
-import java.util.Properties;
-
 import org.exoplatform.crowdin.model.CrowdinFile.Type;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -106,9 +107,6 @@ public class PropsToXML {
     }
 
     // Replace special characters in master file
-    //use shell script
-    //ShellScriptUtils.execShellscript("scripts/handle-special-characters.sh", masterFile);
-    //use java code
     FileUtils.replaceCharactersInFile(masterFile, "config/special_character_processing.properties", "PropertiesToXMLSpecialCharacters");
 
 
@@ -167,42 +165,26 @@ public class PropsToXML {
 
     TransformerFactory transformFactory = TransformerFactory.newInstance();
     Transformer transformer = transformFactory.newTransformer();
-    transformer.setOutputProperty("method", "xml");
-    transformer.setOutputProperty("encoding", "UTF-8");
-    transformer.setOutputProperty("indent", "yes");
+    transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+    transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+    transformer.setOutputProperty(OutputKeys.INDENT, "yes");
     transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
     Source source = new DOMSource(doc);
     File fout = new File(outputFile);
     // if language is English, update master file and the English file if it exists (do not create new)
     if (propsFilePath.endsWith("en.properties") || propsFilePath.equalsIgnoreCase("en_ALL.properties")) {
       transformer.transform(source, new StreamResult(new File(masterFile)));
-      // perform post-processing for the output file
-      //use shell script
-      //ShellScriptUtils.execShellscript("scripts/per-file-processing.sh", masterFile);
-      //use java
       FileUtils.replaceCharactersInFile(masterFile, "config/special_character_processing.properties", "UpdateSourceSpecialCharacters");
-
       if (fout.exists()) {
         transformer.transform(source, new StreamResult(fout));
-        //use shell script
-        //ShellScriptUtils.execShellscript("scripts/per-file-processing.sh", outputFile);
-        //use java
         FileUtils.replaceCharactersInFile(outputFile, "config/special_character_processing.properties", "UpdateSourceSpecialCharacters");
-
       }
     } else {
       // always create new (or update) for other languages
       transformer.transform(source, new StreamResult(fout));
-      //use shell script
-      //ShellScriptUtils.execShellscript("scripts/per-file-processing.sh", outputFile);
-      //use java
       FileUtils.replaceCharactersInFile(outputFile, "config/special_character_processing.properties", "UpdateSourceSpecialCharacters");
-
       // revert changes in master file
-      //use shell script
-      //ShellScriptUtils.execShellscript("scripts/per-file-processing.sh", masterFile);
       FileUtils.replaceCharactersInFile(masterFile, "config/special_character_processing.properties", "UpdateSourceSpecialCharacters");
-
     }
 
     return true;
