@@ -120,6 +120,13 @@
         </plugins>
       </build>
     </profile>
+    <!--
+    Profile init does
+    * init-prepare script
+    * init mojo
+    * post-process script
+    * reset-local script
+    -->
     <profile>
       <id>init</id>
       <build>
@@ -180,6 +187,13 @@
         </plugins>
       </build>
     </profile>
+    <!--
+    Profile sync does
+    * init-prepare script
+    * sync mojo
+    * post-process script
+    * reset-local script
+    -->
     <profile>
       <id>sync</id>
       <build>
@@ -240,6 +254,10 @@
         </plugins>
       </build>
     </profile>
+    <!--
+    Profile update does
+    * update mojo
+    -->
     <profile>
       <id>update</id>
       <build>
@@ -302,6 +320,12 @@
         </plugins>
       </build>
     </profile>
+    <!--
+    Profile upload-translation does
+    * init-prepare script
+    * upload-translation mojo
+    * post-process script
+    -->
     <profile>
       <id>upload-translation</id>
       <build>
@@ -351,6 +375,10 @@
         </plugins>
       </build>
     </profile>
+    <!--
+    Profile upload-translation does
+    * restore-translation mojo
+    -->
     <profile>
       <id>restore-translation</id>
       <build>
