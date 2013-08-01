@@ -122,8 +122,8 @@
     </profile>
     <!--
     Profile init does
-    * init-prepare script
-    * init mojo
+    * initialize mojo
+    * init-crowdin mojo
     * post-process script
     * reset-local script
     -->
@@ -135,17 +135,6 @@
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>exec-maven-plugin</artifactId>
             <executions>
-              <execution>
-                <id>init</id>
-                <phase>initialize</phase>
-                <goals>
-                  <goal>exec</goal>
-                </goals>
-                <configuration>
-                  <executable>${project.basedir}/src/scripts/init-prepare.sh</executable>
-                  <workingDirectory>${project.basedir}/eXoProjects/</workingDirectory>
-                </configuration>
-              </execution>
               <execution>
                 <id>post-process</id>
                 <phase>package</phase>
@@ -176,10 +165,17 @@
             <version>${project.version}</version>
             <executions>
               <execution>
+                <id>initialize</id>
+                <phase>initialize</phase>
+                <goals>
+                  <goal>initialize</goal>
+                </goals>
+              </execution>
+              <execution>
                 <id>init</id>
                 <phase>compile</phase>
                 <goals>
-                  <goal>init</goal>
+                  <goal>init-crowdin</goal>
                 </goals>
               </execution>
             </executions>
@@ -189,7 +185,7 @@
     </profile>
     <!--
     Profile sync does
-    * init-prepare script
+    * initialize mojo
     * sync-sources mojo
     * post-process script
     * reset-local script
@@ -203,17 +199,6 @@
             <artifactId>exec-maven-plugin</artifactId>
             <executions>
               <execution>
-                <id>init</id>
-                <phase>initialize</phase>
-                <goals>
-                  <goal>exec</goal>
-                </goals>
-                <configuration>
-                  <executable>${project.basedir}/src/scripts/init-prepare.sh</executable>
-                  <workingDirectory>${project.basedir}/eXoProjects/</workingDirectory>
-                </configuration>
-              </execution>
-              <execution>
                 <id>post-process</id>
                 <phase>package</phase>
                 <goals>
@@ -242,6 +227,13 @@
             <artifactId>crowdin-maven-plugin</artifactId>
             <version>${project.version}</version>
             <executions>
+              <execution>
+                <id>initialize</id>
+                <phase>initialize</phase>
+                <goals>
+                  <goal>initialize</goal>
+                </goals>
+              </execution>
               <execution>
                 <id>sync</id>
                 <phase>compile</phase>
@@ -256,6 +248,7 @@
     </profile>
     <!--
     Profile update does
+    * initialize mojo
     * update-sources mojo
     -->
     <profile>
@@ -267,17 +260,6 @@
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>exec-maven-plugin</artifactId>
             <executions>
-              <execution>
-                <id>init</id>
-                <phase>initialize</phase>
-                <goals>
-                  <goal>exec</goal>
-                </goals>
-                <configuration>
-                  <executable>${project.basedir}/src/scripts/init-prepare.sh</executable>
-                  <workingDirectory>${project.basedir}/eXoProjects/</workingDirectory>
-                </configuration>
-              </execution>
               <execution>
                 <id>update</id>
                 <phase>package</phase>
@@ -309,6 +291,13 @@
             <version>${project.version}</version>
             <executions>
               <execution>
+                <id>initialize</id>
+                <phase>initialize</phase>
+                <goals>
+                  <goal>initialize</goal>
+                </goals>
+              </execution>
+              <execution>
                 <id>update</id>
                 <phase>compile</phase>
                 <goals>
@@ -322,7 +311,7 @@
     </profile>
     <!--
     Profile upload-translation does
-    * init-prepare script
+    * initialize mojo
     * upload-translation mojo
     * post-process script
     -->
@@ -334,17 +323,6 @@
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>exec-maven-plugin</artifactId>
             <executions>
-              <execution>
-                <id>init</id>
-                <phase>initialize</phase>
-                <goals>
-                  <goal>exec</goal>
-                </goals>
-                <configuration>
-                  <executable>${project.basedir}/src/scripts/init-prepare.sh</executable>
-                  <workingDirectory>${project.basedir}/eXoProjects/</workingDirectory>
-                </configuration>
-              </execution>
               <execution>
                 <id>post-process</id>
                 <phase>package</phase>
@@ -363,6 +341,13 @@
             <artifactId>crowdin-maven-plugin</artifactId>
             <version>${project.version}</version>
             <executions>
+              <execution>
+                <id>initialize</id>
+                <phase>initialize</phase>
+                <goals>
+                  <goal>initialize</goal>
+                </goals>
+              </execution>
               <execution>
                 <id>upload-translation</id>
                 <phase>compile</phase>

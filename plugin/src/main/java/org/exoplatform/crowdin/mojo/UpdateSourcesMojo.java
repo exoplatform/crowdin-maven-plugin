@@ -18,7 +18,7 @@
  */
 package org.exoplatform.crowdin.mojo;
 
-import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
+import static org.twdata.maven.mojoexecutor.MojoExecutor.element;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -57,14 +57,6 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
 
   @Override
   public void crowdInMojoExecute() throws MojoExecutionException, MojoFailureException {
-    getLog().info("------------------------------------------------------------------------");
-    getLog().info("Preparing working environment ...");
-    getLog().info("------------------------------------------------------------------------");
-    for (SourcesRepository repository : getSourcesRepositories()) {
-      File bareRepository = prepareRepositoryCache(repository);
-      prepareWorkingRepository(repository, bareRepository);
-    }
-    getLog().info("Projects ready.");
     File zip = downloadCrowdInArchive();
     Date downloadDate = new Date();
     //format 20130730-023900
@@ -175,69 +167,6 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
     }
     return zip;
   }
-
-  private void prepareWorkingRepository(SourcesRepository repository, File bareRepository) throws MojoExecutionException, MojoFailureException {
-    // Create a copy for the given version
-    File localVersionRepository = new File(getWorkingDir(), repository.getLocalDirectory());
-    if (localVersionRepository.exists()) {
-      getLog().info("Reset repository " + repository.getLocalDirectory() + "...");
-      execGit(localVersionRepository, "remote set-url origin " + repository.getUri());
-      execGit(localVersionRepository, "remote update --prune");
-      execGit(localVersionRepository, "checkout --force " + repository.getBranch());
-      execGit(localVersionRepository, "reset --hard origin/" + repository.getBranch());
-    } else {
-      getLog().info("Creating working repository " + localVersionRepository + " ...");
-      execGit(getWorkingDir(), "clone --no-checkout --reference " + bareRepository.getAbsolutePath() + " " + repository.getUri() + " " + repository.getLocalDirectory());
-      execGit(localVersionRepository, "checkout --force " + repository.getBranch());
-      execGit(localVersionRepository, "config user.name \"CrowdIn\"");
-      execGit(localVersionRepository, "config user.email \"noreply+crowdin@exoplatform.com\"");
-    }
-    getLog().info("Done.");
-  }
-
-  private File prepareRepositoryCache(SourcesRepository repository) throws MojoExecutionException, MojoFailureException {
-    // Create or update the reference repository
-    File bareRepository = new File(getCacheDir(), repository.getName() + ".git");
-    if (bareRepository.exists()) {
-      getLog().info("Fetching repository " + repository.getName() + " ...");
-      execGit(bareRepository, "remote set-url origin " + repository.getUri());
-      execGit(bareRepository, "remote update --prune");
-      getLog().info("Done.");
-    } else {
-      getLog().info("Cloning repository " + repository.getName() + " ...");
-      execGit(getCacheDir(), "clone --bare " + repository.getUri() + " " + repository.getName() + ".git");
-      getLog().info("Done.");
-    }
-    return bareRepository;
-  }
-
-  private void execGit(File workingDirectory, String params) throws MojoExecutionException, MojoFailureException {
-    execGit(workingDirectory, params, element("successCode", "0"));
-  }
-
-  private void execGit(File workingDirectory, String params, Element... successCodes) throws MojoExecutionException, MojoFailureException {
-    getLog().info("Running : git " + params);
-    executeMojo(
-        plugin(
-            groupId("org.codehaus.mojo"),
-            artifactId("exec-maven-plugin"),
-            version("1.2.1")
-        ),
-        goal("exec"),
-        configuration(
-            element(name("executable"), "/bin/sh"),
-            element(name("commandlineArgs"), "-c \"(cd " + workingDirectory.getAbsolutePath() + " && exec git " + params + ")\""),
-            element(name("workingDirectory"), workingDirectory.getAbsolutePath()),
-            element(name("successCodes"), successCodes)
-        ),
-        executionEnvironment(
-            getProject(),
-            getMavenSession(),
-            getPluginManager()
-        )
-    );
-  }
-
 
   private void applyTranslations(File _destFolder, String _zipFile, String locale) {
     try {

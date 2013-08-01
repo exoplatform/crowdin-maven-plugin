@@ -18,6 +18,8 @@
  */
 package org.exoplatform.crowdin.mojo;
 
+import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
@@ -46,6 +48,7 @@ import org.exoplatform.crowdin.model.CrowdinFileFactory;
 import org.exoplatform.crowdin.model.CrowdinTranslation;
 import org.exoplatform.crowdin.model.SourcesRepository;
 import org.exoplatform.crowdin.utils.CrowdinAPIHelper;
+import org.twdata.maven.mojoexecutor.MojoExecutor;
 
 /**
  * @author Philippe Aristote
@@ -438,4 +441,30 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
     return null;
   }
 
+  protected void execGit(File workingDirectory, String params) throws MojoExecutionException, MojoFailureException {
+    execGit(workingDirectory, params, element("successCode", "0"));
+  }
+
+  protected void execGit(File workingDirectory, String params, MojoExecutor.Element... successCodes) throws MojoExecutionException, MojoFailureException {
+    getLog().info("Running : git " + params);
+    executeMojo(
+        plugin(
+            groupId("org.codehaus.mojo"),
+            artifactId("exec-maven-plugin"),
+            version("1.2.1")
+        ),
+        goal("exec"),
+        configuration(
+            element(name("executable"), "/bin/sh"),
+            element(name("commandlineArgs"), "-c \"(cd " + workingDirectory.getAbsolutePath() + " && exec git " + params + ")\""),
+            element(name("workingDirectory"), workingDirectory.getAbsolutePath()),
+            element(name("successCodes"), successCodes)
+        ),
+        executionEnvironment(
+            getProject(),
+            getMavenSession(),
+            getPluginManager()
+        )
+    );
+  }
 }
