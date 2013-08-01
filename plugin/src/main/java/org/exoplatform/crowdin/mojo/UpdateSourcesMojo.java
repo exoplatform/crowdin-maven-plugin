@@ -117,7 +117,8 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
         zipentryName = zipentryName.replace('/', File.separatorChar);
         zipentryName = zipentryName.replace('\\', File.separatorChar);
         String[] path = zipentryName.split(File.separator);
-        if (!languagesToProcess.contains(path[0])) languagesToProcess.add(path[0]);
+        if (!languagesToProcess.contains(path[0]))
+          languagesToProcess.add(path[0]);
         zipentry = zipinputstream.getNextEntry();
       }// while
       zipinputstream.close();
@@ -228,8 +229,10 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
           } else {
             // identify the master properties file
             String masterFile = parentDir + name + extension;
-            if (!new File(masterFile).exists()) masterFile = parentDir + name + "_en" + extension;
-            if (!new File(masterFile).exists()) throw new FileNotFoundException("Cannot create or update " + entryName + " as the master file " + name + extension + " (or " + name + "_en" + extension + ")" + " does not exist!");
+            if (!new File(masterFile).exists())
+              masterFile = parentDir + name + "_en" + extension;
+            if (!new File(masterFile).exists())
+              throw new FileNotFoundException("Cannot create or update " + entryName + " as the master file " + name + extension + " (or " + name + "_en" + extension + ")" + " does not exist!");
 
             // use the master file as a skeleton and fill in with translations from Crowdin
             PropertiesConfiguration config = new PropertiesConfiguration(masterFile);
@@ -248,15 +251,10 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
             if ("en".equals(lang)) {
               config.save(masterFile);
               // perform post-processing for the output file
-              //use shell script
-              //ShellScriptUtils.execShellscript("scripts/per-file-processing.sh", masterFile);
-              //use java
               org.exoplatform.crowdin.utils.FileUtils.replaceCharactersInFile(masterFile, "config/special_character_processing.properties", "UpdateSourceSpecialCharacters");
 
               if (new File(entryName).exists()) {
                 config.save(entryName);
-                //use shell script
-                //ShellScriptUtils.execShellscript("scripts/per-file-processing.sh", entryName);
                 //use java
                 org.exoplatform.crowdin.utils.FileUtils.replaceCharactersInFile(entryName, "config/special_character_processing.properties", "UpdateSourceSpecialCharacters");
 
@@ -264,14 +262,10 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
             } else {
               // always create new (or update) for other languages
               config.save(entryName);
-              //use shell script
-              //ShellScriptUtils.execShellscript("scripts/per-file-processing.sh", entryName);
               //user java
               org.exoplatform.crowdin.utils.FileUtils.replaceCharactersInFile(entryName, "config/special_character_processing.properties", "UpdateSourceSpecialCharacters");
-
             }
           }
-
           zipinputstream.closeEntry();
         } catch (Exception e) {
           getLog().warn("Error while applying change for " + zipentryName + " - " + fileName + " : " + e.getMessage());

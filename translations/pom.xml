@@ -190,41 +190,11 @@
     Profile init does
     * initialize mojo
     * init-crowdin mojo
-    * post-process script
-    * reset-local script
     -->
     <profile>
       <id>init</id>
       <build>
         <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>exec-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>post-process</id>
-                <phase>package</phase>
-                <goals>
-                  <goal>exec</goal>
-                </goals>
-                <configuration>
-                  <executable>${project.basedir}/src/scripts/post-process.sh</executable>
-                  <workingDirectory>${project.basedir}/eXoProjects/</workingDirectory>
-                </configuration>
-              </execution>
-              <execution>
-                <id>reset</id>
-                <phase>package</phase>
-                <goals>
-                  <goal>exec</goal>
-                </goals>
-                <configuration>
-                  <executable>${project.basedir}/src/scripts/reset-local.sh</executable>
-                  <workingDirectory>${project.basedir}/eXoProjects/</workingDirectory>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
           <plugin>
             <groupId>org.exoplatform.crowdin</groupId>
             <artifactId>crowdin-maven-plugin</artifactId>
@@ -253,41 +223,11 @@
     Profile sync does
     * initialize mojo
     * sync-sources mojo
-    * post-process script
-    * reset-local script
     -->
     <profile>
       <id>sync</id>
       <build>
         <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>exec-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>post-process</id>
-                <phase>package</phase>
-                <goals>
-                  <goal>exec</goal>
-                </goals>
-                <configuration>
-                  <executable>${project.basedir}/src/scripts/post-process.sh</executable>
-                  <workingDirectory>${project.basedir}/eXoProjects/</workingDirectory>
-                </configuration>
-              </execution>
-              <execution>
-                <id>reset</id>
-                <phase>package</phase>
-                <goals>
-                  <goal>exec</goal>
-                </goals>
-                <configuration>
-                  <executable>${project.basedir}/src/scripts/reset-local.sh</executable>
-                  <workingDirectory>${project.basedir}/eXoProjects/</workingDirectory>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
           <plugin>
             <groupId>org.exoplatform.crowdin</groupId>
             <artifactId>crowdin-maven-plugin</artifactId>
@@ -316,29 +256,11 @@
     Profile upload-translation does
     * initialize mojo
     * upload-translation mojo
-    * post-process script
     -->
     <profile>
       <id>upload-translation</id>
       <build>
         <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>exec-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>post-process</id>
-                <phase>package</phase>
-                <goals>
-                  <goal>exec</goal>
-                </goals>
-                <configuration>
-                  <executable>${project.basedir}/src/scripts/post-process.sh</executable>
-                  <workingDirectory>${project.basedir}/eXoProjects/</workingDirectory>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
           <plugin>
             <groupId>org.exoplatform.crowdin</groupId>
             <artifactId>crowdin-maven-plugin</artifactId>
