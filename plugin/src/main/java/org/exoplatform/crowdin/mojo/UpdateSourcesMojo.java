@@ -110,18 +110,14 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
           getLog().info("Done.");
           BufferedReader br = new BufferedReader(new FileReader(patchFile));
           if (br.readLine() == null) {
-            getLog().info("No change for locale " + language + " on " + repository.getName() + " (branch: " + repository.getBranch() + " ) from crowdin extract done on " + DateFormat.getInstance().format(downloadDate));
+            getLog().info("No change for locale " + language + " from crowdin extract done on " + DateFormat.getInstance().format(downloadDate));
           } else {
             // Apply the patch
             getLog().info("Apply patch(s) for " + repository.getLocalDirectory() + "...");
             execGit(localVersionRepository, "apply --ignore-whitespace " + patchFile.getAbsolutePath(), element("successCode", "0"), element("successCode", "1"));
             getLog().info("Done.");
             getLog().info("Commit changes for " + repository.getLocalDirectory() + "...");
-            // Commit changes 7/31/13 4:03 PM
-//            execGit(localVersionRepository, "commit -a -m 'Apply changes for locale " + language + " on " + repository.getName() + " (branch: " + repository.getBranch() + " ) from crowdin extract done on " + DateFormat.getInstance().format(downloadDate) + "'", element("successCode", "0"), element("successCode", "1"));
-            //sv-SE injection on 20130730-023900
-            execGit(localVersionRepository, "commit -a -m ' " + language + " injection on " + format.format(downloadDate) + "'", element("successCode", "0"), element("successCode", "1"));
-
+            execGit(localVersionRepository, "commit -a -m '" + language + " injection on " + format.format(downloadDate) + "'", element("successCode", "0"), element("successCode", "1"));
             getLog().info("Done.");
             // Push it
             if (!isDryRun()) {
