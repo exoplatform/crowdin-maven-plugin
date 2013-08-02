@@ -17,7 +17,6 @@ Configuration:
 
 Add the Following properties in the maven settings.xml (contact with admin of crowdin exo-platform-35 project to get project key and id):
 
-
    <exo.crowdin.project.id>{projectId}</exo.crowdin.project.id>
    <exo.crowdin.project.key>{projectKey}</exo.crowdin.project.key>
 
@@ -56,11 +55,27 @@ This will execute the plugin with the goal 'init':
 > > *There are nonexistent properties files! Check again and update properties configuration files or run following command to continue:*
 > >  **mvn clean install -Pinit -Dforce=true**
 
-**2\. Synchronization ( UPDATED VERSION )**
 
-**mvn install; mvn install -Psync**
+**2\. Update sources from crowdin (injection)**
 
-This will execute the plugin with the goal 'sync':
+**mvn clean install -pl plugin -am; mvn clean install -Pcrowdin-plf40,plf40,update-sources -pl translations**
+
+This will execute the plugin with the goal 'update':
+
+- Clone all projects to ~/.eXoProjectCached
+- Download crowdin translation packaging (all.zip) in /translation/target/
+- Create patches files,  commit and apply to branch /feature/4.0.x-translation
+
+with *-DdryRun=true*
+
+- DryRun will not download the all.zip if it exists in /target/ and doesn't push to github
+
+
+**3\. Update to crowdin (synchronization)**
+
+**mvn clean install -pl plugin -am; mvn clean install -Pcrowdin-plf40,plf40,update-crowdin -pl translations**
+
+This will execute the plugin with the goal 'update-crowdin':
 
 -- load the properties of each project
 
@@ -72,26 +87,20 @@ This will execute the plugin with the goal 'sync':
 
 -- delete old folders and files (old entries in the properties of each project and not exist in file system)
 
+with *-DdryRun=true*
+
+- DryRun will not update properties files to crowdin
+
 > **Note: If there are nonexistent master files in file system, there will be a warning like**
 > > *There are nonexistent properties files! Check again and update properties configuration files or run following command to continue:*
-> >  **mvn clean install -Psync -Dforce=true**
+
 
 > **Warning: All Crowdin files corresponding to nonexistent properties files will be deleted after execute above command**
 
 *We can rely on above message to know if there are some master files renamed in source code. In this case, we need update manually these
 master files by content and translations from Crowdin before do a synchronization again with* **-Dforce=true**
 
-**3\. Updating ( UPDATED VERSION )**
 
-**mvn install; mvn [clean] install -Pupdate [-Dlangs=<all | en,fr,it,...>] **
-
-2 options to update languages: by -Dlangs OR by /translation/pom.xml add in <language></language> tag
-
-This will execute the plugin with the goal 'update':
-
-- Clone all projects to ~/.eXoProjectCached
-- Download crowdin translation packaging (all.zip) in /translation/target/
-- Create patches files and apply to /feature/4.0.x-translation branch with commit
 
 **4\. Upload Translation**
 
