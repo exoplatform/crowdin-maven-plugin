@@ -48,7 +48,7 @@ public class DownloadTranslationsMojo extends AbstractCrowdinMojo {
         throw new MojoExecutionException("Error downloading the translations from Crowdin." + e);
       }
       Properties downloadProperties = new Properties();
-      downloadProperties.put("dowloadDate", new SimpleDateFormat("yyyyMMdd-HHmmss").format(Calendar.getInstance().getTime()));
+      downloadProperties.put(DOWNLOAD_DATE_PROPERTY, new SimpleDateFormat("yyyyMMdd-HHmmss").format(Calendar.getInstance().getTime()));
       try {
         downloadProperties.store(new FileOutputStream(crowdInArchiveProperties), "");
       } catch (IOException e) {
