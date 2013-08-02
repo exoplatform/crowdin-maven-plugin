@@ -143,7 +143,7 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
           continue;
         }
         String zipentryName = zipentry.getName();
-        getLog().debug("Processing " + zipentryName);
+        getLog().debug("Processing : " + zipentryName);
         zipentryName = CrowdinFileFactory.encodeMinusCharacterInPath(zipentryName, false);
         zipentryName = zipentryName.replace('/', File.separatorChar);
         zipentryName = zipentryName.replace('\\', File.separatorChar);
@@ -161,7 +161,7 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
 
         try {
           String cp = crowdinProj + File.separator + proj;
-          Properties currentProj = getProperties().get(proj + "/");
+          Properties currentProj = getProperties().get(proj);
           // ignore projects that is not managed by the plugin
           if (currentProj == null) {
             zipentry = zipinputstream.getNextEntry();
@@ -201,6 +201,7 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
           }
 
           String parentDir = _destFolder + File.separator + proj + File.separator + value.substring(0, value.lastIndexOf(File.separatorChar) + 1);
+          getLog().debug("parentDir : " + parentDir);
           parentDir = parentDir.replace('/', File.separatorChar).replace('\\', File.separatorChar);
           String entryName = parentDir + fileName;
           Type resourceBundleType = (key.indexOf("gadget") >= 0) ? Type.GADGET : Type.PORTLET;
