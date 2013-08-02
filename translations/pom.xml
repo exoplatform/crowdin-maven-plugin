@@ -50,7 +50,6 @@
               <languages>
                 <language>en</language>
                 <language>fr</language>
-                <!--
                 <language>ar</language>
                 <language>ja</language>
                 <language>de</language>
@@ -59,7 +58,6 @@
                 <language>it</language>
                 <language>pt-BR</language>
                 <language>es-ES</language>
-                -->
               </languages>
               <!-- Projects to manage -->
               <sourcesRepositories>
