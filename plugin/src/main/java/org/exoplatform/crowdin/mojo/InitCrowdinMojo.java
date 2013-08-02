@@ -41,9 +41,9 @@ public class InitCrowdinMojo extends AbstractCrowdinMojo {
   public void crowdInMojoExecute() throws MojoExecutionException, MojoFailureException {
     if (!isAllPropertyFilesExisted() && !isForce()) {
       getLog().info("\n\n\n");
-      getLog().info("----------------------------------------------------------------------------------------\n\n"
-          + "There are nonexistent properties files! Check again and update properties configuration files or run following command to "
-          + "continue:\n mvn clean install -Pinit -Dforce=true\n");
+      getLog().info("----------------------------------------------------------------------------------------\n\n");
+      getLog().info("There are nonexistent properties files! Check again and update properties configuration files or run following command to ");
+      getLog().info("continue:\n mvn clean install -Pinit -Dforce=true\n");
       getLog().info("----------------------------------------------------------------------------------------\n\n\n");
       return;
     }
@@ -59,7 +59,7 @@ public class InitCrowdinMojo extends AbstractCrowdinMojo {
         // Skip the property baseDir
         if (file.equals("baseDir")) continue;
         // Construct the full path to the file
-        String filePath = getWorkingDir() + File.separator + proj +File.separator + currentProj.getProperty(file.toString());
+        String filePath = getWorkingDir() + File.separator + proj + File.separator + currentProj.getProperty(file.toString());
         CrowdinFile master = getFactory().prepareCrowdinFile(filePath, file.toString(), baseDir);
         if (master.getFile().exists()) {
           boolean initialized = initFile(master);

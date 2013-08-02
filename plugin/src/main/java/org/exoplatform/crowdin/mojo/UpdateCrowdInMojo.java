@@ -46,7 +46,10 @@ public class UpdateCrowdInMojo extends AbstractCrowdinMojo {
   public void crowdInMojoExecute() throws MojoExecutionException, MojoFailureException {
     if (!isAllPropertyFilesExisted() && !isForce()) {
       getLog().info("\n\n\n");
-      getLog().info("----------------------------------------------------------------------------------------\n\n" + "There are nonexistent properties files! Check again and update properties configuration files or run following command to " + "continue:\n mvn clean install -Psync -Dforce=true \n" + "Warning: All Crowdin files corresponding to nonexistent properties files will be deleted after execute above command.\n");
+      getLog().info("----------------------------------------------------------------------------------------\n\n");
+      getLog().info("There are nonexistent properties files! Check again and update properties configuration files or run following command to ");
+      getLog().info("continue:\n mvn clean install -Psync -Dforce=true \n");
+      getLog().info("Warning: All Crowdin files corresponding to nonexistent properties files will be deleted after execute above command.\n");
       getLog().info("----------------------------------------------------------------------------------------\n\n\n");
       return;
     }
