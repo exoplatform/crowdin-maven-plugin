@@ -58,6 +58,7 @@
                 <language>it</language>
                 <language>pt-BR</language>
                 <language>es-ES</language>
+                <language>ru</language>		
               </languages>
               <!-- Projects to manage -->
               <sourcesRepositories>
