@@ -48,6 +48,7 @@
               <!-- Can be set with command line arg -Dlangs=fr,en -->
               <!-- ALL By default, list computed from the archive -->
               <languages>
+	      <!--
                 <language>en</language>
                 <language>fr</language>
                 <language>ar</language>
@@ -58,6 +59,7 @@
                 <language>it</language>
                 <language>pt-BR</language>
                 <language>es-ES</language>
+		-->
                 <language>ru</language>		
               </languages>
               <!-- Projects to manage -->
@@ -184,6 +186,47 @@
         </plugins>
       </build>
     </profile>
+    <!--
+    Activate new language
+    * initialize mojo
+    * download-translations mojo
+    * activate-language mojo
+    -->
+    <profile>
+      <id>activate-language</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.exoplatform.crowdin</groupId>
+            <artifactId>crowdin-maven-plugin</artifactId>
+            <version>${project.version}</version>
+            <executions>
+              <execution>
+                <id>initialize</id>
+                <phase>initialize</phase>
+                <goals>
+                  <goal>initialize</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>download-translations</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>download-translations</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>update</id>
+                <phase>compile</phase>
+                <goals>
+                  <goal>activate-language</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>    
     <!--
     Profile update-crowdin does
     * initialize mojo
