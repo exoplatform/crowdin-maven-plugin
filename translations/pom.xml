@@ -47,8 +47,7 @@
               <!-- Languages to apply in projects -->
               <!-- Can be set with command line arg -Dlangs=fr,en -->
               <!-- ALL By default, list computed from the archive -->
-              <languages>
-	      <!--
+              <languages>	      
                 <language>en</language>
                 <language>fr</language>
                 <language>ar</language>
@@ -59,8 +58,10 @@
                 <language>it</language>
                 <language>pt-BR</language>
                 <language>es-ES</language>
-		-->
-                <language>ru</language>		
+		<!--  mvn install -Pactivate-language to activate new language -->
+		<!--
+                <language>ru</language>	
+		-->	
               </languages>
               <!-- Projects to manage -->
               <sourcesRepositories>
