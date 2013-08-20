@@ -174,12 +174,14 @@ public class CrowdinAPIHelper {
         currentMojo.getLog().debug("*** Real mode would execute:\n" +
             "given()." +
             "multiPart(\"language\", " + _file.getLang() + ")." +
+            "multiPart(\"import_eq_suggestions\", " + "1" + ")." +
             "multiPart(\"files[\"" + _file.getMaster().getCrowdinPath() + "\"]\", " + _file.getFile().getName() + ")." +
             "post(\"/upload-translation?key=" + projectKey + ").andReturn().asString();");
       return "<dryRun success/>";
     }
     return given().
         multiPart("language", _file.getLang()).
+        multiPart("import_eq_suggestions", "1").
         multiPart("files[" + _file.getMaster().getCrowdinPath() + "]", _file.getFile()).
         post("/upload-translation?key=" + projectKey).andReturn().asString();
   }
