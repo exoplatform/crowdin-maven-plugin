@@ -263,39 +263,6 @@
       </build>
     </profile>
     <!--
-    Profile init does
-    * initialize mojo
-    * init-crowdin mojo
-    -->
-    <profile>
-      <id>init-crowdin</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.exoplatform.crowdin</groupId>
-            <artifactId>crowdin-maven-plugin</artifactId>
-            <version>${project.version}</version>
-            <executions>
-              <execution>
-                <id>initialize</id>
-                <phase>initialize</phase>
-                <goals>
-                  <goal>initialize</goal>
-                </goals>
-              </execution>
-              <execution>
-                <id>init</id>
-                <phase>compile</phase>
-                <goals>
-                  <goal>init-crowdin</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    <!--
     Profile upload-translation does
     * initialize mojo
     * upload-translation mojo
