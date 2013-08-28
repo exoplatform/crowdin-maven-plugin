@@ -267,6 +267,7 @@
     * initialize mojo
     * init-crowdin mojo
     -->
+    <!--
     <profile>
       <id>init-crowdin</id>
       <build>
@@ -295,6 +296,7 @@
         </plugins>
       </build>
     </profile>
+    -->
     <!--
     Profile upload-translation does
     * initialize mojo
