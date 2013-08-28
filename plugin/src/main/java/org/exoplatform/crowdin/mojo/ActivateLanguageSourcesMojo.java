@@ -46,8 +46,8 @@ import org.exoplatform.crowdin.utils.PropsToXML;
 /**
  * Update projects sources from crowdin translations
  */
-@Mojo(name = "update-sources")
-public class UpdateSourcesMojo extends AbstractCrowdinMojo {
+@Mojo(name = "activate-language")
+public class ActivateLanguageSourcesMojo extends AbstractCrowdinMojo {
 
   @Override
   public void crowdInMojoExecute() throws MojoExecutionException, MojoFailureException {
@@ -67,7 +67,9 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
           // Create a patch with local changes
           getLog().info("Create patch(s) for " + repository.getLocalDirectory() + "...");
           File patchFile = new File(getProject().getBuild().getDirectory(), repository.getLocalDirectory() + "-" + language + ".patch");
-          execGit(localVersionRepository, "diff --ignore-all-space > " + patchFile.getAbsolutePath());
+          execGit(localVersionRepository, "add .");
+          execGit(localVersionRepository, "diff --ignore-all-space HEAD > " + patchFile.getAbsolutePath());
+          getLog().info("Create patch file at: "+ patchFile.getAbsolutePath());
           getLog().info("Done.");
           // Reset our local copy
           getLog().info("Reset repository " + repository.getLocalDirectory() + "...");
@@ -81,6 +83,7 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
             // Apply the patch
             getLog().info("Apply patch(s) for " + repository.getLocalDirectory() + "...");
             execGit(localVersionRepository, "apply --ignore-whitespace " + patchFile.getAbsolutePath(), element("successCode", "0"), element("successCode", "1"));
+            execGit(localVersionRepository, "add .");
             getLog().info("Done.");
             getLog().info("Commit changes for " + repository.getLocalDirectory() + "...");
             execGit(localVersionRepository, "commit -a -m '" + language + " injection on " + getCrowdinDownloadDate() + "'", element("successCode", "0"), element("successCode", "1"));

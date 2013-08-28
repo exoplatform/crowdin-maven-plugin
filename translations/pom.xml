@@ -1,294 +1,357 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
 
+    Copyright (C) 2003-2013 eXo Platform SAS.
+
+    This is free software; you can redistribute it and/or modify it
+    under the terms of the GNU Lesser General Public License as
+    published by the Free Software Foundation; either version 3 of
+    the License, or (at your option) any later version.
+
+    This software is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+    Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public
+    License along with this software; if not, write to the Free
+    Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+    02110-1301 USA, or see the FSF site: http://www.fsf.org.
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.exoplatform.crowdin</groupId>
     <artifactId>crowdin</artifactId>
+    <groupId>org.exoplatform.crowdin</groupId>
     <version>4.0.0-SNAPSHOT</version>
   </parent>
-
   <artifactId>platform-translation</artifactId>
   <packaging>pom</packaging>
   <name>eXo Platform Translations</name>
-
   <properties>
-    <exo.crowdin.properties>src/config/crowdin.properties</exo.crowdin.properties>
     <!-- exo.crowdin.project.id and exo.crowdin.project.key are set in settings.xml -->
     <!--exo.crowdin.upload-translation.properties>upload-translation/upload-translation.properties</exo.crowdin.upload-translation.properties-->
   </properties>
-  
   <profiles>
     <profile>
-      <id>init</id>
+      <!-- PLF 4.0.x Translations-->
+      <id>plf40</id>
       <build>
         <plugins>
           <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>exec-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>init</id>
-                <phase>initialize</phase>
-                <configuration>
-                  <executable>${basedir}/src/scripts/init-prepare.sh</executable>
-                  <workingDirectory>${basedir}/eXoProjects/</workingDirectory>
-                </configuration>
-                <goals>
-                  <goal>exec</goal>
-                </goals>
-              </execution>
-              <execution>
-                <id>post-process</id>
-                <phase>package</phase>
-                <configuration>
-                  <executable>${basedir}/src/scripts/post-process.sh</executable>
-                  <workingDirectory>${basedir}/eXoProjects/</workingDirectory>
-                </configuration>
-                <goals>
-                  <goal>exec</goal>
-                </goals>
-              </execution>
-              <execution>
-                <id>reset</id>
-                <phase>package</phase>
-                <configuration>
-                  <executable>${basedir}/src/scripts/reset-local.sh</executable>
-                  <workingDirectory>${basedir}/eXoProjects/</workingDirectory>
-                </configuration>
-                <goals>
-                  <goal>exec</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-             <groupId>org.exoplatform.crowdin</groupId>
-             <artifactId>crowdin-maven-plugin</artifactId>
-             <version>${project.version}</version>
-             <executions>
-               <execution>
-                 <id>init</id>
-                 <phase>compile</phase>
-                 <goals>
-                   <goal>init</goal>
-                 </goals>
-                 <configuration>
-                   <startDir>${basedir}/eXoProjects/</startDir>
-                 </configuration>
-               </execution>
-             </executions>
+            <groupId>org.exoplatform.crowdin</groupId>
+            <artifactId>crowdin-maven-plugin</artifactId>
+            <version>${project.version}</version>
+            <configuration>
+              <!-- Languages to apply in projects -->
+              <!-- Can be set with command line arg -Dlangs=fr,en -->
+              <!-- ALL By default, list computed from the archive -->
+              <languages>	      
+                <language>en</language>
+                <language>fr</language>
+                <language>ar</language>
+                <language>ja</language>
+                <language>de</language>
+                <language>vi</language>
+                <language>sv-SE</language>
+                <language>it</language>
+                <language>pt-BR</language>
+                <language>es-ES</language>
+		<language>ru</language>
+		<!--  mvn install -Pactivate-language to activate new language -->
+		<!--
+                <language>ru</language>	
+		-->	
+              </languages>
+              <!-- Projects to manage -->
+              <sourcesRepositories>
+                <sourcesRepository>
+                  <uri>git@github.com:exodev/platform-ui.git</uri>
+                  <branch>feature/4.0.x-translation</branch>
+                  <localDirectory>platform-ui-4.0.x</localDirectory>
+                </sourcesRepository>
+                <sourcesRepository>
+                  <uri>git@github.com:exodev/commons.git</uri>
+                  <branch>feature/4.0.x-translation</branch>
+                  <localDirectory>commons-4.0.x</localDirectory>
+                </sourcesRepository>
+                <sourcesRepository>
+                  <uri>git@github.com:exodev/ecms.git</uri>
+                  <branch>feature/4.0.x-translation</branch>
+                  <localDirectory>ecms-4.0.x</localDirectory>
+                </sourcesRepository>
+                <sourcesRepository>
+                  <uri>git@github.com:exodev/social.git</uri>
+                  <branch>feature/4.0.x-translation</branch>
+                  <localDirectory>social-4.0.x</localDirectory>
+                </sourcesRepository>
+                <sourcesRepository>
+                  <uri>git@github.com:exodev/calendar.git</uri>
+                  <branch>feature/4.0.x-translation</branch>
+                  <localDirectory>calendar-4.0.x</localDirectory>
+                </sourcesRepository>
+                <sourcesRepository>
+                  <uri>git@github.com:exodev/wiki.git</uri>
+                  <branch>feature/4.0.x-translation</branch>
+                  <localDirectory>wiki-4.0.x</localDirectory>
+                </sourcesRepository>
+                <sourcesRepository>
+                  <uri>git@github.com:exodev/forum.git</uri>
+                  <branch>feature/4.0.x-translation</branch>
+                  <localDirectory>forum-4.0.x</localDirectory>
+                </sourcesRepository>
+                <sourcesRepository>
+                  <uri>git@github.com:exodev/integration.git</uri>
+                  <branch>feature/4.0.x-translation</branch>
+                  <localDirectory>integration-4.0.x</localDirectory>
+                </sourcesRepository>
+                <sourcesRepository>
+                  <uri>git@github.com:exodev/platform.git</uri>
+                  <branch>feature/4.0.x-translation</branch>
+                  <localDirectory>platform-4.0.x</localDirectory>
+                </sourcesRepository>
+                <sourcesRepository>
+                  <uri>git@github.com:exoplatform/gatein-portal.git</uri>
+                  <branch>feature/3.5.x-PLF-translation</branch>
+                  <localDirectory>gatein-portal-3.5.x</localDirectory>
+                </sourcesRepository>
+              </sourcesRepositories>
+            </configuration>
           </plugin>
         </plugins>
       </build>
     </profile>
-    
+    <!--
+    Profile download-translations does
+    * download-translations mojo
+    -->
     <profile>
-      <id>sync</id>
+      <id>download-translations</id>
       <build>
         <plugins>
           <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>exec-maven-plugin</artifactId>
+            <groupId>org.exoplatform.crowdin</groupId>
+            <artifactId>crowdin-maven-plugin</artifactId>
+            <version>${project.version}</version>
             <executions>
               <execution>
-                <id>init</id>
-                <phase>initialize</phase>
-                <configuration>
-                  <executable>${basedir}/src/scripts/init-prepare.sh</executable>
-                  <workingDirectory>${basedir}/eXoProjects/</workingDirectory>
-                </configuration>
+                <id>download-translations</id>
+                <phase>generate-resources</phase>
                 <goals>
-                  <goal>exec</goal>
-                </goals>
-              </execution>
-              <execution>
-                <id>post-process</id>
-                <phase>package</phase>
-                <configuration>
-                  <executable>${basedir}/src/scripts/post-process.sh</executable>
-                  <workingDirectory>${basedir}/eXoProjects/</workingDirectory>
-                </configuration>
-                <goals>
-                  <goal>exec</goal>
-                </goals>
-              </execution>
-              <execution>
-                <id>reset</id>
-                <phase>package</phase>
-                <configuration>
-                  <executable>${basedir}/src/scripts/reset-local.sh</executable>
-                  <workingDirectory>${basedir}/eXoProjects/</workingDirectory>
-                </configuration>
-                <goals>
-                  <goal>exec</goal>
+                  <goal>download-translations</goal>
                 </goals>
               </execution>
             </executions>
           </plugin>
-          <plugin>
-             <groupId>org.exoplatform.crowdin</groupId>
-             <artifactId>crowdin-maven-plugin</artifactId>
-             <version>${project.version}</version>
-             <executions>
-               <execution>
-                 <id>sync</id>
-                 <phase>compile</phase>
-                 <goals>
-                   <goal>sync</goal>
-                 </goals>
-                 <configuration>
-                   <startDir>${basedir}/eXoProjects/</startDir>
-                 </configuration>
-               </execution>
-             </executions>
-          </plugin>
         </plugins>
       </build>
     </profile>
-    
+    <!--
+    Profile update does
+    * initialize mojo
+    * download-translations mojo
+    * update-sources mojo
+    -->
     <profile>
-      <id>update</id>
+      <id>update-sources</id>
       <build>
         <plugins>
           <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>exec-maven-plugin</artifactId>
+            <groupId>org.exoplatform.crowdin</groupId>
+            <artifactId>crowdin-maven-plugin</artifactId>
+            <version>${project.version}</version>
             <executions>
               <execution>
-                <id>init</id>
+                <id>initialize</id>
                 <phase>initialize</phase>
-                <configuration>
-                  <executable>${basedir}/src/scripts/init-prepare.sh</executable>
-                  <workingDirectory>${basedir}/eXoProjects/</workingDirectory>
-                </configuration>
                 <goals>
-                  <goal>exec</goal>
+                  <goal>initialize</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>download-translations</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>download-translations</goal>
                 </goals>
               </execution>
               <execution>
                 <id>update</id>
-                <phase>package</phase>
-                <configuration>
-                  <executable>${basedir}/src/scripts/update.sh</executable>
-                  <workingDirectory>${basedir}/eXoProjects/</workingDirectory>
-                </configuration>
+                <phase>compile</phase>
                 <goals>
-                  <goal>exec</goal>
-                </goals>
-              </execution>
-              <execution>
-                <id>post-process</id>
-                <phase>package</phase>
-                <configuration>
-                  <executable>${basedir}/src/scripts/post-process.sh</executable>
-                  <workingDirectory>${basedir}/eXoProjects/</workingDirectory>
-                </configuration>
-                <goals>
-                  <goal>exec</goal>
+                  <goal>update-sources</goal>
                 </goals>
               </execution>
             </executions>
           </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <!--
+    Activate new language
+    * initialize mojo
+    * download-translations mojo
+    * activate-language mojo
+    -->
+    <profile>
+      <id>activate-language</id>
+      <build>
+        <plugins>
           <plugin>
-             <groupId>org.exoplatform.crowdin</groupId>
-             <artifactId>crowdin-maven-plugin</artifactId>
-             <version>${project.version}</version>
-             <executions>
-               <execution>
-                 <id>update</id>
-                 <phase>compile</phase>
-                 <goals>
-                   <goal>update</goal>
-                 </goals>
-                 <configuration>
-                   <startDir>${basedir}/eXoProjects/</startDir>
-                 </configuration>
-               </execution>
-             </executions>
+            <groupId>org.exoplatform.crowdin</groupId>
+            <artifactId>crowdin-maven-plugin</artifactId>
+            <version>${project.version}</version>
+            <executions>
+              <execution>
+                <id>initialize</id>
+                <phase>initialize</phase>
+                <goals>
+                  <goal>initialize</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>download-translations</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>download-translations</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>update</id>
+                <phase>compile</phase>
+                <goals>
+                  <goal>activate-language</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>    
+    <!--
+    Profile update-crowdin does
+    * initialize mojo
+    * update-crowdin mojo
+    -->
+    <profile>
+      <id>update-crowdin</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.exoplatform.crowdin</groupId>
+            <artifactId>crowdin-maven-plugin</artifactId>
+            <version>${project.version}</version>
+            <executions>
+              <execution>
+                <id>initialize</id>
+                <phase>initialize</phase>
+                <goals>
+                  <goal>initialize</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>update-crowdin</id>
+                <phase>compile</phase>
+                <goals>
+                  <goal>update-crowdin</goal>
+                </goals>
+              </execution>
+            </executions>
           </plugin>
         </plugins>
       </build>
     </profile>
-    
+    <!--
+    Profile init does
+    * initialize mojo
+    * init-crowdin mojo
+    -->
+    <profile>
+      <id>init-crowdin</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.exoplatform.crowdin</groupId>
+            <artifactId>crowdin-maven-plugin</artifactId>
+            <version>${project.version}</version>
+            <executions>
+              <execution>
+                <id>initialize</id>
+                <phase>initialize</phase>
+                <goals>
+                  <goal>initialize</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>init</id>
+                <phase>compile</phase>
+                <goals>
+                  <goal>init-crowdin</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <!--
+    Profile upload-translation does
+    * initialize mojo
+    * upload-translation mojo
+    -->
     <profile>
       <id>upload-translation</id>
       <build>
         <plugins>
           <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>exec-maven-plugin</artifactId>
+            <groupId>org.exoplatform.crowdin</groupId>
+            <artifactId>crowdin-maven-plugin</artifactId>
+            <version>${project.version}</version>
             <executions>
               <execution>
-                <id>init</id>
+                <id>initialize</id>
                 <phase>initialize</phase>
-                <configuration>
-                  <executable>${basedir}/src/scripts/init-prepare.sh</executable>
-                  <workingDirectory>${basedir}/eXoProjects/</workingDirectory>
-                </configuration>
                 <goals>
-                  <goal>exec</goal>
+                  <goal>initialize</goal>
                 </goals>
               </execution>
               <execution>
-                <id>post-process</id>
-                <phase>package</phase>
-                <configuration>
-                  <executable>${basedir}/src/scripts/post-process.sh</executable>
-                  <workingDirectory>${basedir}/eXoProjects/</workingDirectory>
-                </configuration>
+                <id>upload-translation</id>
+                <phase>compile</phase>
                 <goals>
-                  <goal>exec</goal>
+                  <goal>upload-translation</goal>
                 </goals>
               </execution>
             </executions>
           </plugin>
-          <plugin>
-             <groupId>org.exoplatform.crowdin</groupId>
-             <artifactId>crowdin-maven-plugin</artifactId>
-             <version>${project.version}</version>
-             <executions>
-               <execution>
-                 <id>upload-translation</id>
-                 <phase>compile</phase>
-                 <goals>
-                   <goal>upload-translation</goal>
-                 </goals>
-                 <configuration>
-                   <startDir>${basedir}/eXoProjects/</startDir>
-                 </configuration>
-               </execution>
-             </executions>
-          </plugin>
         </plugins>
       </build>
     </profile>
-
+    <!--
+    Profile upload-translation does
+    * restore-translation mojo
+    -->
     <profile>
       <id>restore-translation</id>
       <build>
         <plugins>
           <plugin>
-             <groupId>org.exoplatform.crowdin</groupId>
-             <artifactId>crowdin-maven-plugin</artifactId>
-             <version>${project.version}</version>
-             <executions>
-               <execution>
-                 <id>restore-translation</id>
-                 <phase>compile</phase>
-                 <goals>
-                   <goal>restore-translation</goal>
-                 </goals>
-                 <configuration>
-                   <startDir>${basedir}/eXoProjects/</startDir>
-                 </configuration>
-               </execution>
-             </executions>
+            <groupId>org.exoplatform.crowdin</groupId>
+            <artifactId>crowdin-maven-plugin</artifactId>
+            <version>${project.version}</version>
+            <executions>
+              <execution>
+                <id>restore-translation</id>
+                <phase>compile</phase>
+                <goals>
+                  <goal>restore-translation</goal>
+                </goals>
+              </execution>
+            </executions>
           </plugin>
         </plugins>
       </build>
     </profile>
-    
   </profiles>
-
 </project>

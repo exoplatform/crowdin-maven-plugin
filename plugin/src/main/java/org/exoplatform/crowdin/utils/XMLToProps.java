@@ -1,3 +1,21 @@
+/*
+ * Copyright (C) 2003-2013 eXo Platform SAS.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
 package org.exoplatform.crowdin.utils;
 
 /*
@@ -17,16 +35,18 @@ package org.exoplatform.crowdin.utils;
  * along with this program; if not, see<http://www.gnu.org/licenses/>.
  */
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.Iterator;
 import java.util.LinkedList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.exoplatform.crowdin.model.CrowdinFile.Type;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -40,10 +60,6 @@ import org.xml.sax.InputSource;
  */
 public class XMLToProps {
   public static final String COLON_IN_KEY = "__COLON__";
-  
-  public XMLToProps() {
-
-  }
 
   @SuppressWarnings("unchecked")
   public static boolean parse(String inputFilePath, Type type) throws Exception {
@@ -60,9 +76,12 @@ public class XMLToProps {
     collect(new LinkedList<String>(), bundleElt, bundle, type);
 
     String outputFile = inputFilePath.replaceAll("\\.xml", ".properties");
-    FileOutputStream fos = new FileOutputStream(outputFile, false);
-    fos.write(bundle.toString().getBytes());
-    fos.close();
+    // We manage our properties files in UTF-8 :(
+    Writer out = new BufferedWriter(new OutputStreamWriter(
+        new FileOutputStream(outputFile), "UTF-8"));
+    out.append(bundle.toString());
+    out.flush();
+    out.close();
     return true;
   }
 
@@ -94,7 +113,7 @@ public class XMLToProps {
       String value = currentElt.getTextContent();
       StringBuffer sb = new StringBuffer();
       if (Type.PORTLET.equals(type)) {
-        for (Iterator<String> i = path.iterator(); i.hasNext();) {
+        for (Iterator<String> i = path.iterator(); i.hasNext(); ) {
           String name = i.next();
           sb.append(name);
           if (i.hasNext()) {
@@ -110,7 +129,7 @@ public class XMLToProps {
       bundle.append(key).append("=").append(value.replaceAll("\n", " ")).append("\n");
     }
   }
-  
+
   private static String makeComment(String comment) {
     if (comment != null) {
       comment = comment.trim();
