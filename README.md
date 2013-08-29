@@ -38,23 +38,7 @@ Usage:
 - From master branch, switch to branch feature/4.0.x/jgit
 - Run maven command relates on profiles: **download-translation**, **update-sources**, **update-crowdin**, **init-crowdin**, **upload-translation**
 
-
-**1\. Initialization a crowdin project: init-crowdin**
-
-**`mvn clean install -pl plugin -am; mvn clean install -Pcrowdin-plf40,plf40,init-crowdin -pl translations`**
-
-This will execute the plugin with the profile 'init-crowdin':
-
--- load the properties of each project
-
--- browse them to identify master files and translations
-
--- create folders on Crowdin if they don't exist
-
--- upload the master files and translations of each master file on Crowdin if they don't exist
-
-
-**2\. Download translations from crowdin: download-translations**
+**1\. Download translations from crowdin: download-translations**
 
 
 **`mvn clean install -pl plugin -am; mvn clean install -Pcrowdin-plf40,plf40,download-translations -pl translations`**
@@ -62,24 +46,12 @@ This will execute the plugin with the profile 'init-crowdin':
 
 - Download archive file from crowdin to translation/target/ then name to "translation.zip"
 
-**3\. Activate new language**
-
-**`mvn clean install -pl plugin -am; mvn clean install -Pcrowdin-plf40,plf40,activate-language -pl translations`**
-
-Execute 'activate-language' with download-translation included :
-
-- Modify the pom file with only new activated language: **`<languages><language>ru</language></languages>`** for example
-- Clone all projects to ~/.eXoProjectCached/
-- Download archive file from crowdin to translation/target/ then name to "translation.zip" ( download-translation step)
-- Create patches files, commit and apply to branch /feature/4.0.x-translation
-
-with **`-DdryRun=true`**
-
-- DryRun will not download the all.zip if it exists in /target/ also, it doesn't push to github
-
-**4\. Update sources from crowdin (injection)**
+**2\. Update sources from crowdin (injection)**
 
 **`mvn clean install -pl plugin -am; mvn clean install -Pcrowdin-plf40,plf40,update-sources -pl translations`**
+
+- Modify the pom file with list languages: **`<languages><language>xxx</language></languages>`** 
+- Defaut is false in : **`<isActivate>false</isActivate>`**
 
 This will execute the plugin with the goal 'update-sources' with step download-translation included:
 
@@ -87,12 +59,17 @@ This will execute the plugin with the goal 'update-sources' with step download-t
 - Download archive file from crowdin to translation/target/ then name to "translation.zip" ( download-translation step)
 - Create patches files,  commit and apply to branch /feature/4.0.x-translation
 
+Activate new language/properties file :
+
+- Modify the pom file with **ONLY** new activated language: **`<languages><language>ru</language></languages>`** for example
+- Set true in : **`<isActivate>true</isActivate>`** 
+
 with **`-DdryRun=true`**
 
 - DryRun will not download the all.zip if it exists in /target/ also, it doesn't push to github
 
 
-**5\. Update to crowdin (synchronization): update-crowdin**
+**3\. Update to crowdin (synchronization): update-crowdin**
 
 **`mvn clean install -pl plugin -am; mvn clean install -Pcrowdin-plf40,plf40,update-crowdin -pl translations`**
 
@@ -108,7 +85,7 @@ with **`-DdryRun=true`**
 
 - DryRun will not update properties files to crowdin
 
-**6\. Upload Translation**
+**4\. Upload Translation**
 
 **`mvn clean install -pl plugin -am; mvn clean install -Pcrowdin-plf40,plf40,upload-translation -pl translations`**
 
@@ -120,7 +97,7 @@ Steps:
 * For each project create the project description file named <project>.properties. In this file provide the path to the project in the 'baseDir' property and list all the translation files need to be updated in the form of <path in Crowdin>=<path in source code>
 * Run 'mvn clean install -Pupload-translation'
 
-**7\. Restore translation**
+**5\. Restore translation**
 
 **`mvn clean install -pl plugin -am; mvn clean install -Pcrowdin-plf40,plf40,restore-translation -pl translations`**
 
@@ -136,7 +113,7 @@ Steps:
 
 If you want to decide what to be uploaded to Crowdin, you can: first run with 'Dprepare=true' option to get the plugin stops after preparing the extracted folder for you to modify, e.g to remove some languages or projects you don't want to upload. When you're done, let the plugin continues by running with '-Dcontinue=true' option, it will upload your modified folder instead of the original zip. 
 
-**8\. Command line options**
+**6\. Command line options**
 
 -- **dryRun**
    If true, no communication with Crowdin will be done; Default: false.

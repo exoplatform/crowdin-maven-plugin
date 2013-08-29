@@ -106,6 +106,12 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
 
   @Parameter(property = "exo.crowdin.ignore")
   private String ignore;
+  
+  /**
+   * Boolean to enable/disable new language or new properties file
+   */  
+  @Parameter
+  private boolean isActivate;
 
   @Parameter
   private List<SourcesRepository> sourcesRepositories = new ArrayList<SourcesRepository>();
@@ -252,6 +258,11 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
   public List<SourcesRepository> getSourcesRepositories() {
     return sourcesRepositories;
   }
+  
+  public boolean isActivate() {
+    return isActivate;
+  }
+
 
   public String getApplyApprovedOnlyOption() {
     if ("true".equals(apply_approved_only)) {
