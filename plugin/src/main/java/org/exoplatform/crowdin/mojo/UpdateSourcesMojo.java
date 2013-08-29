@@ -66,8 +66,18 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
           getLog().info("Extract/Apply/Commit/Push changes on " + repository.getName() + " (branch: " + repository.getBranch() + ")");
           // Create a patch with local changes
           getLog().info("Create patch(s) for " + repository.getLocalDirectory() + "...");
-          File patchFile = new File(getProject().getBuild().getDirectory(), repository.getLocalDirectory() + "-" + language + ".patch");
+          File patchFile = new File(getProject().getBuild().getDirectory(), repository.getLocalDirectory() + "-" + language + ".patch");          
+          // create patch all files when activate new language or properties
+          if (isActivate()){
+            getLog().info("Activation new language/properties "); 
+            execGit(localVersionRepository, "add .");
+            execGit(localVersionRepository, "diff --ignore-all-space HEAD > " + patchFile.getAbsolutePath());
+            getLog().info("Create patch file at: "+ patchFile.getAbsolutePath());  
+          }
+          // create patch only tracked files
+          else{
           execGit(localVersionRepository, "diff --ignore-all-space > " + patchFile.getAbsolutePath());
+          }
           getLog().info("Done.");
           // Reset our local copy
           getLog().info("Reset repository " + repository.getLocalDirectory() + "...");
@@ -81,6 +91,10 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
             // Apply the patch
             getLog().info("Apply patch(s) for " + repository.getLocalDirectory() + "...");
             execGit(localVersionRepository, "apply --ignore-whitespace " + patchFile.getAbsolutePath(), element("successCode", "0"), element("successCode", "1"));
+            // commit all untracked and tracked files
+            if (isActivate()){
+              execGit(localVersionRepository, "add .");
+            } 
             getLog().info("Done.");
             getLog().info("Commit changes for " + repository.getLocalDirectory() + "...");
             execGit(localVersionRepository, "commit -a -m '" + language + " injection on " + getCrowdinDownloadDate() + "'", element("successCode", "0"), element("successCode", "1"));
