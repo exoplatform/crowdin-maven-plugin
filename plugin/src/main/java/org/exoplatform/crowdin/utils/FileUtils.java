@@ -61,7 +61,7 @@ public class FileUtils {
       String line = "";
       StringBuffer oldtext = new StringBuffer("");
       while ((line = reader.readLine()) != null) {
-        oldtext.append(line + "\r\n");
+        oldtext.append(line + System.getProperty("line.separator"));
       }
       reader.close();
       // replace a word in a file
@@ -106,7 +106,8 @@ public class FileUtils {
       String line = "";
       StringBuffer oldtext = new StringBuffer("");
       while ((line = reader.readLine()) != null) {
-        oldtext.append(line + "\r\n");
+        //do not use \r\n causes ^M problem, use the correct line separator 
+        oldtext.append(line + System.getProperty("line.separator"));
       }
       reader.close();
       String newtext = oldtext.toString();
