@@ -254,12 +254,20 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
             PropertiesConfiguration.setDefaultListDelimiter('=');
             config.setEncoding("UTF-8");
 
+            Properties propsCrowdin = new Properties();
+            propsCrowdin.load(zipinputstream);            
+            
             Properties props = new Properties();
-            props.load(zipinputstream);
+            props.load(new FileInputStream(new File(masterFile)));
+            
+            
             Enumeration e = props.propertyNames();
             while (e.hasMoreElements()) {
               String propKey = (String) e.nextElement();
-              config.setProperty(propKey, props.getProperty(propKey));
+              String crowdinValue = propsCrowdin.getProperty(propKey);
+             
+              if (null != crowdinValue && crowdinValue.length() > 0)
+                config.setProperty(propKey, crowdinValue);
             }
 
             // if language is English, update master file and the English file if it exists (do not create new)
