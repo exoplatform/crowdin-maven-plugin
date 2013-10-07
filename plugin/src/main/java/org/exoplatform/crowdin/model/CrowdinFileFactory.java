@@ -19,6 +19,8 @@
 package org.exoplatform.crowdin.model;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -44,15 +46,26 @@ public class CrowdinFileFactory {
    */
   public CrowdinFile prepareCrowdinFile(String _path, String _name, String _project) {
 
+
     File file = new File(_path);
     String type = _path.substring(_path.lastIndexOf('.') + 1);
     boolean shouldBeCleaned = false;
-    if (type.equals("xml")) {
+    
+    // process only for projects, not for mobile 
+    if (type.equals("xml") && (!_project.contains("mobile"))) {
       file = fromXMLToProps(file);
       _path = file.getPath();
       type = "properties";
       shouldBeCleaned = true;
     }
+    
+    else if (_project.contains("android")){
+      type = "xml";
+    }
+    else if (_project.contains("ios")){
+      type = "strings";
+    }
+
 
     // replace all - by __ because of an unknown bug in RestAssured.get
     _project = encodeMinusCharacterInPath(_project, true);
@@ -135,13 +148,42 @@ public class CrowdinFileFactory {
    */
   public CrowdinTranslation prepareCrowdinTranslation(CrowdinFile _master, File _translationFile) {
     String type = _translationFile.getName().substring(_translationFile.getName().lastIndexOf('.') + 1);
+
     boolean shouldBeCleaned = false;
-    if (type.equals("xml")) {
+    // don't convert xml to properties when in mobile project
+    if (type.equals("xml") && !(_master.getProject().contains("mobile"))) {
       _translationFile = fromXMLToProps(_translationFile);
       shouldBeCleaned = true;
     }
 
-    String name, lang;
+    String name, lang="";
+    
+    // if project is mobile
+    if (_master.getProject().contains("mobile")){
+      List<String> fileSplitTempo =  Arrays.asList(_translationFile.getPath().split("/"));
+      //if android
+      if (_translationFile.getPath().contains("android")){
+        for (String matchValue : fileSplitTempo) {
+          if (matchValue.contains("values-")){
+            String[] values_language = matchValue.split("values-");
+            //get language in "values-languages"
+            lang = values_language[1];
+          }
+        }
+      }
+      //if ios
+      if (_translationFile.getPath().contains("ios")){
+        for (String matchValue : fileSplitTempo) {
+          if (matchValue.contains("lproj") && (!matchValue.contains("en"))){
+            String[] values_language = matchValue.split(".lproj");
+            //get langugage in "language.lproj"
+            lang = values_language[0];
+          }
+        }
+      }
+    }
+    // if project is not mobile, use ordinary processing
+    else{
     if (_translationFile.getPath().contains("gadget") && !_translationFile.getPath().contains("GadgetPortlet")) {
       lang = _translationFile.getName().substring(0, _translationFile.getName().lastIndexOf('.'));
       if ("default".equals(lang)) {
@@ -155,6 +197,8 @@ public class CrowdinFileFactory {
       if (m.group(3) != null)
         lang += m.group(3);
     }
+    }    
+    
     name = encodeMinusCharacterInPath(_translationFile.getName(), true);
 
     return new CrowdinTranslation(_translationFile, name, _master.getType(), _master.getProject(), lang, _master, shouldBeCleaned);

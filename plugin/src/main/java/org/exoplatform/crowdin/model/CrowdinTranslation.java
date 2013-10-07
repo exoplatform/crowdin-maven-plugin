@@ -63,4 +63,26 @@ public class CrowdinTranslation extends CrowdinFile {
     }
   }
 
+  /**
+* tranform xx-XX to xx-rXX
+* @param locale
+* @return
+*/
+  public static String encodeAndroidLocale(String locale){
+    if (locale.contains("-")){
+      return locale = locale.replaceAll("-", "-r");
+    }
+    else{
+      return locale;
+    }
+  }
+  
+  /**
+* transform en-GB to en_GB
+* @param locale
+* @return
+*/
+  public static String encodeIOSLocale(String locale){
+    return encodeLanguageName(locale, false);
+  }  
 }

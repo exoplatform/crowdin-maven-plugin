@@ -117,6 +117,16 @@
                   <branch>feature/3.5.x-PLF-translation</branch>
                   <localDirectory>gatein-portal-3.5.x</localDirectory>
                 </sourcesRepository>
+                <sourcesRepository>
+                  <uri>git@github.com:exoplatform/mobile-android.git</uri>
+                  <branch>feature/translations</branch>
+                  <localDirectory>android</localDirectory>
+                </sourcesRepository>
+                <sourcesRepository>
+                  <uri>git@github.com:exoplatform/mobile-ios.git</uri>
+                  <branch>feature/translations</branch>
+                  <localDirectory>ios</localDirectory>
+                </sourcesRepository>
               </sourcesRepositories>
             </configuration>
           </plugin>
@@ -317,3 +327,4 @@
     </profile>
   </profiles>
 </project>
+

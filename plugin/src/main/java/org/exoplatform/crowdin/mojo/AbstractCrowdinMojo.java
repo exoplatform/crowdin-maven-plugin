@@ -28,6 +28,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
@@ -356,7 +357,8 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
   }
 
   /**
-   * A function that initializes translations of the master file given in parameter.
+   * A function that initializes translations of the master file given in parameter 
+   * then upload these translations into Crowdin accordingly
    *
    * @param _master The master file of which translations will be detected and uploaded.
    */
@@ -366,30 +368,72 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
     if (_master.isShouldBeCleaned()) {
       _master.getFile().delete();
     }
-    File[] files = dir.listFiles(new FilenameFilter() {
-      public boolean accept(File dir, String name) {
-        if (dir.getPath().contains("gadget") && !dir.getPath().contains("GadgetPortlet")) {
-          return true;
-        }
-        // There are both format *.properties and *.xml for this files, so must ignore *.xml files
-        if (dir.getPath().contains("workflow") && name.indexOf(".xml") > 0) {
-          return false;
-        }
-        if (dir.getPath().contains("web/portal")) {
-          if (name.equals("expression_en.xml") || name.equals("expression_it.xml") || name.equals("services_en.xml") || name.equals("services_it.xml"))
+ 
+    List<File> files = new ArrayList<File>();
+    List<String> languagesToProcess = getLanguages();    
+    // processing for Android or iOs
+    if ((dir.getPath().contains("android")) || ((dir.getPath().contains("ios")))) {
+      
+      
+      // remove "en" language default in the list, just send translations files      
+      if (languagesToProcess.contains("en")) {
+        languagesToProcess.remove("en");
+      }      
+      
+      for (int i = 0; i < languagesToProcess.size(); i++) {        
+          String replaceLanguagePathName ="";
+          
+          if (dir.getPath().contains("android")){
+          //replace "values" to "values-language"
+            String localizable = CrowdinTranslation.encodeAndroidLocale(languagesToProcess.get(i));
+          replaceLanguagePathName = dir.getPath().replaceAll("values","values-" + localizable);
+          }
+          else if (dir.getPath().contains("ios")) {
+            //replace "en.lproj" to "language.lproj"
+            //transform to iOS convention localizable "es-ES" > "es_ES"
+            String localizable = CrowdinTranslation.encodeIOSLocale(languagesToProcess.get(i));
+          replaceLanguagePathName = dir.getPath().replaceAll("en.lproj",localizable+".lproj");
+          }          
+          // add translation files in list
+          File fileToAdd = new File(replaceLanguagePathName + File.separator + masterFileName);
+          if (fileToAdd.exists()) {
+            files.add(fileToAdd);
+          }
+                  
+      }
+    }
+    // processing for other projects
+    else{
+      File[] filesArray = dir.listFiles(new FilenameFilter() {
+        public boolean accept(File dir, String name) {
+          if (dir.getPath().contains("gadget") && !dir.getPath().contains("GadgetPortlet")) {
+            return true;
+          }
+          // There are both format *.properties and *.xml for this files, so must
+          // ignore *.xml files
+          if (dir.getPath().contains("workflow") && name.indexOf(".xml") > 0) {
             return false;
-        }
-        if (ignoredFiles != null) {
-          String filePath = dir.getPath() + "/" + name;
-          for (Object key : ignoredFiles.keySet()) {
-            if (filePath.indexOf((String) key) >= 0) {
+          }
+          if (dir.getPath().contains("web/portal")) {
+            if (name.equals("expression_en.xml") || name.equals("expression_it.xml")
+                || name.equals("services_en.xml") || name.equals("services_it.xml"))
               return false;
+          }
+          if (ignoredFiles != null) {
+            String filePath = dir.getPath() + "/" + name;
+            for (Object key : ignoredFiles.keySet()) {
+              if (filePath.indexOf((String) key) >= 0) {
+                return false;
+              }
             }
           }
+          return getFactory().isTranslation(name);
         }
-        return getFactory().isTranslation(name);
-      }
-    });
+      });
+      files = Arrays.asList(filesArray);
+    }  
+    
+    
     for (File file : files) {
       String transName = file.getName();
       String masterName;
@@ -404,29 +448,55 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
       if (!tName.equalsIgnoreCase(mName) && (transName.indexOf(masterName) == 0 && transName.indexOf(masterName + "-") < 0 || file.getPath().contains("gadget"))) {
         if (getLog().isDebugEnabled())
           getLog().debug("*** Initializing: " + transName);
-        try {
-          if (getLog().isDebugEnabled())
-            getLog().debug("*** Upload translation: " + transName + "\n\t***** for master: " + _master.getName());
-          CrowdinTranslation cTran = getFactory().prepareCrowdinTranslation(_master, file);
-          if (getLog().isDebugEnabled()) {
-            getLog().debug("=============================================================================");
-            getLog().debug(printFileContent(cTran.getFile()));
-            getLog().debug("=============================================================================");
-          }
-          String result = getHelper().uploadTranslation(cTran);
-          if (result.contains("success"))
-            getLog().info("Translation '" + transName + "' added succesfully.");
-          else
-            getLog().warn("Cannot upload translation '" + file.getPath() + " with lang '" + cTran.getLang() + "'. Reason:\n" + result);
-          if (cTran.isShouldBeCleaned()) {
-            cTran.getFile().delete();
-          }
-        } catch (MojoExecutionException e) {
-          getLog().error("Error while adding translation '" + file.getPath() + "'. Exception:\n" + e.getMessage());
-        }
+        prepareAndUploadTranslation(transName, _master, file);
+      }
+      //process for Android or iOS
+      else if ((dir.getPath().contains("android")) || ((dir.getPath().contains("ios")))) {
+        prepareAndUploadTranslation(transName, _master, file);
       }
     }
   }
+  
+  /**
+* prepareCrowdinTranslation and uploadTranslation
+* @param transName
+* @param _master
+* @param file
+*/
+  private void prepareAndUploadTranslation(String transName, CrowdinFile _master, File file) {
+    try {
+      if (getLog().isDebugEnabled())
+        getLog().debug("*** Upload translation: " + transName + "\n\t***** for master: "
+            + _master.getName());
+      CrowdinTranslation cTran = getFactory().prepareCrowdinTranslation(_master, file);
+      if (getLog().isDebugEnabled()) {
+        getLog().debug("=============================================================================");
+        getLog().debug(printFileContent(cTran.getFile()));
+        getLog().debug("=============================================================================");
+      }
+      if(!getLanguages().contains(cTran.getLang())){
+        getLog().warn("Language "+cTran.getLang()+" is not configured to be processed");
+        return;
+      }
+      
+      String result = getHelper().uploadTranslation(cTran);
+      getLog().info("*** Upload translation: " + transName + "\n\t***** for master: "
+          + _master.getName());
+      
+      if (result.contains("success"))
+        getLog().info("Translation '" + transName + "' added succesfully.");
+      else
+        getLog().warn("Cannot upload translation '" + file.getPath() + " with lang '"
+            + cTran.getLang() + "'. Reason:\n" + result);
+      if (cTran.isShouldBeCleaned()) {
+        cTran.getFile().delete();
+      }
+    } catch (MojoExecutionException e) {
+      getLog().error("Error while adding translation '" + file.getPath() + "'. Exception:\n"
+          + e.getMessage());
+    }
+  }
+    
 
   protected String printFileContent(File file) {
     try {

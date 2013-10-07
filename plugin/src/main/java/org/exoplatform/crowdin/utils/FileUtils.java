@@ -20,6 +20,7 @@ package org.exoplatform.crowdin.utils;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -137,5 +138,36 @@ public class FileUtils {
     return true;
   }
 
+  /**
+   * replace old string with new string and write to file
+   * @param filePath
+   * @param oldValue
+   * @param newValue
+   */
+  public static void replaceCharacters(String filePath, String oldValue, String newValue) {
+    //search propKey in code base then replace the new value 
+    File file = new File(filePath);
+    BufferedReader reader;
+    try {
+      reader = new BufferedReader(new FileReader(file));
+      String line = "", oldtext = "";
+      while((line = reader.readLine()) != null)
+      {
+        oldtext += line + System.getProperty("line.separator");
+      }
+      reader.close();
+      //To replace a line in a file
+      String newtext = oldtext.replaceAll(oldValue, newValue);
+      
+      FileWriter writer = new FileWriter(filePath);
+      writer.write(newtext);
+      writer.close();
+    } catch (FileNotFoundException e) {
+      log.error(e.getMessage());
+    } catch (IOException e) {
+      log.error(e.getMessage());
+    }
+  }
+  
 
 }
