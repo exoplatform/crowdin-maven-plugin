@@ -266,7 +266,7 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
             if(zipentryName.contains("mobile") && zipentryName.contains("android")){
               String resourceTranslationFilePath  = parentDir + name + extension;
               String localizable = CrowdinTranslation.encodeAndroidLocale(locale);
-              String masterFilePath = resourceTranslationFilePath.replaceAll("-" + localizable, "");
+              String masterFilePath = resourceTranslationFilePath.replaceAll("res/values-" + localizable, "res/values");
 
               //create temporary file to persists zipinputstream
               int n;
