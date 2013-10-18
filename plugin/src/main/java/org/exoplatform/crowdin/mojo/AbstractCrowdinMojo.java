@@ -476,6 +476,9 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
       }
       if(!getLanguages().contains(cTran.getLang())){
         getLog().warn("Language "+cTran.getLang()+" is not configured to be processed");
+        if (cTran.isShouldBeCleaned()) {
+          cTran.getFile().delete();
+        }
         return;
       }
       
