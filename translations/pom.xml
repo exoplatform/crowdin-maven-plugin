@@ -70,55 +70,55 @@
                 <sourcesRepository>
                   <uri>git@github.com:exodev/platform-ui.git</uri>
                   <branch>feature/stabilization</branch>
-                  <localDirectory>platform-ui-4.0.x</localDirectory>
+                  <localDirectory>platform-ui-4.1.x</localDirectory>
                 </sourcesRepository>
                 <sourcesRepository>
                   <uri>git@github.com:exodev/commons.git</uri>
                   <branch>feature/stabilization</branch>
-                  <localDirectory>commons-4.0.x</localDirectory>
+                  <localDirectory>commons-4.1.x</localDirectory>
                 </sourcesRepository>		
                 <sourcesRepository>
                   <uri>git@github.com:exodev/ecms.git</uri>
                   <branch>feature/stabilization</branch>
-                  <localDirectory>ecms-4.0.x</localDirectory>
+                  <localDirectory>ecms-4.1.x</localDirectory>
                 </sourcesRepository>		
                 <sourcesRepository>
                   <uri>git@github.com:exodev/social.git</uri>
                   <branch>feature/stabilization</branch>
-                  <localDirectory>social-4.0.x</localDirectory>
+                  <localDirectory>social-4.1.x</localDirectory>
                 </sourcesRepository>
                 <sourcesRepository>
                   <uri>git@github.com:exodev/calendar.git</uri>
                   <branch>feature/stabilization</branch>
-                  <localDirectory>calendar-4.0.x</localDirectory>
+                  <localDirectory>calendar-4.1.x</localDirectory>
                 </sourcesRepository>
                 <sourcesRepository>
                   <uri>git@github.com:exodev/wiki.git</uri>
                   <branch>feature/stabilization</branch>
-                  <localDirectory>wiki-4.0.x</localDirectory>
+                  <localDirectory>wiki-4.1.x</localDirectory>
                 </sourcesRepository>
                 <sourcesRepository>
                   <uri>git@github.com:exodev/forum.git</uri>
                   <branch>feature/stabilization</branch>
-                  <localDirectory>forum-4.0.x</localDirectory>
+                  <localDirectory>forum-4.1.x</localDirectory>
                 </sourcesRepository>
                 <sourcesRepository>
                   <uri>git@github.com:exodev/integration.git</uri>
                   <branch>feature/stabilization</branch>
-                  <localDirectory>integration-4.0.x</localDirectory>
+                  <localDirectory>integration-4.1.x</localDirectory>
                 </sourcesRepository>		
                 <sourcesRepository>
                   <uri>git@github.com:exodev/platform.git</uri>
                   <branch>feature/stabilization</branch>
-                  <localDirectory>platform-4.0.x</localDirectory>
+                  <localDirectory>platform-4.1.x</localDirectory>
                 </sourcesRepository>	
 		
 		<!-- disable Gatein productization and mobile projects-->
 		<!--
                 <sourcesRepository>
                   <uri>git@github.com:exoplatform/gatein-portal.git</uri>
-                  <branch>feature/3.5.x-PLF-translation</branch>
-                  <localDirectory>gatein-portal-3.5.x</localDirectory>
+                  <branch>feature/3.7.x-PLF-translation</branch>
+                  <localDirectory>gatein-portal-3.7.x</localDirectory>
                 </sourcesRepository>	
                 <sourcesRepository>
                   <uri>git@github.com:exoplatform/mobile-android.git</uri>
