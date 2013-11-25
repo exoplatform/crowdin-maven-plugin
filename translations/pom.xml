@@ -112,14 +112,13 @@
                   <branch>feature/stabilization</branch>
                   <localDirectory>platform-4.1.x</localDirectory>
                 </sourcesRepository>	
-		
-		<!-- disable Gatein productization and mobile projects-->
-		<!--
                 <sourcesRepository>
                   <uri>git@github.com:exoplatform/gatein-portal.git</uri>
                   <branch>feature/3.7.x-PLF-translation</branch>
                   <localDirectory>gatein-portal-3.7.x</localDirectory>
-                </sourcesRepository>	
+                </sourcesRepository>			
+		<!-- disable mobile projects-->
+		<!--
                 <sourcesRepository>
                   <uri>git@github.com:exoplatform/mobile-android.git</uri>
                   <branch>feature/translations</branch>
@@ -130,8 +129,7 @@
                   <branch>feature/translations</branch>
                   <localDirectory>ios</localDirectory>
                 </sourcesRepository>
-		-->
-	
+		-->	
               </sourcesRepositories>
             </configuration>
           </plugin>
