@@ -373,7 +373,8 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
               String propKey = (String) e.nextElement();
               String crowdinValue = propsCrowdin.getProperty(propKey);
              
-              if (null != crowdinValue && crowdinValue.length() > 0)
+              //PLFENG-2270, add file when not self-replacement a=#{a}
+              if (null != crowdinValue && crowdinValue.length() > 0 && (!crowdinValue.trim().equals("#{"+propKey+"}")))
                 config.setProperty(propKey, crowdinValue);
             }
 
