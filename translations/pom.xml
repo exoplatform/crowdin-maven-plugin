@@ -65,9 +65,9 @@
                 <language>zh-CN</language>
                 <language>fi</language>
                 <language>lt</language>
-		<language>no</language>
-		<language>sq</language>		
-		<language>zh-TW</language>
+                <language>no</language>
+                <language>sq</language>		
+                <language>zh-TW</language>
               </languages>
               <!-- Projects to manage -->
               <sourcesRepositories>
@@ -130,6 +130,11 @@
                   <uri>git@github.com:exoplatform/mobile-ios.git</uri>
                   <branch>feature/translations</branch>
                   <localDirectory>ios</localDirectory>
+                </sourcesRepository>
+                <sourcesRepository>
+                  <uri>git@github.com:exo-addons/weemo-extension.git</uri>
+                  <branch>feature/4.0.x-translation</branch>
+                  <localDirectory>weemo-extension</localDirectory>
                 </sourcesRepository>
               </sourcesRepositories>
             </configuration>
