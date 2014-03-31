@@ -63,7 +63,11 @@
                 <language>ru</language>
                 <language>tr</language>
                 <language>zh-CN</language>
-                <language>fi</language>    
+                <language>fi</language>
+                <language>lt</language>
+                <language>no</language>
+                <language>sq</language>		
+                <language>zh-TW</language>
               </languages>
               <!-- Projects to manage -->
               <sourcesRepositories>	      
@@ -130,6 +134,11 @@
                   <localDirectory>ios</localDirectory>
                 </sourcesRepository>
 		-->	
+                <sourcesRepository>
+                  <uri>git@github.com:exo-addons/weemo-extension.git</uri>
+                  <branch>feature/4.1.x-translation</branch>
+                  <localDirectory>weemo-extension</localDirectory>
+                </sourcesRepository>
               </sourcesRepositories>
             </configuration>
           </plugin>
