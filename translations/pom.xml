@@ -63,9 +63,6 @@
                 <language>ru</language>
                 <language>tr</language>
                 <language>zh-CN</language>
-                <language>fi</language>
-                <language>lt</language>
-                <language>no</language>
                 <language>sq</language>		
                 <language>zh-TW</language>
               </languages>
@@ -116,11 +113,13 @@
                   <branch>feature/4.1.x-translation</branch>
                   <localDirectory>platform-4.1.x</localDirectory>
                 </sourcesRepository>	
+<!--
                 <sourcesRepository>
                   <uri>git@github.com:exoplatform/gatein-portal.git</uri>
                   <branch>feature/3.7.x-PLF-translation</branch>
                   <localDirectory>gatein-portal-3.7.x</localDirectory>
-                </sourcesRepository>			
+                </sourcesRepository>		
+-->	
 		<!-- disable mobile projects-->
 		<!--
                 <sourcesRepository>
