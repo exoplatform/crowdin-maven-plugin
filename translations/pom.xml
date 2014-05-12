@@ -127,21 +127,21 @@
                   <branch>feature/4.1.x-translation</branch>
                   <localDirectory>weemo-extension</localDirectory>
                 </sourcesRepository>
+                <sourcesRepository>
+                  <uri>git@github.com:exoplatform/mobile-android.git</uri>
+                  <branch>feature/4.1.x-translation</branch>
+                  <localDirectory>android</localDirectory>
+                </sourcesRepository>
+                <sourcesRepository>
+                  <uri>git@github.com:exoplatform/mobile-ios.git</uri>
+                  <branch>feature/4.1.x-translation</branch>
+                  <localDirectory>ios</localDirectory>
+                </sourcesRepository>
 <!-- project disable		
                 <sourcesRepository>
                   <uri>git@github.com:exoplatform/gatein-portal.git</uri>
                   <branch>feature/3.7.x-PLF-translation</branch>
                   <localDirectory>gatein-portal-3.7.x</localDirectory>
-                </sourcesRepository>
-                <sourcesRepository>
-                  <uri>git@github.com:exoplatform/mobile-android.git</uri>
-                  <branch>feature/translations</branch>
-                  <localDirectory>android</localDirectory>
-                </sourcesRepository>
-                <sourcesRepository>
-                  <uri>git@github.com:exoplatform/mobile-ios.git</uri>
-                  <branch>feature/translations</branch>
-                  <localDirectory>ios</localDirectory>
                 </sourcesRepository>
 -->
               </sourcesRepositories>
