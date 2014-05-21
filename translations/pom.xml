@@ -70,8 +70,9 @@
                 <language>zh-TW</language>
                 <language>cs</language>
                 <language>uk</language>
-		            -->
-                <language>fa</language>
+		            <language>fa</language>
+                -->
+                <language>el</language>
               </languages>
               <!-- Projects to manage -->
               <sourcesRepositories>
