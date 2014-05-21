@@ -50,7 +50,7 @@
               <!-- Can be set with command line arg -Dlangs=fr,en -->
               <!-- ALL By default, list computed from the archive -->
               <languages>
-                <!—- language>en</language>
+                <!-- language>en</language>
                 <language>fr</language>
                 <language>ar</language>
                 <language>ja</language>
@@ -70,7 +70,7 @@
                 <language>zh-TW</language>
                 <language>cs</language>
                 <language>uk</language>
-		—->
+		            -->
                 <language>fa</language>
               </languages>
               <!-- Projects to manage -->
