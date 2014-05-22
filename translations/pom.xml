@@ -45,7 +45,7 @@
             <version>${project.version}</version>
             <configuration>
 	    <!-- Boolean to activate new language or add new properties (true/false)-->
-	    <isActivate>false</isActivate>
+	    <isActivate>true</isActivate>
               <!-- Languages to apply in projects -->
               <!-- Can be set with command line arg -Dlangs=fr,en -->
               <!-- ALL By default, list computed from the archive -->
@@ -74,47 +74,47 @@
               <sourcesRepositories>
                 <sourcesRepository>
                   <uri>git@github.com:exodev/platform-ui.git</uri>
-                  <branch>feature/4.1.x-translation</branch>
+                  <branch>feature/stabilization</branch>
                   <localDirectory>platform-ui-4.1.x</localDirectory>
                 </sourcesRepository>
                 <sourcesRepository>
                   <uri>git@github.com:exodev/commons.git</uri>
-                  <branch>feature/4.1.x-translation</branch>
+                  <branch>feature/stabilization</branch>
                   <localDirectory>commons-4.1.x</localDirectory>
                 </sourcesRepository>		
                 <sourcesRepository>
                   <uri>git@github.com:exodev/ecms.git</uri>
-                  <branch>feature/4.1.x-translation</branch>
+                  <branch>feature/stabilization</branch>
                   <localDirectory>ecms-4.1.x</localDirectory>
                 </sourcesRepository>		
                 <sourcesRepository>
                   <uri>git@github.com:exodev/social.git</uri>
-                  <branch>feature/4.1.x-translation</branch>
+                  <branch>feature/stabilization</branch>
                   <localDirectory>social-4.1.x</localDirectory>
                 </sourcesRepository>
                 <sourcesRepository>
                   <uri>git@github.com:exodev/calendar.git</uri>
-                  <branch>feature/4.1.x-translation</branch>
+                  <branch>feature/stabilization</branch>
                   <localDirectory>calendar-4.1.x</localDirectory>
                 </sourcesRepository>
                 <sourcesRepository>
                   <uri>git@github.com:exodev/wiki.git</uri>
-                  <branch>feature/4.1.x-translation</branch>
+                  <branch>feature/stabilization</branch>
                   <localDirectory>wiki-4.1.x</localDirectory>
                 </sourcesRepository>
                 <sourcesRepository>
                   <uri>git@github.com:exodev/forum.git</uri>
-                  <branch>feature/4.1.x-translation</branch>
+                  <branch>feature/stabilization</branch>
                   <localDirectory>forum-4.1.x</localDirectory>
                 </sourcesRepository>
                 <sourcesRepository>
                   <uri>git@github.com:exodev/integration.git</uri>
-                  <branch>feature/4.1.x-translation</branch>
+                  <branch>feature/stabilization</branch>
                   <localDirectory>integration-4.1.x</localDirectory>
                 </sourcesRepository>		
                 <sourcesRepository>
                   <uri>git@github.com:exodev/platform.git</uri>
-                  <branch>feature/4.1.x-translation</branch>
+                  <branch>feature/stabilization</branch>
                   <localDirectory>platform-4.1.x</localDirectory>
                 </sourcesRepository>
                 <sourcesRepository>
