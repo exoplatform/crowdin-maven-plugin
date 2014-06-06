@@ -50,7 +50,6 @@
               <!-- Can be set with command line arg -Dlangs=fr,en -->
               <!-- ALL By default, list computed from the archive -->
               <languages>
-<!--
                 <language>en</language>
                 <language>fr</language>
                 <language>vi</language>
@@ -70,7 +69,6 @@
                 <language>cs</language>		
                 <language>lt</language>
                 <language>uk</language>
--->
                 <language>no</language>
                 <language>el</language>
               </languages>
