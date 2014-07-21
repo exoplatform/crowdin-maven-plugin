@@ -121,7 +121,7 @@
                   <localDirectory>platform-4.0.x</localDirectory>
                 </sourcesRepository>
                 <sourcesRepository>
-                  <uri>git@github.com:exoplatform/gatein-portal.git</uri>
+                  <uri>git@github.com:exodev/gatein-portal.git</uri>
                   <branch>feature/3.5.x-PLF-translation</branch>
                   <localDirectory>gatein-portal-3.5.x</localDirectory>
                 </sourcesRepository>
