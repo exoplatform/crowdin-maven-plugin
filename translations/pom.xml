@@ -45,7 +45,7 @@
             <version>${project.version}</version>
             <configuration>
 	    <!-- Boolean to activate new language or add new properties (true/false)-->
-	    <isActivate>true</isActivate>
+	    <isActivate>false</isActivate>
               <!-- Languages to apply in projects -->
               <!-- Can be set with command line arg -Dlangs=fr,en -->
               <!-- ALL By default, list computed from the archive -->
@@ -76,7 +76,6 @@
               </languages>
               <!-- Projects to manage -->
               <sourcesRepositories>
-<!--
                 <sourcesRepository>
                   <uri>git@github.com:exodev/platform-ui.git</uri>
                   <branch>feature/stabilization</branch>
@@ -142,8 +141,6 @@
                   <branch>feature/4.1.x-translation</branch>
                   <localDirectory>ios</localDirectory>
                 </sourcesRepository>
--->
-
                 <sourcesRepository>
                   <uri>git@github.com:exodev/gatein-portal.git</uri>
                   <branch>feature/3.7.x-PLF-translation</branch>
