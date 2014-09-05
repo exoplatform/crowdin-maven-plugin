@@ -45,7 +45,7 @@
             <version>${project.version}</version>
             <configuration>
 	    <!-- Boolean to activate new language or add new properties (true/false)-->
-	    <isActivate>false</isActivate>
+	    <isActivate>true</isActivate>
               <!-- Languages to apply in projects -->
               <!-- Can be set with command line arg -Dlangs=fr,en -->
               <!-- ALL By default, list computed from the archive -->
@@ -53,10 +53,12 @@
                 <language>en</language>
                 <language>fr</language>
                 <language>vi</language>
+<!--
                 <language>ar</language>
                 <language>ja</language>
+-->
                 <language>de</language>
-                <language>vi</language>
+<!--
                 <language>sv-SE</language>
                 <language>it</language>
                 <language>pt-BR</language>
@@ -74,9 +76,11 @@
                 <language>pl</language>
                 <language>fa</language>
                 <language>ro</language>
+-->
               </languages>
               <!-- Projects to manage -->
               <sourcesRepositories>
+<!--
                 <sourcesRepository>
                   <uri>git@github.com:exodev/platform-ui.git</uri>
                   <branch>feature/stabilization</branch>
@@ -97,11 +101,13 @@
                   <branch>feature/stabilization</branch>
                   <localDirectory>social-4.1.x</localDirectory>
                 </sourcesRepository>
+-->
                 <sourcesRepository>
                   <uri>git@github.com:exodev/calendar.git</uri>
                   <branch>feature/stabilization</branch>
                   <localDirectory>calendar-4.1.x</localDirectory>
                 </sourcesRepository>
+<!--
                 <sourcesRepository>
                   <uri>git@github.com:exodev/wiki.git</uri>
                   <branch>feature/stabilization</branch>
@@ -147,13 +153,15 @@
                   <branch>feature/3.5.x-PLF-translation</branch>
                   <localDirectory>gatein-portal-3.5.x</localDirectory>
                 </sourcesRepository>
-
+-->
 <!--project will used for PLF 4.2-->
+<!--
                 <sourcesRepository>
                   <uri>git@github.com:exodev/gatein-portal.git</uri>
                   <branch>feature/3.7.x-PLF-translation</branch>
                   <localDirectory>gatein-portal-3.7.x</localDirectory>
                 </sourcesRepository>
+-->
               </sourcesRepositories>
             </configuration>
           </plugin>
