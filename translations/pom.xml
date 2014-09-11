@@ -50,6 +50,7 @@
               <!-- Can be set with command line arg -Dlangs=fr,en -->
               <!-- ALL By default, list computed from the archive -->
               <languages>
+<!--
                 <language>en</language>
                 <language>fr</language>
                 <language>vi</language>
@@ -73,6 +74,8 @@
                 <language>pl</language>
                 <language>fa</language>
                 <language>ro</language>
+-->
+                <language>ca</language>
               </languages>
               <!-- Projects to manage -->
               <sourcesRepositories>
