@@ -129,7 +129,7 @@
                 </sourcesRepository>
                 <sourcesRepository>
                   <uri>git@github.com:exo-addons/weemo-extension.git</uri>
-                  <branch>feature/4.1.x-translation</branch>
+                  <branch>master</branch>
                   <localDirectory>weemo-extension</localDirectory>
                 </sourcesRepository>
                 <sourcesRepository>
