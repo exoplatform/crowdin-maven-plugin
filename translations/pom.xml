@@ -153,11 +153,13 @@
                   <localDirectory>gatein-portal-3.5.x</localDirectory>
                 </sourcesRepository>
 <!--project will used for PLF 4.2-->
+<!-- disable
                 <sourcesRepository>
                   <uri>git@github.com:exodev/gatein-portal.git</uri>
                   <branch>feature/3.7.x-PLF-translation</branch>
                   <localDirectory>gatein-portal-3.7.x</localDirectory>
                 </sourcesRepository>
+-->
               </sourcesRepositories>
             </configuration>
           </plugin>
