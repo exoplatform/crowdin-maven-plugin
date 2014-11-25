@@ -79,47 +79,47 @@
               <sourcesRepositories>
                 <sourcesRepository>
                   <uri>git@github.com:exodev/platform-ui.git</uri>
-                  <branch>feature/stabilization</branch>
+                  <branch>integration/4.2.x-translation</branch>
                   <localDirectory>platform-ui-4.1.x</localDirectory>
                 </sourcesRepository>
                 <sourcesRepository>
                   <uri>git@github.com:exodev/commons.git</uri>
-                  <branch>feature/stabilization</branch>
+                  <branch>integration/4.2.x-translation</branch>
                   <localDirectory>commons-4.1.x</localDirectory>
                 </sourcesRepository>		
                 <sourcesRepository>
                   <uri>git@github.com:exodev/ecms.git</uri>
-                  <branch>feature/stabilization</branch>
+                  <branch>integration/4.2.x-translation</branch>
                   <localDirectory>ecms-4.1.x</localDirectory>
                 </sourcesRepository>		
                 <sourcesRepository>
                   <uri>git@github.com:exodev/social.git</uri>
-                  <branch>feature/stabilization</branch>
+                  <branch>integration/4.2.x-translation</branch>
                   <localDirectory>social-4.1.x</localDirectory>
                 </sourcesRepository>
                 <sourcesRepository>
                   <uri>git@github.com:exodev/calendar.git</uri>
-                  <branch>feature/stabilization</branch>
+                  <branch>integration/4.2.x-translation</branch>
                   <localDirectory>calendar-4.1.x</localDirectory>
                 </sourcesRepository>
                 <sourcesRepository>
                   <uri>git@github.com:exodev/wiki.git</uri>
-                  <branch>feature/stabilization</branch>
+                  <branch>integration/4.2.x-translation</branch>
                   <localDirectory>wiki-4.1.x</localDirectory>
                 </sourcesRepository>
                 <sourcesRepository>
                   <uri>git@github.com:exodev/forum.git</uri>
-                  <branch>feature/stabilization</branch>
+                  <branch>integration/4.2.x-translation</branch>
                   <localDirectory>forum-4.1.x</localDirectory>
                 </sourcesRepository>
                 <sourcesRepository>
                   <uri>git@github.com:exodev/integration.git</uri>
-                  <branch>feature/stabilization</branch>
+                  <branch>integration/4.2.x-translation</branch>
                   <localDirectory>integration-4.1.x</localDirectory>
                 </sourcesRepository>		
                 <sourcesRepository>
                   <uri>git@github.com:exodev/platform.git</uri>
-                  <branch>feature/stabilization</branch>
+                  <branch>integration/4.2.x-translation</branch>
                   <localDirectory>platform-4.1.x</localDirectory>
                 </sourcesRepository>
                 <sourcesRepository>
@@ -149,7 +149,7 @@
                 </sourcesRepository>
                 <sourcesRepository>
                   <uri>git@github.com:exodev/gatein-portal.git</uri>
-                  <branch>feature/3.5.x-PLF-translation</branch>
+                  <branch>integration/4.2.x-translation</branch>
                   <localDirectory>gatein-portal-3.5.x</localDirectory>
                 </sourcesRepository>
 <!--project will used for PLF 4.2-->
