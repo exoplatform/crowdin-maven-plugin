@@ -17,11 +17,13 @@ Configuration:
 
 Add the Following properties in the maven settings.xml (contact with admin of crowdin exo-platform-35 project to get project key and id):
 
-
-    <exo.crowdin.project.id>crowdin-plf41</exo.crowdin.project.id>
-    <exo.crowdin.project.key>{projectKey}</exo.crowdin.project.key>
-
-
+  <profile>
+    <id>crowdin-plf4</id>
+    <properties>
+      <exo.crowdin.project.id>exo-platform</exo.crowdin.project.id>
+      <exo.crowdin.project.key>YOUR KEY</exo.crowdin.project.key> 
+    </properties>
+  </profile>
 
 Download:
 ---------
@@ -41,14 +43,14 @@ Usage:
 **1\. Download translations from crowdin: download-translations**
 
 
-**`mvn clean install -pl plugin -am; mvn clean install -Pcrowdin-plf41,plf41,download-translations -pl translations`**
+**`mvn clean install -pl plugin -am; mvn clean install -Pcrowdin-plf4,plf4,download-translations -pl translations`**
 
 
 - Download archive file from crowdin to translation/target/ then name to "translation.zip"
 
 **2\. Update sources from crowdin (injection)**
 
-**`mvn clean install -pl plugin -am; mvn clean install -Pcrowdin-plf41,plf41,update-sources -pl translations`**
+**`mvn clean install -pl plugin -am; mvn clean install -Pcrowdin-plf4,plf4,update-sources -pl translations`**
 
 - Modify the pom file with list languages: **`<languages><language>xxx</language></languages>`** 
 - Defaut is false in : **`<isActivate>false</isActivate>`**
@@ -71,7 +73,7 @@ with **`-DdryRun=true`**
 
 **3\. Update to crowdin (synchronization): update-crowdin**
 
-**`mvn clean install -pl plugin -am; mvn clean install -Pcrowdin-plf41,plf41,update-crowdin -pl translations`**
+**`mvn clean install -pl plugin -am; mvn clean install -Pcrowdin-plf4,plf4,update-crowdin -pl translations`**
 
 This will execute the plugin with the goal 'update-crowdin':
 
@@ -87,7 +89,7 @@ with **`-DdryRun=true`**
 
 **4\. Upload Translation**
 
-**`mvn clean install -pl plugin -am; mvn clean install -Pcrowdin-plf41,plf41,upload-translation -pl translations`**
+**`mvn clean install -pl plugin -am; mvn clean install -Pcrowdin-plf4,plf4,upload-translation -pl translations`**
 
 This is used to update changes in projects' translation files to Crowdin. It uses the information provided in the properties files (upload-translation.properties and <exo-project>.properties files) under upload-translation folder to determine the projects and their translation files need to be updated (in the same convention as the plugin's crowdin.properties and <exo-project>.properties files) 
 
@@ -99,7 +101,7 @@ Steps:
 
 **5\. Restore translation**
 
-**`mvn clean install -pl plugin -am; mvn clean install -Pcrowdin-plf41,plf41,restore-translation -pl translations`**
+**`mvn clean install -pl plugin -am; mvn clean install -Pcrowdin-plf4,plf4,restore-translation -pl translations`**
 
 This restores a Crowdin project's directory structure and translations from its zip file. This zip file should be built with 'Export Only Approved' and 'Don't Export Untranslated' options unchecked so it will backup the untranslated and all suggested translations (not only the approved ones) as they will need to be restored also. Since this zip contains the project's directory structure and all of its translations, it can be considered as a project's backup and should be rebuilt (with 'Build Fresh Package' under Crowdin's 'Downloads' tab) and kept safe before doing any activity that may mess up the project.
 

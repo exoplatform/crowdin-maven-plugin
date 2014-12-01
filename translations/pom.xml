@@ -35,8 +35,8 @@
   </properties>
   <profiles>
     <profile>
-      <!-- PLF 4.1.x Translations-->
-      <id>plf41</id>
+      <!-- Current profile PLF 4 Translations-->
+      <id>plf4</id>
       <build>
         <plugins>
           <plugin>
