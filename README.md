@@ -17,11 +17,13 @@ Configuration:
 
 Add the Following properties in the maven settings.xml (contact with admin of crowdin exo-platform-35 project to get project key and id):
 
-
-    <exo.crowdin.project.id>crowdin-plf41</exo.crowdin.project.id>
-    <exo.crowdin.project.key>{projectKey}</exo.crowdin.project.key>
-
-
+  <profile>
+    <id>crowdin-plf41</id>
+    <properties>
+      <exo.crowdin.project.id>exo-platform-41</exo.crowdin.project.id>
+      <exo.crowdin.project.key>YOUR KEY</exo.crowdin.project.key> 
+    </properties>
+  </profile>
 
 Download:
 ---------
