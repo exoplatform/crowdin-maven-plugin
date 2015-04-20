@@ -129,12 +129,12 @@
                 </sourcesRepository>
                 <sourcesRepository>
                   <uri>git@github.com:exo-addons/weemo-extension.git</uri>
-                  <branch>master</branch>
+                  <branch>develop</branch>
                   <localDirectory>weemo-extension</localDirectory>
                 </sourcesRepository>
                 <sourcesRepository>
                   <uri>git@github.com:exo-addons/chat-application.git</uri>
-                  <branch>master</branch>
+                  <branch>develop</branch>
                   <localDirectory>chat-application</localDirectory>
                 </sourcesRepository>
                 <sourcesRepository>
