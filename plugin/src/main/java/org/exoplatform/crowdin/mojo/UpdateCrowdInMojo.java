@@ -47,11 +47,11 @@ public class UpdateCrowdInMojo extends AbstractCrowdinMojo {
     if (!isAllPropertyFilesExisted() && !isForce()) {
       getLog().info("\n\n\n");
       getLog().info("----------------------------------------------------------------------------------------\n\n");
-      getLog().info("There are nonexistent properties files! Check again and update properties configuration files or run following command to ");
+      getLog().error("There are nonexistent properties files! Check again and update properties configuration files or run following command to ");
       getLog().info("continue:\n mvn clean install -Psync -Dforce=true \n");
       getLog().info("Warning: All Crowdin files corresponding to nonexistent properties files will be deleted after execute above command.\n");
       getLog().info("----------------------------------------------------------------------------------------\n\n\n");
-      return;
+      throw new MojoExecutionException(UpdateCrowdInMojo.class.getName());      
     }
     // Iterate on each project defined in crowdin.properties
     for (String proj : getProperties().keySet()) {
