@@ -45,7 +45,7 @@
             <version>${project.version}</version>
             <configuration>
 	    <!-- Boolean to activate new language or add new properties (true/false)-->
-	    <isActivate>false</isActivate>
+	    <isActivate>true</isActivate>
               <!-- Languages to apply in projects -->
               <!-- Can be set with command line arg -Dlangs=fr,en -->
               <!-- ALL By default, list computed from the archive -->
@@ -77,6 +77,7 @@
               </languages>
               <!-- Projects to manage -->
               <sourcesRepositories>
+<!--
                 <sourcesRepository>
                   <uri>git@github.com:exodev/platform-ui.git</uri>
                   <branch>integration/4.2.x-translation</branch>
@@ -97,11 +98,13 @@
                   <branch>integration/4.2.x-translation</branch>
                   <localDirectory>social-4.2.x</localDirectory>
                 </sourcesRepository>
+-->
                 <sourcesRepository>
                   <uri>git@github.com:exodev/calendar.git</uri>
                   <branch>integration/4.2.x-translation</branch>
                   <localDirectory>calendar-4.2.x</localDirectory>
                 </sourcesRepository>
+<!--
                 <sourcesRepository>
                   <uri>git@github.com:exodev/wiki.git</uri>
                   <branch>integration/4.2.x-translation</branch>
@@ -112,11 +115,13 @@
                   <branch>integration/4.2.x-translation</branch>
                   <localDirectory>forum-4.2.x</localDirectory>
                 </sourcesRepository>
+-->
                 <sourcesRepository>
                   <uri>git@github.com:exodev/integration.git</uri>
                   <branch>integration/4.2.x-translation</branch>
                   <localDirectory>integration-4.2.x</localDirectory>
                 </sourcesRepository>		
+<!--
                 <sourcesRepository>
                   <uri>git@github.com:exodev/platform.git</uri>
                   <branch>integration/4.2.x-translation</branch>
@@ -152,6 +157,7 @@
                   <branch>integration/4.2.x-translation</branch>
                   <localDirectory>gatein-portal-3.5.x</localDirectory>
                 </sourcesRepository>
+-->
 <!--project will used for PLF 4.2-->
 <!-- disable
                 <sourcesRepository>
