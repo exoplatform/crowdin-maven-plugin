@@ -77,11 +77,13 @@
               </languages>
               <!-- Projects to manage -->
               <sourcesRepositories>
+<!--
                 <sourcesRepository>
                   <uri>git@github.com:exodev/platform-ui.git</uri>
                   <branch>integration/4.2.x-translation</branch>
                   <localDirectory>platform-ui-4.2.x</localDirectory>
                 </sourcesRepository>
+-->
                 <sourcesRepository>
                   <uri>git@github.com:exodev/commons.git</uri>
                   <branch>integration/4.2.x-translation</branch>
@@ -122,6 +124,7 @@
                   <branch>integration/4.2.x-translation</branch>
                   <localDirectory>platform-4.2.x</localDirectory>
                 </sourcesRepository>
+<!--
                 <sourcesRepository>
                   <uri>git@github.com:exoplatform/cloud-workspaces.git</uri>
                   <branch>feature/translation</branch>
@@ -147,6 +150,7 @@
                   <branch>feature/4.1.x-translation</branch>
                   <localDirectory>ios</localDirectory>
                 </sourcesRepository>
+-->
                 <sourcesRepository>
                   <uri>git@github.com:exodev/gatein-portal.git</uri>
                   <branch>integration/4.2.x-translation</branch>
