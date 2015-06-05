@@ -77,50 +77,57 @@
               </languages>
               <!-- Projects to manage -->
               <sourcesRepositories>
+<!--
                 <sourcesRepository>
                   <uri>git@github.com:exodev/platform-ui.git</uri>
-                  <branch>integration/4.2.x-translation</branch>
+                  <branch>develop</branch>
                   <localDirectory>platform-ui</localDirectory>
                 </sourcesRepository>
+-->
                 <sourcesRepository>
                   <uri>git@github.com:exodev/commons.git</uri>
-                  <branch>integration/4.2.x-translation</branch>
+                  <branch>integration/4.3.x-translation</branch>
                   <localDirectory>commons</localDirectory>
                 </sourcesRepository>		
                 <sourcesRepository>
                   <uri>git@github.com:exodev/ecms.git</uri>
-                  <branch>integration/4.2.x-translation</branch>
+                  <branch>integration/4.3.x-translation</branch>
                   <localDirectory>ecms</localDirectory>
                 </sourcesRepository>		
                 <sourcesRepository>
                   <uri>git@github.com:exodev/social.git</uri>
-                  <branch>integration/4.2.x-translation</branch>
+                  <branch>integration/4.3.x-translation</branch>
                   <localDirectory>social</localDirectory>
                 </sourcesRepository>
                 <sourcesRepository>
                   <uri>git@github.com:exodev/calendar.git</uri>
-                  <branch>integration/4.2.x-translation</branch>
+                  <branch>integration/4.3.x-translation</branch>
                   <localDirectory>calendar</localDirectory>
                 </sourcesRepository>
                 <sourcesRepository>
                   <uri>git@github.com:exodev/wiki.git</uri>
-                  <branch>integration/4.2.x-translation</branch>
+                  <branch>integration/4.3.x-translation</branch>
                   <localDirectory>wiki</localDirectory>
                 </sourcesRepository>
                 <sourcesRepository>
                   <uri>git@github.com:exodev/forum.git</uri>
-                  <branch>integration/4.2.x-translation</branch>
+                  <branch>integration/4.3.x-translation</branch>
                   <localDirectory>forum</localDirectory>
                 </sourcesRepository>
                 <sourcesRepository>
                   <uri>git@github.com:exodev/integration.git</uri>
-                  <branch>integration/4.2.x-translation</branch>
+                  <branch>integration/4.3.x-translation</branch>
                   <localDirectory>integration</localDirectory>
                 </sourcesRepository>		
                 <sourcesRepository>
                   <uri>git@github.com:exodev/platform.git</uri>
-                  <branch>integration/4.2.x-translation</branch>
+                  <branch>integration/4.3.x-translation</branch>
                   <localDirectory>platform</localDirectory>
+                </sourcesRepository>
+                <sourcesRepository>
+                  <uri>git@github.com:exodev/gatein-portal.git</uri>
+                  <branch>integration/4.3.x-translation</branch>
+                  <localDirectory>gatein-portal</localDirectory>
                 </sourcesRepository>
                 <sourcesRepository>
                   <uri>git@github.com:exoplatform/cloud-workspaces.git</uri>
@@ -147,20 +154,6 @@
                   <branch>feature/4.1.x-translation</branch>
                   <localDirectory>ios</localDirectory>
                 </sourcesRepository>
-                <sourcesRepository>
-                  <uri>git@github.com:exodev/gatein-portal.git</uri>
-                  <branch>integration/4.2.x-translation</branch>
-                  <localDirectory>gatein-portal-3.5.x</localDirectory>
-                </sourcesRepository>
-
-<!--project will used for PLF 4.2-->
-<!-- disable
-                <sourcesRepository>
-                  <uri>git@github.com:exodev/gatein-portal.git</uri>
-                  <branch>feature/3.7.x-PLF-translation</branch>
-                  <localDirectory>gatein-portal-3.7.x</localDirectory>
-                </sourcesRepository>
--->
               </sourcesRepositories>
             </configuration>
           </plugin>
