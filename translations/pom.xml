@@ -77,13 +77,6 @@
               </languages>
               <!-- Projects to manage -->
               <sourcesRepositories>
-<!--
-                <sourcesRepository>
-                  <uri>git@github.com:exodev/platform-ui.git</uri>
-                  <branch>integration/4.2.x-translation</branch>
-                  <localDirectory>platform-ui-4.2.x</localDirectory>
-                </sourcesRepository>
--->
                 <sourcesRepository>
                   <uri>git@github.com:exodev/commons.git</uri>
                   <branch>integration/4.2.x-translation</branch>
@@ -124,47 +117,11 @@
                   <branch>integration/4.2.x-translation</branch>
                   <localDirectory>platform-4.2.x</localDirectory>
                 </sourcesRepository>
-<!--
-                <sourcesRepository>
-                  <uri>git@github.com:exoplatform/cloud-workspaces.git</uri>
-                  <branch>feature/translation</branch>
-                  <localDirectory>cloud-workspaces</localDirectory>
-                </sourcesRepository>
-                <sourcesRepository>
-                  <uri>git@github.com:exo-addons/weemo-extension.git</uri>
-                  <branch>develop</branch>
-                  <localDirectory>weemo-extension</localDirectory>
-                </sourcesRepository>
-                <sourcesRepository>
-                  <uri>git@github.com:exo-addons/chat-application.git</uri>
-                  <branch>develop</branch>
-                  <localDirectory>chat-application</localDirectory>
-                </sourcesRepository>
-                <sourcesRepository>
-                  <uri>git@github.com:exoplatform/mobile-android.git</uri>
-                  <branch>feature/4.1.x-translation</branch>
-                  <localDirectory>android</localDirectory>
-                </sourcesRepository>
-                <sourcesRepository>
-                  <uri>git@github.com:exoplatform/mobile-ios.git</uri>
-                  <branch>feature/4.1.x-translation</branch>
-                  <localDirectory>ios</localDirectory>
-                </sourcesRepository>
--->
                 <sourcesRepository>
                   <uri>git@github.com:exodev/gatein-portal.git</uri>
                   <branch>integration/4.2.x-translation</branch>
                   <localDirectory>gatein-portal-3.5.x</localDirectory>
                 </sourcesRepository>
-
-<!--project will used for PLF 4.2-->
-<!-- disable
-                <sourcesRepository>
-                  <uri>git@github.com:exodev/gatein-portal.git</uri>
-                  <branch>feature/3.7.x-PLF-translation</branch>
-                  <localDirectory>gatein-portal-3.7.x</localDirectory>
-                </sourcesRepository>
--->
               </sourcesRepositories>
             </configuration>
           </plugin>
