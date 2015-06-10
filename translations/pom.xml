@@ -36,7 +36,7 @@
   <profiles>
     <profile>
       <!-- Current profile PLF 4 Translations-->
-      <id>FREEZECROWDIN</id>
+      <id>plf4</id>
       <build>
         <plugins>
           <plugin>
