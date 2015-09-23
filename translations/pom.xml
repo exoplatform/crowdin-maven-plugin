@@ -74,6 +74,7 @@
                 <language>fa</language>
                 <language>ro</language>
                 <language>ca</language>
+                <language>fi</language>
               </languages>
               <!-- Projects to manage -->
               <sourcesRepositories>
