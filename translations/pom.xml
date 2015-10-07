@@ -45,7 +45,7 @@
             <version>${project.version}</version>
             <configuration>
 	    <!-- Boolean to activate new language or add new properties (true/false)-->
-	    <isActivate>true</isActivate>
+	    <isActivate>false</isActivate>
               <!-- Languages to apply in projects -->
               <!-- Can be set with command line arg -Dlangs=fr,en -->
               <!-- ALL By default, list computed from the archive -->
@@ -86,7 +86,6 @@
                   <localDirectory>platform-ui</localDirectory>
                 </sourcesRepository>
 -->
-<!--
                 <sourcesRepository>
                   <uri>git@github.com:exodev/commons.git</uri>
                   <branch>integration/4.3.x-translation</branch>
@@ -117,13 +116,11 @@
                   <branch>integration/4.3.x-translation</branch>
                   <localDirectory>forum</localDirectory>
                 </sourcesRepository>
--->
                 <sourcesRepository>
                   <uri>git@github.com:exodev/integration.git</uri>
                   <branch>integration/4.3.x-translation</branch>
                   <localDirectory>integration</localDirectory>
                 </sourcesRepository>	
-<!--	
                 <sourcesRepository>
                   <uri>git@github.com:exodev/platform.git</uri>
                   <branch>integration/4.3.x-translation</branch>
@@ -159,7 +156,6 @@
                   <branch>feature/4.1.x-translation</branch>
                   <localDirectory>ios</localDirectory>
                 </sourcesRepository>
--->
               </sourcesRepositories>
             </configuration>
           </plugin>
