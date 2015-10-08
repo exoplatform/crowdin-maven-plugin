@@ -156,6 +156,11 @@
                   <branch>feature/4.1.x-translation</branch>
                   <localDirectory>ios</localDirectory>
                 </sourcesRepository>
+                <sourcesRepository>
+                  <uri>git@github.com:exo-addons/task.git</uri>
+                  <branch>integration/translation</branch>
+                  <localDirectory>task</localDirectory>
+                </sourcesRepository>
               </sourcesRepositories>
             </configuration>
           </plugin>
