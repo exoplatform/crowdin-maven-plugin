@@ -45,12 +45,11 @@
             <version>${project.version}</version>
             <configuration>
 	    <!-- Boolean to activate new language or add new properties (true/false)-->
-	    <isActivate>true</isActivate>
+	    <isActivate>false</isActivate>
               <!-- Languages to apply in projects -->
               <!-- Can be set with command line arg -Dlangs=fr,en -->
               <!-- ALL By default, list computed from the archive -->
               <languages>
-<!--
                 <language>en</language>
                 <language>fr</language>
                 <language>vi</language>
@@ -75,7 +74,6 @@
                 <language>fa</language>
                 <language>ro</language>
                 <language>ca</language>
--->
                 <language>nl</language>
               </languages>
               <!-- Projects to manage -->
