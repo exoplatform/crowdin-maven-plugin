@@ -162,6 +162,11 @@
                   <branch>develop</branch>
                   <localDirectory>task</localDirectory>
                 </sourcesRepository>
+                <sourcesRepository>
+                  <uri>git@github.com:exo-addons/wcm-template-pack.git</uri>
+                  <branch>develop</branch>
+                  <localDirectory>wcm-template-pack</localDirectory>
+                </sourcesRepository>
               </sourcesRepositories>
             </configuration>
           </plugin>
