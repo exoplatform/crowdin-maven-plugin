@@ -133,6 +133,16 @@
                   <localDirectory>gatein-portal</localDirectory>
                 </sourcesRepository>
                 <sourcesRepository>
+                  <uri>git@github.com:exoplatform/mobile-android.git</uri>
+                  <branch>feature/4.1.x-translation</branch>
+                  <localDirectory>android</localDirectory>
+                </sourcesRepository>
+                <sourcesRepository>
+                  <uri>git@github.com:exoplatform/mobile-ios.git</uri>
+                  <branch>feature/4.1.x-translation</branch>
+                  <localDirectory>ios</localDirectory>
+                </sourcesRepository>
+                <sourcesRepository>
                   <uri>git@github.com:exoplatform/cloud-workspaces.git</uri>
                   <branch>feature/translation</branch>
                   <localDirectory>cloud-workspaces</localDirectory>
@@ -148,18 +158,8 @@
                   <localDirectory>chat-application</localDirectory>
                 </sourcesRepository>
                 <sourcesRepository>
-                  <uri>git@github.com:exoplatform/mobile-android.git</uri>
-                  <branch>feature/4.1.x-translation</branch>
-                  <localDirectory>android</localDirectory>
-                </sourcesRepository>
-                <sourcesRepository>
-                  <uri>git@github.com:exoplatform/mobile-ios.git</uri>
-                  <branch>feature/4.1.x-translation</branch>
-                  <localDirectory>ios</localDirectory>
-                </sourcesRepository>
-                <sourcesRepository>
                   <uri>git@github.com:exo-addons/task.git</uri>
-                  <branch>integration/translation</branch>
+                  <branch>develop</branch>
                   <localDirectory>task</localDirectory>
                 </sourcesRepository>
               </sourcesRepositories>
