@@ -142,29 +142,30 @@
                   <branch>feature/4.1.x-translation</branch>
                   <localDirectory>ios</localDirectory>
                 </sourcesRepository>
+<!--ADDONS-->
                 <sourcesRepository>
                   <uri>git@github.com:exoplatform/cloud-workspaces.git</uri>
-                  <branch>feature/translation</branch>
+                  <branch>integration/translation</branch>
                   <localDirectory>cloud-workspaces</localDirectory>
                 </sourcesRepository>
                 <sourcesRepository>
                   <uri>git@github.com:exo-addons/weemo-extension.git</uri>
-                  <branch>develop</branch>
+                  <branch>integration/translation</branch>
                   <localDirectory>weemo-extension</localDirectory>
                 </sourcesRepository>
                 <sourcesRepository>
                   <uri>git@github.com:exo-addons/chat-application.git</uri>
-                  <branch>develop</branch>
+                  <branch>integration/translation</branch>
                   <localDirectory>chat-application</localDirectory>
                 </sourcesRepository>
                 <sourcesRepository>
                   <uri>git@github.com:exo-addons/task.git</uri>
-                  <branch>develop</branch>
+                  <branch>integration/translation</branch>
                   <localDirectory>task</localDirectory>
                 </sourcesRepository>
                 <sourcesRepository>
                   <uri>git@github.com:exo-addons/wcm-template-pack.git</uri>
-                  <branch>develop</branch>
+                  <branch>integration/translation</branch>
                   <localDirectory>wcm-template-pack</localDirectory>
                 </sourcesRepository>
               </sourcesRepositories>
