@@ -145,7 +145,7 @@
 <!--ADDONS-->
                 <sourcesRepository>
                   <uri>git@github.com:exoplatform/cloud-workspaces.git</uri>
-                  <branch>integration/translation</branch>
+                  <branch>feature/translation</branch>
                   <localDirectory>cloud-workspaces</localDirectory>
                 </sourcesRepository>
                 <sourcesRepository>
