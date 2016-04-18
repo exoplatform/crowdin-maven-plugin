@@ -63,9 +63,9 @@
                 <language>ru</language>
                 <language>tr</language>
                 <language>zh-CN</language>
-                <language>sq</language>		
+                <language>sq</language>
                 <language>zh-TW</language>
-                <language>cs</language>		
+                <language>cs</language>
                 <language>lt</language>
                 <language>uk</language>
                 <language>no</language>
@@ -78,6 +78,7 @@
                 <language>nl</language>
                 <language>sl</language>
                 <language>he</language>
+                <language>hu</language>
               </languages>
               <!-- Projects to manage -->
               <sourcesRepositories>
