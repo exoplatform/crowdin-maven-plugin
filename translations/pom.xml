@@ -136,38 +136,38 @@
                 </sourcesRepository>
                 <sourcesRepository>
                   <uri>git@github.com:exoplatform/mobile-android.git</uri>
-                  <branch>integration/4.4.x-translation</branch>
+                  <branch>feature/4.1.x-translation</branch>
                   <localDirectory>android</localDirectory>
                 </sourcesRepository>
                 <sourcesRepository>
                   <uri>git@github.com:exoplatform/mobile-ios.git</uri>
-                  <branch>integration/4.4.x-translation</branch>
+                  <branch>feature/4.1.x-translation</branch>
                   <localDirectory>ios</localDirectory>
                 </sourcesRepository>
 <!--ADDONS-->
                 <sourcesRepository>
                   <uri>git@github.com:exoplatform/cloud-workspaces.git</uri>
-                  <branch>integration/4.4.x-translation</branch>
+                  <branch>feature/translation</branch>
                   <localDirectory>cloud-workspaces</localDirectory>
                 </sourcesRepository>
                 <sourcesRepository>
                   <uri>git@github.com:exo-addons/weemo-extension.git</uri>
-                  <branch>integration/4.4.x-translation</branch>
+                  <branch>integration/translation</branch>
                   <localDirectory>weemo-extension</localDirectory>
                 </sourcesRepository>
                 <sourcesRepository>
                   <uri>git@github.com:exo-addons/chat-application.git</uri>
-                  <branch>integration/4.4.x-translation</branch>
+                  <branch>integration/translation</branch>
                   <localDirectory>chat-application</localDirectory>
                 </sourcesRepository>
                 <sourcesRepository>
                   <uri>git@github.com:exo-addons/task.git</uri>
-                  <branch>integration/4.4.x-translation</branch>
+                  <branch>integration/translation</branch>
                   <localDirectory>task</localDirectory>
                 </sourcesRepository>
                 <sourcesRepository>
                   <uri>git@github.com:exo-addons/wcm-template-pack.git</uri>
-                  <branch>integration/4.4.x-translation</branch>
+                  <branch>integration/translation</branch>
                   <localDirectory>wcm-template-pack</localDirectory>
                 </sourcesRepository>
               </sourcesRepositories>
