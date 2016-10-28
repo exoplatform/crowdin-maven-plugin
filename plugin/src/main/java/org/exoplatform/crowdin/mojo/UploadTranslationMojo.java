@@ -34,28 +34,23 @@ public class UploadTranslationMojo extends AbstractCrowdinMojo {
   @Override
   public void crowdInMojoExecute() throws MojoExecutionException, MojoFailureException {
     if (isAllPropertyFilesExisted()) {
-      // Iterate on each project defined in upload-translation.properties
-      for (String proj : getProperties().keySet()) {
-        getLog().info("Starting project " + proj);
-        // Get the Properties of the current project, i.e. the content of
-        // cs-2.2.x.properties
-        Properties currentProj = getProperties().get(proj);
-        String baseDir = currentProj.getProperty("baseDir");
-        Set<Object> keys = currentProj.keySet();
-        // Iterate on each file of the current project
-        for (Object key : keys) {
-          // Skip the property baseDir
-          if (key.equals("baseDir"))
-            continue;
-          // Construct the full path to the file
-          String filePath = getWorkingDir() + File.separator + proj + File.separator
-              + currentProj.getProperty(key.toString());
+      getLog().info("Starting uploading translations");
+      // Get the Properties of the current project
+      Properties currentProj = getProperties();
+      String baseDir = currentProj.getProperty("baseDir");
+      Set<Object> keys = currentProj.keySet();
+      // Iterate on each file of the current project
+      for (Object key : keys) {
+        // Skip the property baseDir
+        if (key.equals("baseDir"))
+          continue;
+        // Construct the full path to the file
+        String filePath = getWorkingDir() + File.separator + currentProj.getProperty(key.toString());
 
-          CrowdinFile master = getFactory().prepareCrowdinFile(filePath, key.toString(), baseDir);
-          uploadTranslation(master);
-        }
-        getLog().info("Finished project " + proj);
+        CrowdinFile master = getFactory().prepareCrowdinFile(filePath, key.toString(), baseDir);
+        uploadTranslation(master);
       }
+      getLog().info("Finished uploading translations");
     }
 
   }

@@ -176,7 +176,7 @@ public class RestoreTranslationMojo extends AbstractCrowdinMojo {
       tmp = tmp.replace('/', File.separatorChar);
       tmp = tmp.replace('\\', File.separatorChar);
       String[] path = tmp.split(File.separator);
-      Properties currentProj = getProperties().get(path[2]);
+      Properties currentProj = getProperties();
       // ignore projects that is not managed by the plugin
       if (currentProj == null) {
         zipentry = zipinputstream.getNextEntry();

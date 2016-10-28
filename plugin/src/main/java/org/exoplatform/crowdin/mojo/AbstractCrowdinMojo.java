@@ -27,15 +27,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Matcher;
 
 import com.jayway.restassured.RestAssured;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.BuildPluginManager;
@@ -47,7 +48,6 @@ import org.apache.maven.project.MavenProject;
 import org.exoplatform.crowdin.model.CrowdinFile;
 import org.exoplatform.crowdin.model.CrowdinFileFactory;
 import org.exoplatform.crowdin.model.CrowdinTranslation;
-import org.exoplatform.crowdin.model.SourcesRepository;
 import org.exoplatform.crowdin.utils.CrowdinAPIHelper;
 import org.twdata.maven.mojoexecutor.MojoExecutor;
 
@@ -57,21 +57,15 @@ import org.twdata.maven.mojoexecutor.MojoExecutor;
 public abstract class AbstractCrowdinMojo extends AbstractMojo {
 
   public static final String DOWNLOAD_DATE_PROPERTY = "downloadDate";
-  public static final String SRC_CONFIG = "src/config/";
+  public static final String DEFAULT_TRANSLATIONS_REGISTRY_FILE_PATH = "translations.properties";
   protected File crowdInArchive;
   protected File crowdInArchiveProperties;
   protected File translationStatusReport;
   /**
    * The directory to start parsing from
    */
-  @Parameter(property = "workingDir", defaultValue = "${project.build.directory}/eXoProjects")
+  @Parameter(property = "workingDir", defaultValue = "${project.basedir}")
   private File workingDir;
-
-  /**
-   * The directory to cache repositories
-   */
-  @Parameter(property = "cacheDir", defaultValue = "${user.home}/.eXoProjectsCache")
-  private File cacheDir;
 
   /**
    * If true, no communication with Crowdin will be done; useful to test
@@ -87,11 +81,22 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
   private boolean force;
 
   /**
+   * Translations archive file path
+   */
+  @Parameter(property = "exo.crowdin.translationsArchivePath", required = true)
+  private String translationsArchivePath;
+
+  /**
    * Languages of the translations to be processed, or "all" to process all languages
    */
-  //  @Parameter(property = "langs", defaultValue = "all")
-  @Parameter(property = "langs")
+  @Parameter(property = "langs", defaultValue = "all")
   private List<String> languages;
+
+  /**
+   * Translation archive file path
+   */
+  @Parameter(property = "exo.crowdin.translationsRegistryFilePath")
+  private String translationsRegistryFilePath;
 
   /**
    * Option to get only the approved translations or not
@@ -114,9 +119,6 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
   @Parameter
   private boolean isActivate;
 
-  @Parameter
-  private List<SourcesRepository> sourcesRepositories = new ArrayList<SourcesRepository>();
-
   @Parameter(defaultValue = "${project}", readonly = true, required = true)
   private MavenProject project;
 
@@ -127,11 +129,9 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
   private BuildPluginManager pluginManager;
 
   /**
-   * The list of properties files that contain pointers to each file to manage with Crowdin <br/>
-   * Format:  project-name-version <=> path/to/file.properties <br/>
-   * Example: cs-2.2.x <=> cs-2.2.x.properties
+   * The list of properties files that contain pointers to each file to manage with Crowdin
    */
-  private HashMap<String, Properties> properties;
+  private Properties properties;
 
   /**
    * The list of ignored files which  are not processed by plugin
@@ -155,12 +155,14 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
       getLog().debug("*** Current Working Directory: " + workingDir);
     }
     // Initialization of the properties
-    properties = new HashMap<String, Properties>();
     try {
-      for (SourcesRepository repository : getSourcesRepositories()) {
-        if (getLog().isDebugEnabled())
-          getLog().debug("*** Loading the properties file (" + SRC_CONFIG + repository.getLocalDirectory() + ".properties)...");
-        properties.put(repository.getLocalDirectory(), loadProperties(new File(getProject().getBasedir(), SRC_CONFIG + repository.getLocalDirectory() + ".properties").getAbsolutePath()));
+      if (getLog().isDebugEnabled())
+        getLog().debug("*** Loading the properties file (translations.properties)...");
+      properties = loadProperties(new File(getProject().getBasedir(), "translations.properties").getAbsolutePath());
+
+      if(properties == null) {
+        getLog().info("No translations.properties file -> skipped");
+        return;
       }
 
       if (ignore != null) {
@@ -171,19 +173,14 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
       }
 
     } catch (IOException e) {
-      getLog().error("Could not load the properties. Exception: " + e.getMessage());
-      if (getLog().isDebugEnabled()) {
-        for (StackTraceElement elt : e.getStackTrace()) {
-          getLog().debug("*** " + elt.toString());
-        }
-      }
-      throw new MojoExecutionException("Could not load the properties. Exception: " + e.getMessage());
+      getLog().info("No translations.properties file -> skipped");
+      return;
     }
     File buildDir = new File(getProject().getBuild().getDirectory());
     buildDir.mkdirs();
-    crowdInArchive = new File(buildDir, "translations.zip");
-    crowdInArchiveProperties = new File(buildDir, "translations.properties");
-    translationStatusReport = new File(buildDir, "translations_status.xml");
+    crowdInArchive = new File(getTranslationsArchivePath());
+    crowdInArchiveProperties = new File(buildDir, "translations-status.properties");
+    translationStatusReport = new File(buildDir, "translations-status.xml");
 
     // Call to the abstract method, that must be overriden in each concrete mojo
     crowdInMojoExecute();
@@ -222,12 +219,6 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
     return workingDir;
   }
 
-  public File getCacheDir() {
-    if (!cacheDir.exists())
-      cacheDir.mkdirs();
-    return cacheDir;
-  }
-
   public boolean isDryRun() {
     return dryRun;
   }
@@ -252,12 +243,28 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
     return projectKey;
   }
 
-  public List<String> getLanguages() {
-    return languages;
+  public String getTranslationsArchivePath() {
+    return translationsArchivePath;
   }
 
-  public List<SourcesRepository> getSourcesRepositories() {
-    return sourcesRepositories;
+  public void setTranslationsArchivePath(String translationsArchivePath) {
+    this.translationsArchivePath = translationsArchivePath;
+  }
+
+  public String getTranslationsRegistryFilePath() {
+    if(StringUtils.isEmpty(translationsRegistryFilePath)) {
+      return DEFAULT_TRANSLATIONS_REGISTRY_FILE_PATH;
+    } else {
+      return translationsRegistryFilePath;
+    }
+  }
+
+  public void setTranslationsRegistryFilePath(String translationsRegistryFilePath) {
+    this.translationsRegistryFilePath = translationsRegistryFilePath;
+  }
+
+  public List<String> getLanguages() {
+    return languages;
   }
   
   public boolean isActivate() {
@@ -292,7 +299,7 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
    * Format:  project-name-version <=> path/to/file.properties <br/>
    * Example: cs-2.2.x <=> cs-2.2.x.properties
    */
-  public HashMap<String, Properties> getProperties() {
+  public Properties getProperties() {
     return properties;
   }
 
@@ -331,25 +338,21 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
   protected boolean isAllPropertyFilesExisted() {
     boolean existed = true;
     getLog().info("Checking property files... ");
-    // Iterate on each project defined in crowdin.properties
-    for (String proj : getProperties().keySet()) {
-      // Get the Properties of the current project, i.e. the content of
-      // cs-2.2.x.properties
-      Properties currentProj = getProperties().get(proj);
-      Set<Object> files = currentProj.keySet();
-      // Iterate on each file of the current project
-      for (Object file : files) {
-        // Skip the property baseDir
-        if (file.equals("baseDir")) {
-          continue;
-        }
-        // Construct the full path to the file
-        String filePath = getWorkingDir() + File.separator + proj + File.separator + currentProj.getProperty(file.toString());
-        File f = new File(filePath);
-        if (!f.exists()) {
-          existed = false;
-          getLog().warn("File not found: " + filePath);
-        }
+    // Iterate on each file defined in translations.properties
+    Properties projectTranslationsProperties = getProperties();
+    Set<Object> files = projectTranslationsProperties.keySet();
+    // Iterate on each file of the current project
+    for (Object file : files) {
+      // Skip the property baseDir
+      if (file.equals("baseDir")) {
+        continue;
+      }
+      // Construct the full path to the file
+      String filePath = getWorkingDir() + File.separator + projectTranslationsProperties.getProperty(file.toString());
+      File f = new File(filePath);
+      if (!f.exists()) {
+        existed = false;
+        getLog().warn("File not found: " + filePath);
       }
     }
     getLog().info("Checking done.");
@@ -524,9 +527,8 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
 
   protected String getCrowdinDownloadDate() throws IOException {
     if (downloadDate == null) {
-      Properties downloadProperties = new Properties();
-      downloadProperties.load(new FileInputStream(crowdInArchiveProperties));
-      downloadDate = downloadProperties.getProperty(DOWNLOAD_DATE_PROPERTY);
+      // TODO use java 8 Date API
+      downloadDate = new SimpleDateFormat("yyyyMMdd-HHmmss").format(crowdInArchive.lastModified());
     }
     return downloadDate;
   }

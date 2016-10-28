@@ -26,7 +26,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -41,7 +40,6 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.exoplatform.crowdin.model.CrowdinFile.Type;
 import org.exoplatform.crowdin.model.CrowdinFileFactory;
 import org.exoplatform.crowdin.model.CrowdinTranslation;
-import org.exoplatform.crowdin.model.SourcesRepository;
 import org.exoplatform.crowdin.utils.IOSResouceBundleFileUtils;
 import org.exoplatform.crowdin.utils.PropsToXML;
 import org.exoplatform.crowdin.utils.XMLResourceBundleUtils;
@@ -60,58 +58,61 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
     } else {
       languagesToProcess = getLanguages();
     }
+
+    if(languagesToProcess == null || languagesToProcess.isEmpty()) {
+      getLog().info("No language to process");
+    }
+
     for (String language : languagesToProcess) {
       getLog().info("Updates for locale " + language);
       applyTranslations(getWorkingDir(), crowdInArchive.getPath(), language);
-      for (SourcesRepository repository : getSourcesRepositories()) {
-        try {
-          File localVersionRepository = new File(getWorkingDir(), repository.getLocalDirectory());
-          getLog().info("Extract/Apply/Commit/Push changes on " + repository.getName() + " (branch: " + repository.getBranch() + ")");
-          // Create a patch with local changes
-          getLog().info("Create patch(s) for " + repository.getLocalDirectory() + "...");
-          File patchFile = new File(getProject().getBuild().getDirectory(), repository.getLocalDirectory() + "-" + language + ".patch");          
-          // create patch all files when activate new language or properties
-          if (isActivate()){
-            getLog().info("Activation new language/properties "); 
-            execGit(localVersionRepository, "add .");
-            execGit(localVersionRepository, "diff --ignore-all-space HEAD > " + patchFile.getAbsolutePath());
-            getLog().info("Create patch file at: "+ patchFile.getAbsolutePath());  
-          }
-          // create patch only tracked files
-          else{
-          execGit(localVersionRepository, "diff --ignore-all-space > " + patchFile.getAbsolutePath());
-          }
-          getLog().info("Done.");
-          // Reset our local copy
-          getLog().info("Reset repository " + repository.getLocalDirectory() + "...");
-          execGit(localVersionRepository, "reset --hard HEAD");
-          execGit(localVersionRepository, "clean -fd");
-          getLog().info("Done.");
-          BufferedReader br = new BufferedReader(new FileReader(patchFile));
-          if (br.readLine() == null) {
-            getLog().info("No change for locale " + language + " from crowdin extract done on " + getCrowdinDownloadDate());
-          } else {
-            // Apply the patch
-            getLog().info("Apply patch(s) for " + repository.getLocalDirectory() + "...");
-            execGit(localVersionRepository, "apply --ignore-whitespace " + patchFile.getAbsolutePath(), element("successCode", "0"), element("successCode", "1"));
-            // commit all untracked and tracked files
-            if (isActivate()){
-              execGit(localVersionRepository, "add .");
-            } 
-            getLog().info("Done.");
-            getLog().info("Commit changes for " + repository.getLocalDirectory() + "...");
-            execGit(localVersionRepository, "commit -a -m '" + language + " injection on " + getCrowdinDownloadDate() + "'", element("successCode", "0"), element("successCode", "1"));
-            getLog().info("Done.");
-            // Push it
-            if (!isDryRun()) {
-              getLog().info("Pushing changes for " + repository.getLocalDirectory() + "...");
-              execGit(localVersionRepository, "push origin " + repository.getBranch());
-              getLog().info("Done.");
-            }
-          }
-        } catch (Exception e) {
-          throw new MojoExecutionException("Error while updating project " + repository.getName(), e);
+      try {
+        File localVersionRepository = getWorkingDir();
+        getLog().info("Extract/Apply/Commit/Push changes");
+        // Create a patch with local changes
+        getLog().info("Create patch(s)...");
+        File patchFile = new File(getProject().getBuild().getDirectory(), "translations-" + language + ".patch");
+        // create patch all files when activate new language or properties
+        if (isActivate()){
+          getLog().info("Activation new language/properties ");
+          execGit(localVersionRepository, "add .");
+          execGit(localVersionRepository, "diff --ignore-all-space HEAD > " + patchFile.getAbsolutePath());
+          getLog().info("Create patch file at: "+ patchFile.getAbsolutePath());
         }
+        // create patch only tracked files
+        else{
+        execGit(localVersionRepository, "diff --ignore-all-space > " + patchFile.getAbsolutePath());
+        }
+        getLog().info("Done.");
+        // Reset our local copy
+        getLog().info("Reset repository...");
+        execGit(localVersionRepository, "reset --hard HEAD");
+        execGit(localVersionRepository, "clean -fd");
+        getLog().info("Done.");
+        BufferedReader br = new BufferedReader(new FileReader(patchFile));
+        if (br.readLine() == null) {
+          getLog().info("No change for locale " + language + " from crowdin extract done on " + getCrowdinDownloadDate());
+        } else {
+          // Apply the patch
+          getLog().info("Apply patch(s)...");
+          execGit(localVersionRepository, "apply --ignore-whitespace " + patchFile.getAbsolutePath(), element("successCode", "0"), element("successCode", "1"));
+          // commit all untracked and tracked files
+          if (isActivate()){
+            execGit(localVersionRepository, "add .");
+          }
+          getLog().info("Done.");
+          getLog().info("Commit changes...");
+          execGit(localVersionRepository, "commit -a -m '" + language + " injection on " + getCrowdinDownloadDate() + "'", element("successCode", "0"), element("successCode", "1"));
+          getLog().info("Done.");
+          // Push it
+          if (!isDryRun()) {
+            getLog().info("Pushing changes...");
+            execGit(localVersionRepository, "push origin HEAD");
+            getLog().info("Done.");
+          }
+        }
+      } catch (Exception e) {
+        throw new MojoExecutionException("Error while updating project", e);
       }
     }
 
@@ -178,7 +179,7 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
 
         try {
           String cp = crowdinProj + File.separator + proj;
-          Properties currentProj = getProperties().get(proj);
+          Properties currentProj = getProperties();
           // ignore projects that is not managed by the plugin
           if (currentProj == null) {
             zipentry = zipinputstream.getNextEntry();
@@ -249,7 +250,7 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
             fileName = name + "_" + lang + extension;
           }
 
-          String parentDir = _destFolder + File.separator + proj + File.separator + value.substring(0, value.lastIndexOf(File.separatorChar) + 1);
+          String parentDir = _destFolder + File.separator + value.substring(0, value.lastIndexOf(File.separatorChar) + 1);
           getLog().debug("parentDir : " + parentDir);
           parentDir = parentDir.replace('/', File.separatorChar).replace('\\', File.separatorChar);
           String entryName = parentDir + fileName;

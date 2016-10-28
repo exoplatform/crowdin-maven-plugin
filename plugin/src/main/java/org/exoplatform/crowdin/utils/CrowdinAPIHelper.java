@@ -72,8 +72,7 @@ public class CrowdinAPIHelper {
   /**
    * Calls the function http://crowdin.net/page/api/add-file
    *
-   * @param _filePath the full path + name of the file
-   * @param _type     the type of the file (most likely properties)
+   * @param _file the full path + name of the file
    * @return true if the request is successful (file added), false otherwise
    * @throws MojoExecutionException
    */
@@ -158,7 +157,7 @@ public class CrowdinAPIHelper {
   /**
    * Calls the function http://crowdin.net/page/api/update-file
    *
-   * @param _filePath the full path + name of the file
+   * @param _file the full path + name of the file
    * @return true if the request is successful (file updated), false otherwise
    * @throws MojoExecutionException
    */
@@ -180,8 +179,7 @@ public class CrowdinAPIHelper {
   /**
    * Calls the function http://crowdin.net/page/api/upload-translation
    *
-   * @param _filePath the full path + name of the translation file
-   * @param _language the language of the file ("fr", "it", etc)
+   * @param _file the full path + name of the translation file
    * @return true if the request is successful (translation uploaded), false otherwise
    * @throws MojoExecutionException
    */

@@ -53,26 +53,24 @@ public class UpdateCrowdInMojo extends AbstractCrowdinMojo {
       getLog().info("----------------------------------------------------------------------------------------\n\n\n");
       throw new MojoExecutionException(UpdateCrowdInMojo.class.getName());      
     }
-    // Iterate on each project defined in crowdin.properties
-    for (String proj : getProperties().keySet()) {
-      getLog().info("Starting project " + proj);
-      // Get the Properties of the current project, i.e. the content of
-      // cs-2.2.x.properties
-      Properties currentProj = getProperties().get(proj);
-      String baseDir = currentProj.getProperty("baseDir");
-      Set<Object> files = currentProj.keySet();
-      // Iterate on each file of the current project
-      for (Object file : files) {
-        // Skip the property baseDir
-        if (file.equals("baseDir"))
-          continue;
-        // Construct the full path to the file
-        String filePath = getWorkingDir() + File.separator + proj + File.separator + currentProj.getProperty(file.toString());
-        CrowdinFile master = getFactory().prepareCrowdinFile(filePath, file.toString(), baseDir);
-        updateFile(master);
-      }
-      getLog().info("Finished project " + proj);
+
+    getLog().info("Starting updating crowdin");
+    // Get the Properties of the current project, i.e. the content of
+    // cs-2.2.x.properties
+    Properties currentProj = getProperties();
+    String baseDir = currentProj.getProperty("baseDir");
+    Set<Object> files = currentProj.keySet();
+    // Iterate on each file of the current project
+    for (Object file : files) {
+      // Skip the property baseDir
+      if (file.equals("baseDir"))
+        continue;
+      // Construct the full path to the file
+      String filePath = getWorkingDir() + File.separator + currentProj.getProperty(file.toString());
+      CrowdinFile master = getFactory().prepareCrowdinFile(filePath, file.toString(), baseDir);
+      updateFile(master);
     }
+    getLog().info("Finished updating crowdin");
   }
 
   /**
