@@ -1,22 +1,21 @@
-crowdin-maven-plugin
-====================
+= Crowdin Maven Plugin
+
 A command line tool to handle synchronization of the source code with translations made on Crowdin.
 
 Maven plugin for crowdin (http://crowdin.net/)
 
 
-Requirements:
--------------
+== Requirements
 
 * Git is installed and configured properly.
 * Have a valid Crowdin Project ID and its key.
 * Maven 3.2.5+ is installed
 
-Configuration:
---------------
+== Configuration
 
 Add the Following properties in the maven settings.xml (contact with admin of crowdin exo-platform-35 project to get project key and id):
-```
+[source,xml]
+----
   <pluginGroups>
     <!-- ... -->
     <pluginGroup>org.exoplatform.crowdin</pluginGroup>
@@ -30,10 +29,9 @@ Add the Following properties in the maven settings.xml (contact with admin of cr
       <exo.crowdin.project.key>YOUR KEY</exo.crowdin.project.key> 
     </properties>
   </profile>
-```
+----
 
-Download:
----------
+== Download
 
 Get the latest version of the code:
 
@@ -41,57 +39,46 @@ Get the latest version of the code:
 
 This will create a folder and copy the necessary files into it.
 
-Usage:
-------
+== Usage
 
 
-- Available goals are: **download-translations**, **update-sources**, **update-crowdin**, **init-crowdin**, **upload-translation**
+Available goals are: **download-translations**, **update-sources**, **update-crowdin**, **init-crowdin**, **upload-translation**
 
-**1\. Download translations from crowdin: download-translations**
+* Download translations from crowdin: download-translations
 
 **`mvn crowdin:download-translations -Pcrowdin`**
 
-- Download archive file from crowdin to /target/ then name to "translation.zip"
+Download archive file from crowdin to /target/ then name to "translation.zip"
 
-**2\. Update sources from crowdin (injection)**
+* Update sources from crowdin (injection)
 
 **`mvn crowdin:update-sources -Pcrowdin`**
 
-This will execute the plugin with the goal **update-sources**:
+Update translations files with translations from Crowdin, commit and push.
 
-- Update translations files with translations from Crowdin, commit and push
-
-- The list of languages if calculated from the zip content by default. It can be changed through the langs property:
+The list of languages if calculated from the zip content by default. It can be changed through the langs property:
 
 **`mvn crowdin:update-sources -Dlangs=en,fr,vi -Pcrowdin`**
 
-Activate new language/properties file :
+Activate new language/properties file by activating ONLY the new language (for example : `-Dlangs=ru`) and set the `isActivate` property to true (`-DisActivate=true`).
 
-- Activate ONLY the new language, for example : `-Dlangs=ru`
-- Set the `isActivate` property to true : `-DisActivate=true` 
+dryRun option (`-DdryRun=true`) will not download the all.zip if it exists in /target/, and it doesn't push to github.
 
-with **`-DdryRun=true`**
-
-- DryRun will not download the all.zip if it exists in /target/, and it doesn't push to github
-
-
-**3\. Update to crowdin (synchronization): update-crowdin**
+* Update to crowdin (synchronization): update-crowdin
 
 **`mvn crowdin:update-crowdin -Pcrowdin`**
 
 This will execute the plugin with the goal **update-crowdin**:
 
--- load the properties of each project
--- browse them to identify master files and translations
--- create new folders, upload new master files and translations (new entries in the properties of each project)
--- update master files content on Crowdin (add new keys, rename existing keys, delete keys)
--- delete old folders and files (old entries in the properties of each project and not exist in file system)
+** load the properties of each project
+** browse them to identify master files and translations
+** create new folders, upload new master files and translations (new entries in the properties of each project)
+** update master files content on Crowdin (add new keys, rename existing keys, delete keys)
+** delete old folders and files (old entries in the properties of each project and not exist in file system)
 
-with **`-DdryRun=true`**
+dryRun option (`-DdryRun=true`) will not update properties files to crowdin.
 
-- DryRun will not update properties files to crowdin
-
-**4\. Upload Translation**
+* Upload Translation
 
 **`mvn crowdin:upload-translation -Pcrowdin`**
 
@@ -103,7 +90,7 @@ Steps:
 * For each project create the project description file named <project>.properties. In this file provide the path to the project in the 'baseDir' property and list all the translation files need to be updated in the form of <path in Crowdin>=<path in source code>
 * Run 'mvn crowdin:upload-translation -Pcrowdin'
 
-**5\. Restore translation**
+* Restore translation
 
 **`mvn crowdin:restore-translation -Pcrowdin`**
 
@@ -119,40 +106,39 @@ Steps:
 
 If you want to decide what to be uploaded to Crowdin, you can: first run with 'Dprepare=true' option to get the plugin stops after preparing the extracted folder for you to modify, e.g to remove some languages or projects you don't want to upload. When you're done, let the plugin continues by running with '-Dcontinue=true' option, it will upload your modified folder instead of the original zip. 
 
-**6\. Command line options**
+* Command line options
 
 -- **dryRun**
    If true, no communication with Crowdin will be done; Default: false.
    Useful to see the evolution of the process. Combined with maven debug option -X, displays actual Rest calls and XmlPath queries.
 
-Contributing:
--------------
+== Contributing
+
     1. Fork it
     2. Create your feature branch (git checkout -b my-new-feature)
     3. Commit your changes (git commit -am 'Added some feature')
     4. Push to the branch (git push origin my-new-feature)
     5. Create new Pull Request
 
-Resources:
-----------
+== Resources
 
--- http://code.google.com/p/rest-assured/wiki/Usage?ts=1317978378&updated=Usage#Example_1_-_JSON
+* http://code.google.com/p/rest-assured/wiki/Usage?ts=1317978378&updated=Usage#Example_1_-_JSON
 
--- http://blog.jayway.com/2011/10/09/simple-parsing-of-complex-json-and-xml-documents-in-java/
+* http://blog.jayway.com/2011/10/09/simple-parsing-of-complex-json-and-xml-documents-in-java/
 
--- http://rest-assured.googlecode.com/svn/tags/1.6/apidocs/com/jayway/restassured/path/xml/XmlPath.html
+* http://rest-assured.googlecode.com/svn/tags/1.6/apidocs/com/jayway/restassured/path/xml/XmlPath.html
 
--- http://groovy.codehaus.org/Updating+XML+with+XmlSlurper
+* http://groovy.codehaus.org/Updating+XML+with+XmlSlurper
 
--- http://maven.apache.org/developers/mojo-api-specification.html
+* http://maven.apache.org/developers/mojo-api-specification.html
 
--- http://maven.apache.org/plugin-developers/common-bugs.html
+* http://maven.apache.org/plugin-developers/common-bugs.html
 
--- http://www.regexplanet.com/advanced/java/index.html
+* http://www.regexplanet.com/advanced/java/index.html
 
--- http://docs.oracle.com/javase/6/docs/api/index.html
+* http://docs.oracle.com/javase/6/docs/api/index.html
 
--- http://int.exoplatform.org/portal/intranet/wiki/group/spaces/platform_team/Crowdin_Maven_Plugin_Developer_guide
+* http://int.exoplatform.org/portal/intranet/wiki/group/spaces/platform_team/Crowdin_Maven_Plugin_Developer_guide
 
--- http://int.exoplatform.org/portal/intranet/wiki/group/spaces/platform_team/Crowdin_Maven_Plugin_User_Guide
+* http://int.exoplatform.org/portal/intranet/wiki/group/spaces/platform_team/Crowdin_Maven_Plugin_User_Guide
 
