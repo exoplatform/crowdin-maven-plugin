@@ -22,13 +22,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <artifactId>crowdin</artifactId>
+    <artifactId>crowdin-parent</artifactId>
     <groupId>org.exoplatform.crowdin</groupId>
     <version>4.4.x-SNAPSHOT</version>
   </parent>
-  <artifactId>crowdin-maven-plugin</artifactId>
+  <artifactId>crowdin</artifactId>
   <packaging>maven-plugin</packaging>
-  <name>crowdin-maven-plugin</name>
+  <name>Crowdin Maven Plugin</name>
   <properties>
     <mavenVersion>3.2.5</mavenVersion>
     <mavenPluginPluginVersion>3.4</mavenPluginPluginVersion>

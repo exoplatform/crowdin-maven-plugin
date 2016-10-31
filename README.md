@@ -49,13 +49,13 @@ Usage:
 
 **1\. Download translations from crowdin: download-translations**
 
-**`mvn crowdin-maven-plugin:download-translations -Pcrowdin`**
+**`mvn crowdin:download-translations -Pcrowdin`**
 
 - Download archive file from crowdin to /target/ then name to "translation.zip"
 
 **2\. Update sources from crowdin (injection)**
 
-**`mvn crowdin-maven-plugin:update-sources -Pcrowdin`**
+**`mvn crowdin:update-sources -Pcrowdin`**
 
 This will execute the plugin with the goal **update-sources**:
 
@@ -63,7 +63,7 @@ This will execute the plugin with the goal **update-sources**:
 
 - The list of languages if calculated from the zip content by default. It can be changed through the langs property:
 
-**`mvn crowdin-maven-plugin:update-sources -Dlangs=en,fr,vi -Pcrowdin`**
+**`mvn crowdin:update-sources -Dlangs=en,fr,vi -Pcrowdin`**
 
 Activate new language/properties file :
 
@@ -77,7 +77,7 @@ with **`-DdryRun=true`**
 
 **3\. Update to crowdin (synchronization): update-crowdin**
 
-**`mvn crowdin-maven-plugin:update-crowdin -Pcrowdin`**
+**`mvn crowdin:update-crowdin -Pcrowdin`**
 
 This will execute the plugin with the goal **update-crowdin**:
 
@@ -93,7 +93,7 @@ with **`-DdryRun=true`**
 
 **4\. Upload Translation**
 
-**`mvn crowdin-maven-plugin:upload-translation -Pcrowdin`**
+**`mvn crowdin:upload-translation -Pcrowdin`**
 
 This is used to update changes in projects' translation files to Crowdin. It uses the information provided in the properties files (upload-translation.properties and <exo-project>.properties files) under upload-translation folder to determine the projects and their translation files need to be updated (in the same convention as the plugin's crowdin.properties and <exo-project>.properties files) 
 
@@ -101,11 +101,11 @@ Steps:
 
 * Identify the list of projects need to be changed, put them into upload-translation.properties. Each entry is a key/value pair with key = <project name>-<version> and value = <path to project's description file>
 * For each project create the project description file named <project>.properties. In this file provide the path to the project in the 'baseDir' property and list all the translation files need to be updated in the form of <path in Crowdin>=<path in source code>
-* Run 'mvn crowdin-maven-plugin:upload-translation -Pcrowdin'
+* Run 'mvn crowdin:upload-translation -Pcrowdin'
 
 **5\. Restore translation**
 
-**`mvn crowdin-maven-plugin:restore-translation -Pcrowdin`**
+**`mvn crowdin:restore-translation -Pcrowdin`**
 
 This restores a Crowdin project's directory structure and translations from its zip file. This zip file should be built with 'Export Only Approved' and 'Don't Export Untranslated' options unchecked so it will backup the untranslated and all suggested translations (not only the approved ones) as they will need to be restored also. Since this zip contains the project's directory structure and all of its translations, it can be considered as a project's backup and should be rebuilt (with 'Build Fresh Package' under Crowdin's 'Downloads' tab) and kept safe before doing any activity that may mess up the project.
 
@@ -115,7 +115,7 @@ Steps:
 
 * Rename the project's zip file as 'translation.zip' and put it under the plugin's crowdin-zip folder
 * If the master files do not exist (e.g in case you want to do a clone, or you had deleted them all using Crowdin's 'File Manager' to rebuild from scratch - this is recommended), you must first re-create the project's structure with '-Daction=createProject' option, the plugin will extract the zip and walk through its directories and files to create the same structure on Crowdin.
-* When having the master files ready, run 'mvn crowdin-maven-plugin:restore-translation', the plugin will (by default) upload translations of every languages it finds in the zip.
+* When having the master files ready, run 'mvn crowdin:restore-translation', the plugin will (by default) upload translations of every languages it finds in the zip.
 
 If you want to decide what to be uploaded to Crowdin, you can: first run with 'Dprepare=true' option to get the plugin stops after preparing the extracted folder for you to modify, e.g to remove some languages or projects you don't want to upload. When you're done, let the plugin continues by running with '-Dcontinue=true' option, it will upload your modified folder instead of the original zip. 
 

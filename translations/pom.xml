@@ -22,7 +22,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <artifactId>crowdin</artifactId>
+    <artifactId>crowdin-parent</artifactId>
     <groupId>org.exoplatform.crowdin</groupId>
     <version>4.4.x-SNAPSHOT</version>
   </parent>
@@ -41,7 +41,7 @@
         <plugins>
           <plugin>
             <groupId>org.exoplatform.crowdin</groupId>
-            <artifactId>crowdin-maven-plugin</artifactId>
+            <artifactId>crowdin</artifactId>
             <version>${project.version}</version>
             <configuration>
 	    <!-- Boolean to activate new language or add new properties (true/false)-->
@@ -172,7 +172,7 @@
         <plugins>
           <plugin>
             <groupId>org.exoplatform.crowdin</groupId>
-            <artifactId>crowdin-maven-plugin</artifactId>
+            <artifactId>crowdin</artifactId>
             <version>${project.version}</version>
             <executions>
               <execution>
@@ -199,7 +199,7 @@
         <plugins>
           <plugin>
             <groupId>org.exoplatform.crowdin</groupId>
-            <artifactId>crowdin-maven-plugin</artifactId>
+            <artifactId>crowdin</artifactId>
             <version>${project.version}</version>
             <executions>
               <execution>
@@ -239,7 +239,7 @@
         <plugins>
           <plugin>
             <groupId>org.exoplatform.crowdin</groupId>
-            <artifactId>crowdin-maven-plugin</artifactId>
+            <artifactId>crowdin</artifactId>
             <version>${project.version}</version>
             <executions>
               <execution>
@@ -273,7 +273,7 @@
         <plugins>
           <plugin>
             <groupId>org.exoplatform.crowdin</groupId>
-            <artifactId>crowdin-maven-plugin</artifactId>
+            <artifactId>crowdin</artifactId>
             <version>${project.version}</version>
             <executions>
               <execution>
@@ -307,7 +307,7 @@
         <plugins>
           <plugin>
             <groupId>org.exoplatform.crowdin</groupId>
-            <artifactId>crowdin-maven-plugin</artifactId>
+            <artifactId>crowdin</artifactId>
             <version>${project.version}</version>
             <executions>
               <execution>
@@ -339,7 +339,7 @@
         <plugins>
           <plugin>
             <groupId>org.exoplatform.crowdin</groupId>
-            <artifactId>crowdin-maven-plugin</artifactId>
+            <artifactId>crowdin</artifactId>
             <version>${project.version}</version>
             <executions>
               <execution>

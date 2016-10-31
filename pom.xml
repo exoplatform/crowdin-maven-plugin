@@ -27,7 +27,7 @@
     <version>11</version>
   </parent>
   <groupId>org.exoplatform.crowdin</groupId>
-  <artifactId>crowdin</artifactId>
+  <artifactId>crowdin-parent</artifactId>
   <version>4.4.x-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>eXo Platform Crowdin Plugin</name>
