@@ -146,12 +146,18 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
     return languagesToProcess;
   }
 
-  private void applyTranslations(File _destFolder, String _zipFile, String locale) {
+  private void applyTranslations(File _destFolder, String _zipFile, String locale) throws MojoExecutionException {
+    ZipInputStream zipinputstream = null;
+
+    try {
+      zipinputstream = new ZipInputStream(new FileInputStream(_zipFile));
+    } catch (FileNotFoundException e) {
+      throw new MojoExecutionException("Cannot found translations archive file at " + _zipFile + " - Update Aborted.", e);
+    }
+
     try {
       byte[] buf = new byte[1024];
-      ZipInputStream zipinputstream = null;
       ZipEntry zipentry;
-      zipinputstream = new ZipInputStream(new FileInputStream(_zipFile));
 
       zipentry = zipinputstream.getNextEntry();
       while (zipentry != null) {

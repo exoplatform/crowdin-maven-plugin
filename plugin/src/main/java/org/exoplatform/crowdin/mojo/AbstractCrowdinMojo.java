@@ -83,7 +83,7 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
   /**
    * Translations archive file path
    */
-  @Parameter(property = "exo.crowdin.translationsArchivePath", required = true)
+  @Parameter(property = "exo.crowdin.translationsArchivePath", defaultValue = "${project.build.directory}/translations.zip")
   private String translationsArchivePath;
 
   /**
