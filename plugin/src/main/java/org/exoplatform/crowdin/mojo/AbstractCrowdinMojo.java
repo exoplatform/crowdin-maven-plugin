@@ -311,6 +311,8 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
   protected void initDir(String _filePath) {
     // remove the file name
     _filePath = _filePath.substring(0, _filePath.lastIndexOf('/'));
+    if (getLog().isDebugEnabled())
+      getLog().debug("*** Check if directories exist: " + _filePath);
     // add each element of the path in the cell of an array
     String[] path = _filePath.split("/");
     // reconstruct the path from the beginning, one element after each other
@@ -321,7 +323,7 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
       try {
         if (!getHelper().elementExists(pathFromBeginning.toString())) {
           if (getLog().isDebugEnabled())
-            getLog().debug("*** Create directory: " + _filePath);
+            getLog().debug("*** Create directory: " + pathFromBeginning.toString());
           String result = getHelper().addDirectory(pathFromBeginning.toString());
           if (result.contains("success"))
             getLog().info("Directory '" + pathFromBeginning.toString() + "' created succesfully.");
