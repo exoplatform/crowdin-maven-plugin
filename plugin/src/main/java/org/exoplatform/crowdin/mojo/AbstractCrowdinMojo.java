@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -529,8 +528,9 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
 
   protected String getCrowdinDownloadDate() throws IOException {
     if (downloadDate == null) {
-      // TODO use java 8 Date API
-      downloadDate = new SimpleDateFormat("yyyyMMdd-HHmmss").format(crowdInArchive.lastModified());
+      Properties downloadProperties = new Properties();
+      downloadProperties.load(new FileInputStream(crowdInArchiveProperties));
+      downloadDate = downloadProperties.getProperty(DOWNLOAD_DATE_PROPERTY);
     }
     return downloadDate;
   }
