@@ -26,7 +26,7 @@
     <groupId>org.exoplatform.crowdin</groupId>
     <version>4.4.x-SNAPSHOT</version>
   </parent>
-  <artifactId>crowdin</artifactId>
+  <artifactId>crowdin-maven-plugin</artifactId>
   <packaging>maven-plugin</packaging>
   <name>Crowdin Maven Plugin</name>
   <properties>
