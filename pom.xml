@@ -28,6 +28,7 @@
   </parent>
   <groupId>org.exoplatform.translation.crowdin</groupId>
   <artifactId>crowdin-maven-plugin</artifactId>
+  <version>1.0.x-SNAPSHOT</version>
   <packaging>maven-plugin</packaging>
   <name>Crowdin Maven Plugin</name>
   <properties>
