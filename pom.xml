@@ -24,7 +24,7 @@
   <parent>
     <artifactId>maven-parent-pom</artifactId>
     <groupId>org.exoplatform</groupId>
-    <version>11</version>
+    <version>15</version>
   </parent>
   <groupId>org.exoplatform.translation.crowdin</groupId>
   <artifactId>crowdin-maven-plugin</artifactId>
