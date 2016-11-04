@@ -32,6 +32,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -156,6 +157,14 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
     }
 
     try {
+      Properties currentProj = getProperties();
+      // ignore projects that is not managed by the plugin
+      if (currentProj == null) {
+        return;
+      }
+
+      String baseDir = currentProj.getProperty("baseDir");
+
       byte[] buf = new byte[1024];
       ZipEntry zipentry;
 
@@ -176,6 +185,7 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
         String crowdinProj = path[1];
         String proj = path[2];
         String fileName = "";
+        String cp = crowdinProj + File.separator + proj + File.separator;
 
         // process only the languages specified
         if (!(lang.equalsIgnoreCase(locale))) {
@@ -183,15 +193,14 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
           continue;
         }
 
+        // process only files of the current project
+        if(StringUtils.isEmpty(baseDir) || !cp.equals(baseDir)) {
+          zipentry = zipinputstream.getNextEntry();
+          continue;
+        }
+
         try {
-          String cp = crowdinProj + File.separator + proj;
-          Properties currentProj = getProperties();
-          // ignore projects that is not managed by the plugin
-          if (currentProj == null) {
-            zipentry = zipinputstream.getNextEntry();
-            continue;
-          }
-          String key = zipentryName.substring(zipentryName.indexOf(cp) + cp.length() + 1);
+          String key = zipentryName.substring(zipentryName.indexOf(cp) + cp.length());
           String value = currentProj.getProperty(key);
           
           if (value == null) {
