@@ -47,27 +47,6 @@ public class DownloadTranslationsMojo extends AbstractCrowdinMojo {
       } catch (Exception e) {
         throw new MojoExecutionException("Error downloading the translations from Crowdin." + e);
       }
-      Properties downloadProperties = new Properties();
-      downloadProperties.put(DOWNLOAD_DATE_PROPERTY, new SimpleDateFormat("yyyyMMdd-HHmmss").format(Calendar.getInstance().getTime()));
-      try {
-        downloadProperties.store(new FileOutputStream(crowdInArchiveProperties), "");
-      } catch (IOException e) {
-        throw new MojoExecutionException("Error while writing translations properties", e);
-      }
-      //get the translations status
-      BufferedWriter writer = null;
-      try {
-        writer = new BufferedWriter(new FileWriter(translationStatusReport));
-        writer.write(getHelper().getTranslationStatus());
-      } catch (IOException e) {
-        throw new MojoExecutionException("Error while downloading translations report", e);
-      } finally {
-        try {
-          if (writer != null)
-            writer.close();
-        } catch (IOException e) {
-        }
-      }
     }
   }
 }

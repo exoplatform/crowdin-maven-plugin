@@ -55,11 +55,8 @@ import org.twdata.maven.mojoexecutor.MojoExecutor;
  */
 public abstract class AbstractCrowdinMojo extends AbstractMojo {
 
-  public static final String DOWNLOAD_DATE_PROPERTY = "downloadDate";
   public static final String DEFAULT_TRANSLATIONS_REGISTRY_FILE_PATH = "translations.properties";
   protected File crowdInArchive;
-  protected File crowdInArchiveProperties;
-  protected File translationStatusReport;
   /**
    * The directory to start parsing from
    */
@@ -178,8 +175,6 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
     File buildDir = new File(getProject().getBuild().getDirectory());
     buildDir.mkdirs();
     crowdInArchive = new File(getTranslationsArchivePath());
-    crowdInArchiveProperties = new File(buildDir, "translations-status.properties");
-    translationStatusReport = new File(buildDir, "translations-status.xml");
 
     // Call to the abstract method, that must be overriden in each concrete mojo
     crowdInMojoExecute();
@@ -524,14 +519,5 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
   protected void execGit(File workingDirectory, String params, MojoExecutor.Element... successCodes) throws MojoExecutionException, MojoFailureException {
     getLog().info("Running : git " + params);
     executeMojo(plugin(groupId("org.codehaus.mojo"), artifactId("exec-maven-plugin"), version("1.2.1")), goal("exec"), configuration(element(name("executable"), "/bin/sh"), element(name("commandlineArgs"), "-c \"(cd " + workingDirectory.getAbsolutePath() + " && exec git " + params + ")\""), element(name("workingDirectory"), workingDirectory.getAbsolutePath()), element(name("successCodes"), successCodes)), executionEnvironment(getProject(), getMavenSession(), getPluginManager()));
-  }
-
-  protected String getCrowdinDownloadDate() throws IOException {
-    if (downloadDate == null) {
-      Properties downloadProperties = new Properties();
-      downloadProperties.load(new FileInputStream(crowdInArchiveProperties));
-      downloadDate = downloadProperties.getProperty(DOWNLOAD_DATE_PROPERTY);
-    }
-    return downloadDate;
   }
 }

@@ -26,10 +26,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Properties;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -63,6 +61,8 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
       getLog().info("No language to process");
     }
 
+    String currentDate = new SimpleDateFormat("yyyyMMdd-HHmmss").format(Calendar.getInstance().getTime());
+
     for (String language : languagesToProcess) {
       getLog().info("Updates for locale " + language);
       applyTranslations(getWorkingDir(), crowdInArchive.getPath(), language);
@@ -91,7 +91,7 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
         getLog().info("Done.");
         BufferedReader br = new BufferedReader(new FileReader(patchFile));
         if (br.readLine() == null) {
-          getLog().info("No change for locale " + language + " from crowdin extract done on " + getCrowdinDownloadDate());
+          getLog().info("No change for locale " + language + " from crowdin extract done on " + currentDate);
         } else {
           // Apply the patch
           getLog().info("Apply patch(s)...");
@@ -102,7 +102,7 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
           }
           getLog().info("Done.");
           getLog().info("Commit changes...");
-          execGit(localVersionRepository, "commit -a -m '" + language + " injection on " + getCrowdinDownloadDate() + "'", element("successCode", "0"), element("successCode", "1"));
+          execGit(localVersionRepository, "commit -a -m '" + language + " injection on " + currentDate + "'", element("successCode", "0"), element("successCode", "1"));
           getLog().info("Done.");
           // Push it
           if (!isDryRun()) {
