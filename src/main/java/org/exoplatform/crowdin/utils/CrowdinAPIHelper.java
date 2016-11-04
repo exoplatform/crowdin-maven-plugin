@@ -168,11 +168,13 @@ public class CrowdinAPIHelper {
         currentMojo.getLog().debug("*** Real mode would execute:\n" +
             "given()." +
             "multiPart(\"files[\"" + _file.getCrowdinPath() + "\"]\", " + _file.getFile().getName() + ")." +
+            "multiPart(\"update_option\", \"update_as_unapproved\")." +
             "post(\"/update-file?key=" + projectKey + ").andReturn().asString();");
       return "<dryRun success/>";
     }
     return given().
         multiPart("files[" + _file.getCrowdinPath() + "]", _file.getFile()).
+        multiPart("update_option", "update_as_unapproved").
         post("/update-file?key=" + projectKey).andReturn().asString();
   }
 
