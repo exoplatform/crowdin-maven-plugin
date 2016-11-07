@@ -18,7 +18,7 @@ Add the Following properties in the maven settings.xml (contact with admin of cr
 ----
   <pluginGroups>
     <!-- ... -->
-    <pluginGroup>org.exoplatform.crowdin</pluginGroup>
+    <pluginGroup>org.exoplatform.translation.crowdin</pluginGroup>
     <!-- ... -->
   </pluginGroups>
   <!-- ... -->
