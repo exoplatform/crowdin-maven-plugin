@@ -96,14 +96,14 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
         } else {
           // Apply the patch
           getLog().info("Apply patch(s)...");
-          execGit(localVersionRepository, "apply --ignore-whitespace " + patchFile.getAbsolutePath(), element("successCode", "0"), element("successCode", "1"));
+          execGit(localVersionRepository, "apply1 --ignore-whitespace " + patchFile.getAbsolutePath());
           // commit all untracked and tracked files
           if (isActivate()){
             execGit(localVersionRepository, "add .");
           }
           getLog().info("Done.");
           getLog().info("Commit changes...");
-          execGit(localVersionRepository, "commit -a -m '" + language + " injection on " + currentDate + "'", element("successCode", "0"), element("successCode", "1"));
+          execGit(localVersionRepository, "commit -a -m '" + language + " injection on " + currentDate + "'");
           getLog().info("Done.");
           // Push it
           if (!isDryRun()) {
