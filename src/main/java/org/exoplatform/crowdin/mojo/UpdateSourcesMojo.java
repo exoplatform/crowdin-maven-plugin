@@ -96,7 +96,7 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
         } else {
           // Apply the patch
           getLog().info("Apply patch(s)...");
-          execGit(localVersionRepository, "apply1 --ignore-whitespace " + patchFile.getAbsolutePath());
+          execGit(localVersionRepository, "apply --ignore-whitespace " + patchFile.getAbsolutePath());
           // commit all untracked and tracked files
           if (isActivate()){
             execGit(localVersionRepository, "add .");
