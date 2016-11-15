@@ -289,9 +289,9 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
   }
 
   /**
-   * @return The list of properties files that contain pointers to each file to manage with Crowdin <br/>
-   * Format:  project-name-version <=> path/to/file.properties <br/>
-   * Example: cs-2.2.x <=> cs-2.2.x.properties
+   * @return The list of properties files that contain pointers to each file to manage with Crowdin <br>
+   * Format:  project-name-version=path/to/file.properties <br>
+   * Example: cs-2.2.x=cs-2.2.x.properties
    */
   public Properties getProperties() {
     return properties;

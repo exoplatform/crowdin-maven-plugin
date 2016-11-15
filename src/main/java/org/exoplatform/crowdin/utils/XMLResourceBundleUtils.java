@@ -72,7 +72,7 @@ public class XMLResourceBundleUtils {
   /**
    * Read data from XML InputStream
    * @param in
-   * @return a Map<String, List<String>> that contains all xpath:node-data of XML InputStream
+   * @return a {@code Map<String, List<String>>} that contains all xpath:node-data of XML InputStream
    */
   public static Map<String, List<String>> readXMLToMap(InputStream in) {
     if (in == null) {
@@ -84,7 +84,7 @@ public class XMLResourceBundleUtils {
   /**
    * Read data from XML Reader
    * @param in
-   * @return a Map<String, List<String>> that contains all xpath:node-data of XML InputStream
+   * @return a {@code Map<String, List<String>>} that contains all xpath:node-data of XML InputStream
    */
   public static Map<String, List<String>> readXMLToMap(Reader in) {
     if (in == null) {
@@ -247,8 +247,8 @@ public class XMLResourceBundleUtils {
    * Inject translation from crowdin to code base resource translation
    * 
    * @param crowdinFile
-   * @param resourceMasterFile
    * @param resourceTranslationFilePath
+   * @param resourceMasterFilePath
    * @return
    */
   public static String injectTranslation(InputSource crowdinFile,
