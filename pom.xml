@@ -31,6 +31,12 @@
   <version>1.0.x-SNAPSHOT</version>
   <packaging>maven-plugin</packaging>
   <name>Crowdin Maven Plugin</name>
+  <scm>
+    <connection>scm:git:git://github.com/exoplatform/crowdin-maven-plugin.git</connection>
+    <developerConnection>scm:git:git@github.com:exoplatform/crowdin-maven-plugin.git</developerConnection>
+    <tag>HEAD</tag>
+    <url>https://github.com/exo-addons/crowdin-maven-plugin</url>
+  </scm>
   <properties>
     <mavenVersion>3.2.5</mavenVersion>
     <mavenPluginPluginVersion>3.4</mavenPluginPluginVersion>
@@ -72,9 +78,9 @@
       <version>1.5</version>
       <exclusions>
         <exclusion>
+          <artifactId>groovy</artifactId>
           <!-- Select ourselves the groovy version to use -->
           <groupId>org.codehaus.groovy</groupId>
-          <artifactId>groovy</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
