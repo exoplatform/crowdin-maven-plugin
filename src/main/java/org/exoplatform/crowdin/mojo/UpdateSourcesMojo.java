@@ -70,38 +70,17 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
       try {
         File localVersionRepository = getWorkingDir();
         getLog().info("Extract/Apply/Commit/Push changes");
-        // Create a patch with local changes
-        getLog().info("Create patch(s)...");
-        File patchFile = new File(getProject().getBuild().getDirectory(), "translations-" + language + ".patch");
-        // create patch all files when activate new language or properties
-        if (isActivate()){
-          getLog().info("Activation new language/properties ");
-          execGit(localVersionRepository, "add .");
-          execGit(localVersionRepository, "diff --ignore-all-space HEAD > " + patchFile.getAbsolutePath());
-          getLog().info("Create patch file at: "+ patchFile.getAbsolutePath());
-        }
-        // create patch only tracked files
-        else{
-        execGit(localVersionRepository, "diff --ignore-all-space > " + patchFile.getAbsolutePath());
-        }
+        // Check changes
+        getLog().info("Check changes...");
+        File statusFile = new File(getProject().getBuild().getDirectory(), "translations-" + language + ".status");
+        execGit(localVersionRepository, "status -s > " + statusFile.getAbsolutePath());
         getLog().info("Done.");
-        // Reset our local copy
-        getLog().info("Reset repository...");
-        execGit(localVersionRepository, "reset --hard HEAD");
-        execGit(localVersionRepository, "clean -fd");
-        getLog().info("Done.");
-        BufferedReader br = new BufferedReader(new FileReader(patchFile));
+        BufferedReader br = new BufferedReader(new FileReader(statusFile));
         if (br.readLine() == null) {
           getLog().info("No change for locale " + language + " from crowdin extract done on " + currentDate);
         } else {
-          // Apply the patch
-          getLog().info("Apply patch(s)...");
-          execGit(localVersionRepository, "apply --ignore-whitespace " + patchFile.getAbsolutePath());
-          // commit all untracked and tracked files
-          if (isActivate()){
-            execGit(localVersionRepository, "add .");
-          }
-          getLog().info("Done.");
+          // Commit the changes
+          execGit(localVersionRepository, "add .");
           getLog().info("Commit changes...");
           execGit(localVersionRepository, "commit -a -m '" + language + " injection on " + currentDate + "'");
           getLog().info("Done.");

@@ -108,12 +108,6 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
 
   @Parameter(property = "exo.crowdin.ignore")
   private String ignore;
-  
-  /**
-   * Boolean to enable/disable new language or new properties file
-   */  
-  @Parameter
-  private boolean isActivate;
 
   @Parameter(defaultValue = "${project}", readonly = true, required = true)
   private MavenProject project;
@@ -261,11 +255,6 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
     return languages;
   }
   
-  public boolean isActivate() {
-    return isActivate;
-  }
-
-
   public String getApplyApprovedOnlyOption() {
     if ("true".equals(apply_approved_only)) {
       return "1";
