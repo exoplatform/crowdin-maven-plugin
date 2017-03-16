@@ -83,6 +83,15 @@ Useful to see the evolution of the process. Combined with maven debug option -X,
 
 == Let's go deeper
 
+* crowdin:update-sources
+
+** for each language and each localization file declared in translations.properties file...
+*** if the file is an XML file, convert the properties file from Crowdin to an XML file
+*** use the english version (en) as a skeleton and fill it with translations from Crowdin in the given language
+*** save the filled file at its source location
+*** commit the changes
+*** if not in dry run, push the changes in the current branch
+
 * crowdin:update-crowdin
 
 ** load the translations file of the project
@@ -95,25 +104,51 @@ Useful to see the evolution of the process. Combined with maven debug option -X,
 
 ** Identify the list of projects need to be changed, put them into upload-translation.properties. Each entry is a key/value pair with key = <project name>-<version> and value = <path to project's description file>
 ** For each project create the project description file named <project>.properties. In this file provide the path to the project in the 'baseDir' property and list all the translation files need to be updated in the form of <path in Crowdin>=<path in source code>
-** Run 'mvn crowdin:upload-translation -Pcrowdin'
 
 == How-tos
 
-=== How to add a new translation ?
+=== How to add a new localization file ?
 
-TODO
+All localization file of a given project must be referenced in the file translations.properties located at the root of the project.
+Each line must be formatted as follows :
 
-=== How to update a translation ?
+[source]
+----
+crowdin-path=source-path
+----
 
-TODO
+where
 
-=== How to delete a translation ?
+* crowdin-path is the path of the localization file in Crowdin relative to the root of the Crowdin project
+* source-path is the path of the english (en) localization file in the project sources, relative to the value of the property "baseDir"
 
-TODO
+For example :
+
+[source]
+----
+baseDir=platform/calendar/
+webapp/CalendarPortlet.properties=calendar-webapp/src/main/resources/locale/portlet/calendar/CalendarPortlet_en.properties
+----
+
+=== How to add a new translation string in an existing localization file ?
+
+In order to add a new string, simply add it in the english (en) localization file.
+It will automatically added in Crowdin during the next synchronization.
+
+=== How to update an existing translation string ?
+
+Updating a string must be done in Crowdin directly.
+Once validated the translated string will be pushed in the sources during the next synchronization.
+
+=== How to delete a translation string ?
+
+Deleting a string must be done in the sources by simply removing the string in all the localization files containing this string.
+The string will be automatically deleted in Crowdin during the next synchronization.
 
 === How to add a new language ?
 
-TODO
+Adding a new language must be done in Crowdin.
+Once the language has been activated, its localization files will be pushed in the sources during the next synchronization.
 
 === How to clone a Crowdin project ?
 
@@ -122,15 +157,6 @@ In order to clone a Crowdin project from its zip file (by changing the project's
 * Rename the project's zip file as 'translation.zip' and put it under the plugin's crowdin-zip folder
 * If the master files do not exist (e.g in case you want to do a clone, or you had deleted them all using Crowdin's 'File Manager' to rebuild from scratch - this is recommended), you must first re-create the project's structure with '-Daction=createProject' option, the plugin will extract the zip and walk through its directories and files to create the same structure on Crowdin.
 * When having the master files ready, run 'mvn crowdin:restore-translation', the plugin will (by default) upload translations of every languages it finds in the zip.
-
-
-== Contributing
-
-    1. Fork it
-    2. Create your feature branch (git checkout -b my-new-feature)
-    3. Commit your changes (git commit -am 'Added some feature')
-    4. Push to the branch (git push origin my-new-feature)
-    5. Create new Pull Request
 
 == Resources
 
