@@ -28,13 +28,13 @@
   </parent>
   <groupId>org.exoplatform.translation.crowdin</groupId>
   <artifactId>crowdin-maven-plugin</artifactId>
-  <version>1.2.x-SNAPSHOT</version>
+  <version>1.2.0</version>
   <packaging>maven-plugin</packaging>
   <name>Crowdin Maven Plugin</name>
   <scm>
     <connection>scm:git:git://github.com/exoplatform/crowdin-maven-plugin.git</connection>
     <developerConnection>scm:git:git@github.com:exoplatform/crowdin-maven-plugin.git</developerConnection>
-    <tag>HEAD</tag>
+    <tag>1.2.0</tag>
     <url>https://github.com/exo-addons/crowdin-maven-plugin</url>
   </scm>
   <properties>
