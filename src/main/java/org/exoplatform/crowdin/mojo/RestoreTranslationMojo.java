@@ -143,7 +143,7 @@ public class RestoreTranslationMojo extends AbstractCrowdinMojo {
       } else {
         CrowdinFile master = getFactory().prepareCrowdinFile(file.getAbsolutePath(), crowdinPath.substring(crowdinPath.lastIndexOf(File.separatorChar)), dirPath.replace(ZIP_DIR + lang + "/", ""));
         CrowdinTranslation cTran = new CrowdinTranslation(file, crowdinPath.substring(crowdinPath.lastIndexOf(File.separatorChar)), master.getType(), master.getProject(), lang, master, false);
-        String ret = getHelper().uploadTranslation(cTran);
+        String ret = getHelper().uploadTranslation(cTran, false);
         if (ret.contains("success")) {
           getLog().info("Uploading translation: " + crowdinPath + " [successed]");
         } else {

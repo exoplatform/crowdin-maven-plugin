@@ -86,6 +86,7 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
    * Languages of the translations to be processed, or "all" to process all languages
    */
   @Parameter(property = "langs", defaultValue = "all")
+  private String langs;
   private List<String> languages;
 
   /**
@@ -99,6 +100,12 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
    */
   @Parameter(property = "apply_approved_only", defaultValue = "true")
   private String apply_approved_only;
+
+  /**
+   * Option to automatically approve imported translations
+   */
+  @Parameter(property = "exo.crowdin.autoApprovedImported", defaultValue = "false")
+  private boolean autoApprovedImported;
 
   @Parameter(property = "exo.crowdin.project.id", required = true)
   private String projectId;
@@ -252,6 +259,9 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
   }
 
   public List<String> getLanguages() {
+    if(languages == null && langs != null) {
+      languages = Arrays.asList(langs.split(","));
+    }
     return languages;
   }
   
@@ -424,24 +434,9 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
     
     for (File file : files) {
       String transName = file.getName();
-      String masterName;
-      Matcher matcher = getFactory().matchTranslation(masterFileName);
-      if (matcher.matches()) {
-        masterName = matcher.group(1);
-      } else {
-        masterName = masterFileName.substring(0, masterFileName.lastIndexOf('.'));
-      }
-      String tName = transName.substring(0, transName.lastIndexOf('.'));
-      String mName = masterFileName.substring(0, masterFileName.lastIndexOf('.'));
-      if (!tName.equalsIgnoreCase(mName) && (transName.indexOf(masterName) == 0 && transName.indexOf(masterName + "-") < 0 || file.getPath().contains("gadget"))) {
-        if (getLog().isDebugEnabled())
-          getLog().debug("*** Initializing: " + transName);
-        prepareAndUploadTranslation(transName, _master, file);
-      }
-      //process for Android or iOS
-      else if ((dir.getPath().contains("android")) || ((dir.getPath().contains("ios")))) {
-        prepareAndUploadTranslation(transName, _master, file);
-      }
+      if (getLog().isDebugEnabled())
+        getLog().debug("*** Initializing: " + transName);
+      prepareAndUploadTranslation(transName, _master, file, autoApprovedImported);
     }
   }
   
@@ -451,7 +446,7 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
 * @param _master
 * @param file
 */
-  private void prepareAndUploadTranslation(String transName, CrowdinFile _master, File file) {
+  private void prepareAndUploadTranslation(String transName, CrowdinFile _master, File file, boolean autoApprovedImported) {
     try {
       if (getLog().isDebugEnabled())
         getLog().debug("*** Upload translation: " + transName + "\n\t***** for master: "
@@ -470,7 +465,7 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
         return;
       }
       
-      String result = getHelper().uploadTranslation(cTran);
+      String result = getHelper().uploadTranslation(cTran, autoApprovedImported);
       getLog().info("*** Upload translation: " + transName + "\n\t***** for master: "
           + _master.getName());
       

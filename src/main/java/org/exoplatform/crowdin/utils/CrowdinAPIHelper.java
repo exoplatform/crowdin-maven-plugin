@@ -185,19 +185,26 @@ public class CrowdinAPIHelper {
    * @return true if the request is successful (translation uploaded), false otherwise
    * @throws MojoExecutionException
    */
-  public String uploadTranslation(CrowdinTranslation _file) throws MojoExecutionException {
+  public String uploadTranslation(CrowdinTranslation _file, boolean autoApprovedImported) throws MojoExecutionException {
+    String autoApprovedImportedParam = autoApprovedImported ? "1" : "0";
     if (currentMojo.isDryRun()) {
       currentMojo.getLog().info("Uploading translation '" + _file.getFile().getName() + "' in Dry Run mode...");
       if (currentMojo.getLog().isDebugEnabled())
         currentMojo.getLog().debug("*** Real mode would execute:\n" +
             "given()." +
             "multiPart(\"language\", " + _file.getLang() + ")." +
+            "multiPart(\"auto_approve_imported\", " + autoApprovedImportedParam + ")." +
+            "multiPart(\"import_duplicates\", " + autoApprovedImportedParam + ")." +
+            "multiPart(\"import_eq_suggestions\", " + autoApprovedImportedParam + ")." +
             "multiPart(\"files[\"" + _file.getMaster().getCrowdinPath() + "\"]\", " + _file.getFile().getName() + ")." +
             "post(\"/upload-translation?key=" + projectKey + ").andReturn().asString();");
       return "<dryRun success/>";
     }
     return given().
         multiPart("language", _file.getLang()).
+        multiPart("auto_approve_imported", autoApprovedImportedParam).
+        multiPart("import_duplicates", autoApprovedImportedParam).
+        multiPart("import_eq_suggestions", autoApprovedImportedParam).
         multiPart("files[" + _file.getMaster().getCrowdinPath() + "]", _file.getFile()).
         post("/upload-translation?key=" + projectKey).andReturn().asString();
   }
