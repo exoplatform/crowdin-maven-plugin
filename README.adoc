@@ -2,7 +2,7 @@
 
 A command line tool to handle synchronization of the source code with translations made on Crowdin.
 
-Maven plugin for crowdin (http://crowdin.net/)
+Maven plugin for crowdin (https://crowdin.com)
 
 
 == Requirements

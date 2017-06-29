@@ -41,14 +41,14 @@ public class CrowdinAPIHelper {
   public CrowdinAPIHelper(AbstractCrowdinMojo _mojo) {
     projectId = _mojo.getProjectId();
     projectKey = _mojo.getProjectKey();
-    RestAssured.baseURI = "http://api.crowdin.net";
+    RestAssured.baseURI = "https://api.crowdin.com";
     RestAssured.port = 80;
     RestAssured.basePath = "/api/project/" + projectId;
     currentMojo = _mojo;
   }
 
   /**
-   * Calls the function http://crowdin.net/page/api/add-directory
+   * Calls the function http://crowdin.com/page/api/add-directory
    *
    * @param _dirName the name of the directory to create (with path if the directory is nested)
    * @return true if the request is successful (directory created), false otherwise
@@ -70,7 +70,7 @@ public class CrowdinAPIHelper {
   }
 
   /**
-   * Calls the function http://crowdin.net/page/api/add-file
+   * Calls the function https://crowdin.com/page/api/add-file
    *
    * @param _file the full path + name of the file
    * @return true if the request is successful (file added), false otherwise
@@ -112,7 +112,7 @@ public class CrowdinAPIHelper {
   }
 
   /**
-   * Calls the function http://crowdin.net/page/api/delete-file
+   * Calls the function https://crowdin.com/page/api/delete-file
    *
    * @param _file Crowdin file
    * @return true if the request is successful (file deleted), false otherwise
@@ -155,7 +155,7 @@ public class CrowdinAPIHelper {
   }
 
   /**
-   * Calls the function http://crowdin.net/page/api/update-file
+   * Calls the function https://crowdin.com/page/api/update-file
    *
    * @param _file the full path + name of the file
    * @return true if the request is successful (file updated), false otherwise
@@ -179,7 +179,7 @@ public class CrowdinAPIHelper {
   }
 
   /**
-   * Calls the function http://crowdin.net/page/api/upload-translation
+   * Calls the function https://crowdin.com/page/api/upload-translation
    *
    * @param _file the full path + name of the translation file
    * @return true if the request is successful (translation uploaded), false otherwise
@@ -210,7 +210,7 @@ public class CrowdinAPIHelper {
   }
 
   /**
-   * Calls the function http://crowdin.net/page/api/info
+   * Calls the function https://crowdin.com/page/api/info
    *
    * @return an XML string with all information about this project
    * @throws MojoExecutionException
@@ -251,7 +251,7 @@ public class CrowdinAPIHelper {
   }
 
   /**
-   * Calls the function http://crowdin.net/page/api/edit-project
+   * Calls the function https://crowdin.com/page/api/edit-project
    *
    * @return an XML string with all information about the result
    * @throws MojoExecutionException
@@ -263,7 +263,7 @@ public class CrowdinAPIHelper {
   }
 
   /**
-   * Calls the function http://crowdin.net/page/api/edit-project
+   * Calls the function https://crowdin.com/page/api/edit-project
    *
    * @return an XML string with the status of translations
    * @throws MojoExecutionException
