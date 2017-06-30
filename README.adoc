@@ -105,59 +105,6 @@ Useful to see the evolution of the process. Combined with maven debug option -X,
 ** Identify the list of projects need to be changed, put them into upload-translation.properties. Each entry is a key/value pair with key = <project name>-<version> and value = <path to project's description file>
 ** For each project create the project description file named <project>.properties. In this file provide the path to the project in the 'baseDir' property and list all the translation files need to be updated in the form of <path in Crowdin>=<path in source code>
 
-== How-tos
-
-=== How to add a new localization file ?
-
-All localization file of a given project must be referenced in the file translations.properties located at the root of the project.
-Each line must be formatted as follows :
-
-[source]
-----
-crowdin-path=source-path
-----
-
-where
-
-* crowdin-path is the path of the localization file in Crowdin relative to the root of the Crowdin project
-* source-path is the path of the english (en) localization file in the project sources, relative to the value of the property "baseDir"
-
-For example :
-
-[source]
-----
-baseDir=platform/calendar/
-webapp/CalendarPortlet.properties=calendar-webapp/src/main/resources/locale/portlet/calendar/CalendarPortlet_en.properties
-----
-
-=== How to add a new translation string in an existing localization file ?
-
-In order to add a new string, simply add it in the english (en) localization file.
-It will automatically added in Crowdin during the next synchronization.
-
-=== How to update an existing translation string ?
-
-Updating a string must be done in Crowdin directly.
-Once validated the translated string will be pushed in the sources during the next synchronization.
-
-=== How to delete a translation string ?
-
-Deleting a string must be done in the sources by simply removing the string in all the localization files containing this string.
-The string will be automatically deleted in Crowdin during the next synchronization.
-
-=== How to add a new language ?
-
-Adding a new language must be done in Crowdin.
-Once the language has been activated, its localization files will be pushed in the sources during the next synchronization.
-
-=== How to clone a Crowdin project ?
-
-In order to clone a Crowdin project from its zip file (by changing the project's API key to point to another project):
-
-* Rename the project's zip file as 'translation.zip' and put it under the plugin's crowdin-zip folder
-* If the master files do not exist (e.g in case you want to do a clone, or you had deleted them all using Crowdin's 'File Manager' to rebuild from scratch - this is recommended), you must first re-create the project's structure with '-Daction=createProject' option, the plugin will extract the zip and walk through its directories and files to create the same structure on Crowdin.
-* When having the master files ready, run 'mvn crowdin:restore-translation', the plugin will (by default) upload translations of every languages it finds in the zip.
-
 == Resources
 
 * http://code.google.com/p/rest-assured/wiki/Usage?ts=1317978378&updated=Usage#Example_1_-_JSON
