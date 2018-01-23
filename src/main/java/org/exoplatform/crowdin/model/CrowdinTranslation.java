@@ -34,9 +34,7 @@ public class CrowdinTranslation extends CrowdinFile {
 
   public CrowdinTranslation(File _file, String _name, String _type, String _project, String _lang, CrowdinFile _master, boolean _shouldBeCleaned) {
     super(_file, _name, _type, _project, _shouldBeCleaned);
-    lang = _lang;
-    if (lang.equals("vn")) lang = "vi";
-    else if (lang.equals("es")) lang = "es-ES";
+    lang = getCrowdinLangFromPlatformLang(_lang);
     lang = encodeLanguageName(lang, true);
     master = _master;
   }
@@ -61,6 +59,42 @@ public class CrowdinTranslation extends CrowdinFile {
     } else {
       return (lang == null || lang.isEmpty()) ? lang : lang.replace("-", "_");
     }
+  }
+
+  /**
+   * Return the right language code for eXo from the language code used by Crowdin
+   * This is useful for some specific case, for example the indonesian language code in Crowdin
+   * is "id" whereas it is "in" in the platform (and Java).
+   * @param lang Language code in Crowdin
+   * @return Language code in platform
+   */
+  public static String getPlatformLangFromCrowdinLang(String lang) {
+    String language = lang;
+    if("id".equals(language)) {
+      language = "in";
+    }
+    return language;
+  }
+
+  /**
+   * Return the right language code for Crowdin from the language code used by eXo
+   * This is useful for some specific case, for example the indonesian language code in Crowdin
+   * is "id" whereas it is "in" in the platform (and Java).
+   * @param lang Language code in platform
+   * @return Language code in Crowdin
+   */
+  public static String getCrowdinLangFromPlatformLang(String lang) {
+    String language = lang;
+    if("es".equals(language)) {
+      // make sure that resources files in eXo with only "_es" are correctly mapped to spanish language in Crowdin (es-ES)
+      language = "es-ES";
+    } else if("vn".equals(language)) {
+      language = "vi";
+    } else if("in".equals(language)) {
+      // Indonesian language code is "id" in Crowdin but "in" in Java and eXo
+      language = "id";
+    }
+    return language;
   }
 
   /**
