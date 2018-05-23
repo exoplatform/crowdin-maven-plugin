@@ -32,6 +32,22 @@ public class CrowdinFileFactory {
 
   private AbstractCrowdinMojo currentMojo;
 
+  /*
+   * This is a regular expression that matches filenames with a language code, and a possible variant.
+   * Here is how to read it:
+   * - group 1 : ([a-zA-Z_0-9-]*) : any character in a-z, A-Z, 0-9, _ and -, any number of time
+   *                                i.e. the name of the file
+   *                            _ : the character _ only once
+   * - group 2 : ([a-z]*)         : any character in a-z
+   *                                i.e. the language code (e.g. fr, pt, fil)
+   * - group 3 : (_([A-Z]*))?     : the character _ exactly once followed by any character in A-Z, the whole thing zero or once
+   *                                i.e. the language variant (e.g. _BR in pt_BR)
+   *                            . : the character . only once
+   * - group 4 : ([a-z]*)         : any character in a-z, any number of time
+   *                                i.e. the file extension
+   */
+  private Pattern translationFilePattern = Pattern.compile("^([a-zA-Z_0-9-]*)_([a-z]*)(_[A-Z]*)?.([a-z]*)$");
+
   public CrowdinFileFactory(AbstractCrowdinMojo _mojo) {
     currentMojo = _mojo;
   }
@@ -98,24 +114,11 @@ public class CrowdinFileFactory {
    * @return the Matcher object
    */
   public Matcher matchTranslation(String _filename) {
-    /*
-     * This is a regular expression that matches filenames with a language code, and a possible variant.
-		 * Here is how to read it:
-		 * - group 1 : ([a-zA-Z_0-9-]*) : any character in a-z, A-Z, 0-9, _ and -, any number of time
-		 *                                i.e. the name of the file
-		 *                            _ : the character _ only once
-		 * - group 2 : ([a-z]{2})       : any character in a-z exactly twice
-		 *                                i.e. the language code (e.g. fr, pt)
-		 * - group 3 : (_([A-Z]{2}))?   : the character _ exactly once followed by any character in A-Z exactly twice, the whole thing zero or once
-		 *                                i.e. the language variant (e.g. _BR in pt_BR)
-		 *                            . : the character . only once
-		 * - group 4 : ([a-z]*)         : any character in a-z, any number of time
-		 *                                i.e. the file extension
-		 */
-    Pattern p = Pattern.compile("^([a-zA-Z_0-9-]*)_([a-z]{2})(_[A-Z]{2})?.([a-z]*)$");
-    Matcher m = p.matcher(_filename);
+    Matcher m = translationFilePattern.matcher(_filename);
     m.matches(); // seems necessary otherwise the regex won't be executed
-    if (currentMojo.getLog().isDebugEnabled()) currentMojo.getLog().debug("*** Does " + _filename + " Matches? " + m.matches() + "; " + m);
+    if (currentMojo.getLog().isDebugEnabled()) {
+      currentMojo.getLog().debug("*** Does " + _filename + " Matches? " + m.matches() + "; " + m);
+    }
     return m;
   }
 
