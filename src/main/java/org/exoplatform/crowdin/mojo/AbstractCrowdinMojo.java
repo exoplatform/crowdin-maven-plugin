@@ -436,6 +436,10 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
       String transName = file.getName();
       if (getLog().isDebugEnabled())
         getLog().debug("*** Initializing: " + transName);
+      if ( ! file.exists() ) {
+        getLog().warn(file.getName() + " does not exists anymore, an xml file probably exists with the same name.");
+        continue;
+      }
       prepareAndUploadTranslation(transName, _master, file, autoApprovedImported);
     }
   }
@@ -464,10 +468,12 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
         }
         return;
       }
-      
+
+      getLog().info("*** Uploading translation: " + transName + "\n\t***** for master: "
+              + _master.getName() + " to crowdin ....");
       String result = getHelper().uploadTranslation(cTran, autoApprovedImported);
       getLog().info("*** Upload translation: " + transName + "\n\t***** for master: "
-          + _master.getName());
+          + _master.getName() + " to crowdin done");
       
       if (result.contains("success"))
         getLog().info("Translation '" + transName + "' added succesfully.");
