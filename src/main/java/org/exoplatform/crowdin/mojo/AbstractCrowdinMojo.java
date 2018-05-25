@@ -361,7 +361,7 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
    * @param _master The master file of which translations will be detected and uploaded.
    */
   protected void initTranslations(CrowdinFile _master) {
-    File dir = _master.getFile().getParentFile();
+    File masterDir = _master.getFile().getParentFile();
     String masterFileName = _master.getFile().getName();
     if (_master.isShouldBeCleaned()) {
       _master.getFile().delete();
@@ -370,7 +370,7 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
     List<File> files = new ArrayList<File>();
     List<String> languagesToProcess = getLanguages();    
     // processing for Android or iOs
-    if ((dir.getPath().contains("android")) || ((dir.getPath().contains("ios")))) {
+    if ((masterDir.getPath().contains("android")) || ((masterDir.getPath().contains("ios")))) {
       
       
       // remove "en" language default in the list, just send translations files      
@@ -381,16 +381,16 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
       for (int i = 0; i < languagesToProcess.size(); i++) {        
           String replaceLanguagePathName ="";
           
-          if (dir.getPath().contains("android")){
+          if (masterDir.getPath().contains("android")){
           //replace "values" to "values-language"
             String localizable = CrowdinTranslation.encodeAndroidLocale(languagesToProcess.get(i));
-          replaceLanguagePathName = dir.getPath().replaceAll("values","values-" + localizable);
+          replaceLanguagePathName = masterDir.getPath().replaceAll("values","values-" + localizable);
           }
-          else if (dir.getPath().contains("ios")) {
+          else if (masterDir.getPath().contains("ios")) {
             //replace "en.lproj" to "language.lproj"
             //transform to iOS convention localizable "es-ES" > "es_ES"
             String localizable = CrowdinTranslation.encodeIOSLocale(languagesToProcess.get(i));
-          replaceLanguagePathName = dir.getPath().replaceAll("en.lproj",localizable+".lproj");
+          replaceLanguagePathName = masterDir.getPath().replaceAll("en.lproj",localizable+".lproj");
           }          
           // add translation files in list
           File fileToAdd = new File(replaceLanguagePathName + File.separator + masterFileName);
@@ -402,31 +402,33 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
     }
     // processing for other projects
     else{
-      File[] filesArray = dir.listFiles(new FilenameFilter() {
-        public boolean accept(File dir, String name) {
-          if (dir.getPath().contains("gadget") && !dir.getPath().contains("GadgetPortlet")) {
-            return true;
-          }
-          // There are both format *.properties and *.xml for this files, so must
-          // ignore *.xml files
-          if (dir.getPath().contains("workflow") && name.indexOf(".xml") > 0) {
+      File[] filesArray = masterDir.listFiles((dir, filename) -> {
+        if (!isSameTranslationFile(masterFileName, filename)) {
+          return false;
+        }
+
+        if (dir.getPath().contains("gadget") && !dir.getPath().contains("GadgetPortlet")) {
+          return true;
+        }
+        // There are both format *.properties and *.xml for this files, so must
+        // ignore *.xml files
+        if (dir.getPath().contains("workflow") && filename.indexOf(".xml") > 0) {
+          return false;
+        }
+        if (dir.getPath().contains("web/portal")) {
+          if (filename.equals("expression_en.xml") || filename.equals("expression_it.xml")
+              || filename.equals("services_en.xml") || filename.equals("services_it.xml"))
             return false;
-          }
-          if (dir.getPath().contains("web/portal")) {
-            if (name.equals("expression_en.xml") || name.equals("expression_it.xml")
-                || name.equals("services_en.xml") || name.equals("services_it.xml"))
+        }
+        if (ignoredFiles != null) {
+          String filePath = dir.getPath() + "/" + filename;
+          for (Object key : ignoredFiles.keySet()) {
+            if (filePath.indexOf((String) key) >= 0) {
               return false;
-          }
-          if (ignoredFiles != null) {
-            String filePath = dir.getPath() + "/" + name;
-            for (Object key : ignoredFiles.keySet()) {
-              if (filePath.indexOf((String) key) >= 0) {
-                return false;
-              }
             }
           }
-          return getFactory().isTranslation(name);
         }
+        return getFactory().isTranslation(filename);
       });
       files = Arrays.asList(filesArray);
     }  
@@ -439,14 +441,37 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
       prepareAndUploadTranslation(transName, _master, file, autoApprovedImported);
     }
   }
-  
+
+  /**
+   * Check if the given filename is related to the same translation file than the filename
+   * @param masterFileName
+   * @param filename
+   * @return
+   */
+  private boolean isSameTranslationFile(String masterFileName, String filename) {
+    // convert "folder/test_en.properties" to "test"
+    String masterName = masterFileName;
+    int lastSlash = masterName.lastIndexOf("/");
+    if(lastSlash >= 0) {
+      masterName = masterName.substring(lastSlash + 1);
+    }
+    masterName = masterName.substring(0, masterName.lastIndexOf("."));
+    masterName = masterName.substring(0, masterName.indexOf("_"));
+
+    // same for filename
+    String name = filename.substring(0, filename.lastIndexOf("."));
+    name = name.substring(0, name.indexOf("_"));
+
+    return masterName.equals(name);
+  }
+
   /**
 * prepareCrowdinTranslation and uploadTranslation
 * @param transName
 * @param _master
 * @param file
 */
-  private void prepareAndUploadTranslation(String transName, CrowdinFile _master, File file, boolean autoApprovedImported) {
+  protected void prepareAndUploadTranslation(String transName, CrowdinFile _master, File file, boolean autoApprovedImported) {
     try {
       if (getLog().isDebugEnabled())
         getLog().debug("*** Upload translation: " + transName + "\n\t***** for master: "
