@@ -18,22 +18,6 @@
  */
 package org.exoplatform.crowdin.mojo;
 
-import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
-import java.util.regex.Matcher;
-
 import com.jayway.restassured.RestAssured;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.execution.MavenSession;
@@ -49,6 +33,11 @@ import org.exoplatform.crowdin.model.CrowdinFileFactory;
 import org.exoplatform.crowdin.model.CrowdinTranslation;
 import org.exoplatform.crowdin.utils.CrowdinAPIHelper;
 import org.twdata.maven.mojoexecutor.MojoExecutor;
+
+import java.io.*;
+import java.util.*;
+
+import static org.twdata.maven.mojoexecutor.MojoExecutor.*;
 
 /**
  * @author Philippe Aristote
@@ -402,26 +391,32 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
     }
     // processing for other projects
     else{
-      File[] filesArray = masterDir.listFiles((dir, filename) -> {
+      File[] filesArray = Arrays.stream(masterDir.listFiles()).filter(file -> {
+        if(file.isDirectory()) {
+          return false;
+        }
+
+        String dirPath = file.getParentFile().getPath();
+        String filename = file.getName();
         if (!isSameTranslationFile(masterFileName, filename)) {
           return false;
         }
 
-        if (dir.getPath().contains("gadget") && !dir.getPath().contains("GadgetPortlet")) {
+        if (dirPath.contains("gadget") && !dirPath.contains("GadgetPortlet")) {
           return true;
         }
         // There are both format *.properties and *.xml for this files, so must
         // ignore *.xml files
-        if (dir.getPath().contains("workflow") && filename.indexOf(".xml") > 0) {
+        if (dirPath.contains("workflow") && filename.indexOf(".xml") > 0) {
           return false;
         }
-        if (dir.getPath().contains("web/portal")) {
+        if (dirPath.contains("web/portal")) {
           if (filename.equals("expression_en.xml") || filename.equals("expression_it.xml")
               || filename.equals("services_en.xml") || filename.equals("services_it.xml"))
             return false;
         }
         if (ignoredFiles != null) {
-          String filePath = dir.getPath() + "/" + filename;
+          String filePath = dirPath + "/" + filename;
           for (Object key : ignoredFiles.keySet()) {
             if (filePath.indexOf((String) key) >= 0) {
               return false;
@@ -429,7 +424,7 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
           }
         }
         return getFactory().isTranslation(filename);
-      });
+      }).toArray(File[]::new);
       files = Arrays.asList(filesArray);
     }  
     
@@ -451,16 +446,29 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
   private boolean isSameTranslationFile(String masterFileName, String filename) {
     // convert "folder/test_en.properties" to "test"
     String masterName = masterFileName;
-    int lastSlash = masterName.lastIndexOf("/");
-    if(lastSlash >= 0) {
-      masterName = masterName.substring(lastSlash + 1);
+    int lastSlashIndex = masterName.lastIndexOf("/");
+    if(lastSlashIndex >= 0) {
+      masterName = masterName.substring(lastSlashIndex + 1);
     }
-    masterName = masterName.substring(0, masterName.lastIndexOf("."));
-    masterName = masterName.substring(0, masterName.indexOf("_"));
+    int dotIndex = masterName.lastIndexOf(".");
+    if(dotIndex >= 0) {
+      masterName = masterName.substring(0, dotIndex);
+    }
+    int underscoreIndex = masterName.indexOf("_");
+    if(underscoreIndex >= 0) {
+      masterName = masterName.substring(0, underscoreIndex);
+    }
 
     // same for filename
-    String name = filename.substring(0, filename.lastIndexOf("."));
-    name = name.substring(0, name.indexOf("_"));
+    String name = filename;
+    int filenameDotIndex = name.lastIndexOf(".");
+    if(filenameDotIndex >= 0) {
+      name = name.substring(0, dotIndex);
+    }
+    int filenameUnderscoreIndex = name.indexOf("_");
+    if(filenameUnderscoreIndex >= 0) {
+      name = name.substring(0, filenameUnderscoreIndex);
+    }
 
     return masterName.equals(name);
   }
