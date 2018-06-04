@@ -463,7 +463,7 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
     String name = filename;
     int filenameDotIndex = name.lastIndexOf(".");
     if(filenameDotIndex >= 0) {
-      name = name.substring(0, dotIndex);
+      name = name.substring(0, filenameDotIndex);
     }
     int filenameUnderscoreIndex = name.indexOf("_");
     if(filenameUnderscoreIndex >= 0) {
