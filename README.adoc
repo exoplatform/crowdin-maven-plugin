@@ -13,7 +13,7 @@ Maven plugin for crowdin (https://crowdin.com)
 
 == Configuration
 
-Add the Following properties in the maven settings.xml (contact with admin of crowdin exo-platform-35 project to get project key and id):
+Add the Following properties in the maven settings.xml (contact an admin of crowdin to get the project key and id):
 [source,xml]
 ----
   <pluginGroups>
@@ -37,7 +37,7 @@ Add the Following properties in the maven settings.xml (contact with admin of cr
 
 == Usage
 
-Available goals are: *download-translations*, *update-sources*, *update-crowdin*, *init-crowdin*, *upload-translation*.
+Available goals are: *download-translations*, *update-sources*, *update-crowdin*, *restore-translation* (*upload-translation* goal exists but is never used and should probably be deleted).
 
 [cols="2*", options="header"]
 |===
@@ -45,30 +45,33 @@ Available goals are: *download-translations*, *update-sources*, *update-crowdin*
 |Description
 
 |crowdin:download-translations
-|Download translations archive from Crowdin (defaults to /target/translation.zip).
+|Download the translations archive from Crowdin (defaults to /target/translation.zip).
+
+Options:
+
+* *dryRun* - Do not download the archive if set to *true* and if the archive already exist. Defaults to *false*.
+
+* *exo.crowdin.translationsArchivePath* - target path of the translations archive, defaults to */target/translations.zip*
 
 |crowdin:update-sources
 |Update translations files in source project with translations from Crowdin (from the translations archive), commit and push.
 
-Translations archive default location is */target/translations.zip*, and can be changed with the option *exo.crowdin.translationsArchivePath*.
+Options:
 
-The list of languages if calculated from the zip content by default. It can be changed through the langs property:
-**`mvn crowdin:update-sources -Dlangs=en,fr,vi -Pcrowdin`**
+* *exo.crowdin.translationsArchivePath* - translations archive, defaults to */target/translations.zip*
+
+* *langs* - Comma-separated list of languages to update. Defaults to *all* which means that all the languages available in the archive are updated. Example: **`-Dlangs=en,fr,vi`**
 
 Activate new language/properties file by activating ONLY the new language (for example : `-Dlangs=ru`) and set the `isActivate` property to true (`-DisActivate=true`).
 
-dryRun option (`-DdryRun=true`) will not download the all.zip if it exists in /target/, and it doesn't push to github.
+* *dryRun* - Do not download the archive and not push updates to Github if set to *true*. Defaults to *false*.
 
 |crowdin:update-crowdin
 |Update all translations from source project to Crowdin.
 
-dryRun option (`-DdryRun=true`) will not upload files to crowdin.
+Options:
 
-|crowdin:upload-translation
-|Update changes in projects' translation files to Crowdin. It uses the information provided in the properties files (upload-translation.properties and <exo-project>.properties files) under upload-translation folder to determine the projects and their translation files need to be updated (in the same convention as the plugin's crowdin.properties and <exo-project>.properties files).
-
-dryRun option (`-DdryRun=true`) means no communication with Crowdin will be done; Default: false.
-Useful to see the evolution of the process. Combined with maven debug option -X, displays actual Rest calls and XmlPath queries.
+* *dryRun* - Do not upload files to crowdin if set to *true*. Defaults to *false*.
 
 |crowdin:restore-translation
 |Restore a Crowdin project's directory structure and translations from its zip file. This zip file should be built with 'Export Only Approved' and 'Don't Export Untranslated' options unchecked so it will backup the untranslated and all suggested translations (not only the approved ones) as they will need to be restored also. Since this zip contains the project's directory structure and all of its translations, it can be considered as a project's backup and should be rebuilt (with 'Build Fresh Package' under Crowdin's 'Downloads' tab) and kept safe before doing any activity that may mess up the project.
@@ -77,11 +80,14 @@ Can also be used to clone a Crowdin project from its zip file (by changing the p
 
 If you want to decide what to be uploaded to Crowdin, you can: first run with 'Dprepare=true' option to get the plugin stops after preparing the extracted folder for you to modify, e.g to remove some languages or projects you don't want to upload. When you're done, let the plugin continues by running with '-Dcontinue=true' option, it will upload your modified folder instead of the original zip.
 
-dryRun option (`-DdryRun=true`) means no communication with Crowdin will be done; Default: false.
-Useful to see the evolution of the process. Combined with maven debug option -X, displays actual Rest calls and XmlPath queries.
+Options:
+
+* *dryRun* - Do not do any communication with Crowdin if set to *true*. Defaults to *false*. It is useful to see the evolution of the process. Combined with maven debug option -X, it displays actual REST calls and XmlPath queries.
 |===
 
 == Let's go deeper
+
+Here are the tasks done by the goals:
 
 * crowdin:update-sources
 
@@ -100,10 +106,22 @@ Useful to see the evolution of the process. Combined with maven debug option -X,
 ** update master files content on Crowdin (add new keys, rename existing keys, delete keys)
 ** delete old folders and files (old entries in the properties and not exist in file system)
 
-* crowdin:upload-translation
+== Development mode
 
-** Identify the list of projects need to be changed, put them into upload-translation.properties. Each entry is a key/value pair with key = <project name>-<version> and value = <path to project's description file>
-** For each project create the project description file named <project>.properties. In this file provide the path to the project in the 'baseDir' property and list all the translation files need to be updated in the form of <path in Crowdin>=<path in source code>
+In development mode, a test Crowdin project is used, called *crowdin-maven-plugin-dev* : https://crowdin.com/project/crowdin-maven-plugin-dev.
+
+In order to use it in a project instead of the default one, get the project id and key and update the pom.xml accordingly, or pass these properties directly in the command line:
+
+[source,bash]
+----
+mvn -Dexo.crowdin.project.id=<project-id> -Dexo.crowdin.project.key=<project-key> org.exoplatform.translation.crowdin:crowdin-maven-plugin:1.2.0:download-translations
+----
+
+Debugging local code can be done with surefire debugging option (and dryRun enabled to not apply the changes):
+[source,bash]
+----
+mvn -Dexo.crowdin.project.id=<project-id> -Dexo.crowdin.project.key=<project-key> org.exoplatform.translation.crowdin:crowdin-maven-plugin:1.2.x-SNAPSHOT:upload-translation -DdryRun=true -Dmaven.surefire.debug="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 -Xnoagent -Djava.compiler=NONE"
+----
 
 == Resources
 
