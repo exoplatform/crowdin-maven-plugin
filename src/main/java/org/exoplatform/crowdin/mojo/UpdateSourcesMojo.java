@@ -163,10 +163,16 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
         zipentryName = zipentryName.replace('\\', File.separatorChar);
         String[] path = zipentryName.split(File.separator);
         String lang = CrowdinTranslation.getPlatformLangFromCrowdinLang(path[0]);
-        String crowdinProj = path[1];
-        String proj = path[2];
         String fileName = "";
-        String cp = crowdinProj + File.separator + proj + File.separator;
+        String cp = "";
+        String proj="";
+        for (int i=1;i<path.length;i++) {
+          cp += path[i] + File.separator;
+          if (i==path.length-1) {
+            proj=path[i];
+          }
+        }
+        getLog().debug("cp : " + cp);
 
         // process only the languages specified
         if (!(lang.equalsIgnoreCase(locale))) {
