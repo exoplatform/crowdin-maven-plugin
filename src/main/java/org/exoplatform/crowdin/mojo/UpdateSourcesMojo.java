@@ -166,14 +166,12 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
         String fileName = "";
         String cp = "";
         String proj="";
-        for (int i=1;i<path.length;i++) {
+        for (int i=1;i<path.length-1;i++) {
           cp += path[i] + File.separator;
-          if (i==path.length-1) {
+          if (i==path.length-2) {
             proj=path[i];
           }
         }
-        getLog().debug("cp : " + cp);
-
         // process only the languages specified
         if (!(lang.equalsIgnoreCase(locale))) {
           zipentry = zipinputstream.getNextEntry();
