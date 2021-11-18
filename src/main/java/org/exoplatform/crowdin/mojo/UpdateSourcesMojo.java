@@ -167,7 +167,9 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
         String cp = "";
         String proj="";
         for (int i=1;i<path.length-1;i++) {
-          cp += path[i] + File.separator;
+          if (i==1 || i==2) {
+            cp += path[i] + File.separator;
+          }
           if (i==path.length-2) {
             proj=path[i];
           }
