@@ -265,6 +265,18 @@ public class CrowdinAPIHelper {
   /**
    * Calls the function https://crowdin.com/page/api/edit-project
    *
+   * @return an XML string with all information about the result
+   * @throws MojoExecutionException
+   */
+  public String setTranslatedOnlyOption() throws MojoExecutionException {
+    return given().
+        multiPart("export_translated_only", currentMojo.getTranslatedOnlyOption()).
+        post("/edit-project?key=" + projectKey).andReturn().asString();
+  }
+
+  /**
+   * Calls the function https://crowdin.com/page/api/edit-project
+   *
    * @return an XML string with the status of translations
    * @throws MojoExecutionException
    */

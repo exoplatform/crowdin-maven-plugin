@@ -41,6 +41,7 @@ public class DownloadTranslationsMojo extends AbstractCrowdinMojo {
     if (!crowdInArchive.exists() || !isDryRun()) {
       try {
         getHelper().setApprovedOnlyOption();
+        getHelper().setTranslatedOnlyOption();
         getLog().info("Downloading Crowdin translation zip...");
         getHelper().downloadTranslations(crowdInArchive);
         getLog().info("Downloading done!");
