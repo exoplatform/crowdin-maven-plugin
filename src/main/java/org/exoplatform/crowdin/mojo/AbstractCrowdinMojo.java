@@ -93,7 +93,7 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
   /**
    * Option to get only the translated strings
    */
-  @Parameter(property = "apply_translated_only", defaultValue = "false")
+  @Parameter(property = "apply_translated_only", defaultValue = "true")
   private String apply_translated_only;
 
   /**
