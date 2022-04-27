@@ -88,7 +88,13 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
    * Option to get only the approved translations or not
    */
   @Parameter(property = "apply_approved_only", defaultValue = "true")
+  
   private String apply_approved_only;
+  /**
+   * Option to get only the translated strings
+   */
+  @Parameter(property = "apply_translated_only", defaultValue = "true")
+  private String apply_translated_only;
 
   /**
    * Option to automatically approve imported translations
@@ -256,6 +262,13 @@ public abstract class AbstractCrowdinMojo extends AbstractMojo {
   
   public String getApplyApprovedOnlyOption() {
     if ("true".equals(apply_approved_only)) {
+      return "1";
+    } else
+      return "0";
+  }
+
+  public String getTranslatedOnlyOption() {
+    if ("true".equals(apply_translated_only)) {
       return "1";
     } else
       return "0";
