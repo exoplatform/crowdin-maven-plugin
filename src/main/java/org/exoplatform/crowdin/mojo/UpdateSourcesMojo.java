@@ -378,6 +378,9 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
              
               if (null != crowdinValue && crowdinValue.length() > 0)
                 config.setProperty(propKey, crowdinValue);
+              else if (!"en".equals(lang)) {
+                config.clearProperty(propKey);
+              }
             }
 
             // if language is English, update master file and the English file if it exists (do not create new)
@@ -397,6 +400,10 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
               config.save(entryName);
               //user java
               org.exoplatform.crowdin.utils.FileUtils.replaceCharactersInFile(entryName, "config/special_character_processing.properties", "UpdateSourceSpecialCharacters");
+              // check entryName File empty
+              if(new File(entryName).length() == 0) {
+                new File(entryName).delete();
+              }
             }
           }
           zipinputstream.closeEntry();
