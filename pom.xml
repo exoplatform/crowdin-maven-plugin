@@ -24,7 +24,7 @@
   <parent>
     <artifactId>maven-parent-pom</artifactId>
     <groupId>org.exoplatform</groupId>
-    <version>17</version>
+    <version>25-M06</version>
   </parent>
   <groupId>org.exoplatform.translation.crowdin</groupId>
   <artifactId>crowdin-maven-plugin</artifactId>
@@ -38,25 +38,9 @@
     <url>https://github.com/exo-addons/crowdin-maven-plugin</url>
   </scm>
   <properties>
-    <mavenVersion>3.2.5</mavenVersion>
-    <mavenPluginPluginVersion>3.4</mavenPluginPluginVersion>
+    <mavenPluginPluginVersion>3.7.1</mavenPluginPluginVersion>
   </properties>
   <dependencies>
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-model</artifactId>
-      <version>${mavenVersion}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-artifact</artifactId>
-      <version>${mavenVersion}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-plugin-api</artifactId>
-      <version>${mavenVersion}</version>
-    </dependency>
     <!-- dependencies to annotations -->
     <dependency>
       <groupId>org.apache.maven.plugin-tools</groupId>
@@ -114,8 +98,8 @@
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
-      <artifactId>mockito-all</artifactId>
-      <version>1.10.19</version>
+      <artifactId>mockito-inline</artifactId>
+      <version>3.11.1</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -151,6 +135,7 @@
           <configuration>
             <systemPropertyVariables>
               <basedir>${basedir}</basedir>
+              <argLine>@{argLine} --add-opens --add-opens java.base/java.lang=ALL-UNNAMED</argLine>
             </systemPropertyVariables>
           </configuration>
         </plugin>
