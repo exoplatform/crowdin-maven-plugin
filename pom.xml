@@ -135,7 +135,7 @@
           <configuration>
             <systemPropertyVariables>
               <basedir>${basedir}</basedir>
-              <argLine>@{argLine} --add-opens --add-opens java.base/java.lang=ALL-UNNAMED</argLine>
+              <argLine>@{argLine} --add-opens java.base/java.lang=ALL-UNNAMED</argLine>
             </systemPropertyVariables>
           </configuration>
         </plugin>
