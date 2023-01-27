@@ -42,7 +42,7 @@ public class CrowdinAPIHelper {
     projectId = _mojo.getProjectId();
     projectKey = _mojo.getProjectKey();
     RestAssured.baseURI = "https://api.crowdin.com";
-    RestAssured.port = 80;
+    RestAssured.port = 443;
     RestAssured.basePath = "/api/project/" + projectId;
     currentMojo = _mojo;
   }
