@@ -142,8 +142,6 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
         return;
       }
 
-      locale = CrowdinTranslation.getPlatformLangFromCrowdinLang(locale);
-
       String baseDir = currentProj.getProperty("baseDir");
 
       byte[] buf = new byte[1024];
@@ -162,7 +160,7 @@ public class UpdateSourcesMojo extends AbstractCrowdinMojo {
         zipentryName = zipentryName.replace('/', File.separatorChar);
         zipentryName = zipentryName.replace('\\', File.separatorChar);
         String[] path = zipentryName.split(File.separator);
-        String lang = CrowdinTranslation.getPlatformLangFromCrowdinLang(path[0]);
+        String lang = path[0];
         String fileName = "";
         String cp = "";
         String proj="";
