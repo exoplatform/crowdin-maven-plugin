@@ -62,21 +62,6 @@ public class CrowdinTranslation extends CrowdinFile {
   }
 
   /**
-   * Return the right language code for eXo from the language code used by Crowdin
-   * This is useful for some specific case, for example the indonesian language code in Crowdin
-   * is "id" whereas it is "in" in the platform (and Java).
-   * @param lang Language code in Crowdin
-   * @return Language code in platform
-   */
-  public static String getPlatformLangFromCrowdinLang(String lang) {
-    String language = lang;
-    if("id".equals(language)) {
-      language = "in";
-    }
-    return language;
-  }
-
-  /**
    * Return the right language code for Crowdin from the language code used by eXo
    * This is useful for some specific case, for example the indonesian language code in Crowdin
    * is "id" whereas it is "in" in the platform (and Java).
